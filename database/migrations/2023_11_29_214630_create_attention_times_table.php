@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('promotions', function (Blueprint $table) {
-            $table->string('description')->after('image');
+        Schema::create('attention_times', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('stores_id');
+            $table->text('schedule');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('promotions', function (Blueprint $table) {
-            $table->dropColumn('description');
-        });
+        Schema::dropIfExists('attention_times');
     }
 };

@@ -72,7 +72,10 @@
                         <x-slot name="trigger">
                             @if(Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                    <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                    <?php
+                                        $url_profile = str_replace('http://localhost/', 'http://127.0.0.1:8000/', Auth::user()->profile_photo_url);
+                                    ?>
+                                    <img class="h-8 w-8 rounded-full object-cover" src="{{ $url_profile }}" alt="{{ Auth::user()->name }}" />
                                 </button>
                             @else
                                 <span class="inline-flex rounded-md">
@@ -93,6 +96,10 @@
 
                             <x-dropdown-link href="{{ route('profile.show') }}" style="text-decoration: none">
                                 <i class="fa-solid fa-user me-1"></i>{{ __('Perfil') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link href="/admin/table-management/Cajas" style="text-decoration: none">
+                                <i class="fa-solid fa-user me-1"></i>{{ __('Adminstación') }}
                             </x-dropdown-link>
                     
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())

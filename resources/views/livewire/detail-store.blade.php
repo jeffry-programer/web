@@ -16,7 +16,7 @@
     <div id="carouselExampleIndicators" class="carousel slide">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="{{ asset('http://127.0.0.1:8080'.$store->image) }}" class="d-block w-100 img-carrusel" alt="...">
+            <img src="{{ asset('http://127.0.0.1:8000'.$store->image) }}" class="d-block w-100 img-carrusel" alt="...">
           </div>
         </div>
     </div>
@@ -108,7 +108,7 @@
                         <div class="row">
                             <div class="col-12 col-lg-8 d-flex justify-content-center">
                                 <a href="#">
-                                    <img src="http://127.0.0.1:8080{{$store->image}}" class="img-fluid" alt="Imagen Principal">
+                                    <img src="http://127.0.0.1:8000{{$store->image}}" class="img-fluid" alt="Imagen Principal">
                                 </a>
                             </div>
                             <div class="col-12 col-lg-4">
@@ -153,7 +153,7 @@
                             <div class="col-12 col-md-4 mt-3">
                                 <a href="/tienda/{{ str_replace(' ','-', $store->name) }}/{{$product->link}}">
                                     <div class="card card-store">
-                                        <img src="{{ asset('http://127.0.0.1:8080'.$product->image) }}" class="card-img-top" alt="...">
+                                        <img src="{{ asset('http://127.0.0.1:8000'.$product->image) }}" class="card-img-top" alt="...">
                                         <div class="card-body" style="padding-bottom: 4rem;">
                                         <h5 class="card-title">{{$product->name}}</h5>
                                         <p class="card-text">{{$product->description}}</p>
@@ -186,7 +186,7 @@
                                               <div class="col-12">
                                                 <div class="card" style="width: 7rem;height: 5rem;">
                                                     <div class="card-body" style="padding: .5rem;">
-                                                        <img class="thumbnail img-fluid" src="http://127.0.0.1:8080{{$product_detail->image}}" alt="Imagen 1" style="height: 100%;">
+                                                        <img class="thumbnail img-fluid" src="http://127.0.0.1:8000{{$product_detail->image}}" alt="Imagen 1" style="height: 100%;">
                                                     </div>
                                                 </div>
                                               </div>
@@ -195,7 +195,7 @@
                                                     <div class="col-12 mt-3">
                                                         <div class="card" style="width: 7rem;height: 5rem;">
                                                             <div class="card-body" style="padding: .5rem;">
-                                                                <img class="thumbnail img-fluid" src="http://127.0.0.1:8080{{$key->image}}" alt="Imagen 1" style="object-fit: cover;width: 7rem;height: 4rem;">
+                                                                <img class="thumbnail img-fluid" src="http://127.0.0.1:8000{{$key->image}}" alt="Imagen 1" style="object-fit: cover;width: 7rem;height: 4rem;">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -208,7 +208,7 @@
                                         <div class="card ms-5">
                                             <div class="card-body" style="padding: 0rem;">
                                                 <div id="imagenPrincipalContainer">
-                                                    <img id="imagenPrincipal" class="img-fluid" src="http://127.0.0.1:8080{{$product_detail->image}}" style="height: 24rem;cursor:zoom-in;width: 100%;" alt="Imagen Principal">
+                                                    <img id="imagenPrincipal" class="img-fluid" src="http://127.0.0.1:8000{{$product_detail->image}}" style="height: 24rem;cursor:zoom-in;width: 100%;" alt="Imagen Principal">
                                                 </div>
                                             </div>
                                         </div>
@@ -218,7 +218,7 @@
                             </div>
                             <div class="col-12 col-lg-4">
                                 <div class="container" style="margin-top: 5rem;position: relative">
-                                    <div id="lupa" class="d-none" style="position:absolute;top: 0rem;background: rgb(255, 255, 255);width: 20rem;height: 15rem;background-image: url('http://127.0.0.1:8080{{$product_detail->image}}');background-repeat: no-repeat;"></div>
+                                    <div id="lupa" class="d-none" style="position:absolute;top: 0rem;background: rgb(255, 255, 255);width: 20rem;height: 15rem;background-image: url('http://127.0.0.1:8000{{$product_detail->image}}');background-repeat: no-repeat;"></div>
                                     <div class="row">
                                         <div class="col-12">
                                             <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal3">Editar datos del producto</button>
@@ -271,7 +271,10 @@
                                     @foreach($subscriptions as $subscription)
                                         <div class="row py-2 mt-3" style="border-bottom: solid 1px #dee2e6;">
                                             <div class="col-2">
-                                                <img src="{{asset($subscription->user->profile_photo_path)}}" class="img-fluid" style="border-radius: 100%;">
+                                                <?php
+                                                    $url_profile = 'http://127.0.0.1:8000/storage/'.$subscription->user->profile_photo_path;
+                                                ?>
+                                                <img class="h-8 w-8 rounded-full object-cover" src="{{ $url_profile}}" alt="{{$subscription->user->name}}">
                                             </div>
                                             <div class="col-10 d-flex align-items-center">
                                                 <p>{{ $subscription->user->name }} {{ $subscription->user->last_name }}</p>

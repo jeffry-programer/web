@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Store extends Model
 {
     use HasFactory;
+
+    public function promotions(){
+        return $this->hasMany(Promotion::class);
+    }
 }

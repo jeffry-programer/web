@@ -27,8 +27,11 @@
                 <x-label for="photo" value="{{ __('Fotografía') }}" />
 
                 <!-- Current Profile Photo -->
+                <?php
+                    $url_profile = str_replace('http://localhost/', 'http://127.0.0.1:8000/', $this->user->profile_photo_url);
+                ?>
                 <div class="mt-2" x-show="! photoPreview">
-                    <img src="{{ $this->user->profile_photo_url }}" alt="{{ $this->user->name }}" class="rounded-full h-20 w-20 object-cover">
+                    <img src="{{ $url_profile }}" alt="{{ $this->user->name }}" class="rounded-full h-20 w-20 object-cover">
                 </div>
 
                 <!-- New Profile Photo Preview -->

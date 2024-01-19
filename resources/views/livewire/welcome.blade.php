@@ -5,15 +5,15 @@
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
-        <div class="carousel-inner">
+        <div class="carousel-inner" style="background-image: url('{{ asset('images/1.jpg') }}');background-size: 100% 100%;background-repeat: no-repeat;">
           <div class="carousel-item active">
-            <img src="{{ asset('images/1.jpg') }}" class="d-block w-100 img-carrusel" alt="...">
+            <img src="{{ asset('images/2.png') }}" class="d-block w-50 img-carrusel" style="width: 50% !important;margin-left: 25%;object-fit: contain;" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="{{ asset('images/1.jpg') }}" class="d-block w-100 img-carrusel" alt="...">
+            <img src="{{ asset('images/3.png') }}" class="d-block w-50 img-carrusel" style="width: 50% !important;margin-left: 25%;object-fit: contain;" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="{{ asset('images/1.jpg') }}" class="d-block w-100 img-carrusel" alt="...">
+            <img src="{{ asset('images/4.png') }}" class="d-block w-50 img-carrusel" style="width: 50% !important;margin-left: 25%;object-fit: contain;" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -78,7 +78,7 @@
           <div class="col-12 col-md-4 mt-3">
             <a href="/tienda/{{ str_replace(' ','-', $store->name) }}">
               <div class="card card-store">
-                  <img src="{{ asset('http://127.0.0.1:8080'.$store->image) }}" class="card-img-top" alt="...">
+                  <img src="{{ asset('http://127.0.0.1:8000'.$store->image) }}" class="card-img-top" alt="...">
                   <div class="card-body" style="padding-bottom: 4rem;">
                   <h5 class="card-title">{{$store->name}}</h5>
                   <p class="card-text">{{$store->description}}</p>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Country;
 use App\Models\State;
 use App\Models\Store;
@@ -73,8 +74,11 @@ class SearchStores extends Component
         $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0);
 
         if($categories_id != 'Categoria'){
-            $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
-            $query = $query->where('products.sub_categories_id', $id_sub_category);
+            $category = Category::find($categories_id);
+            if($category->subCategories->isNotEmpty()){
+                $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
+                $query = $query->where('products.sub_categories_id', $id_sub_category);
+            }
         }
         return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }

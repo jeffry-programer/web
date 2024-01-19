@@ -6,6 +6,7 @@ use App\Models\ProductStore;
 use App\Models\Promotion;
 use App\Models\Publicity;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -78,14 +79,15 @@ class Promotions extends Component
     public function savePromotion(){
         $this->validate();
 
-        $imagePath = $this->image->store('images/promotions', 'public');
+        $route_image = $this->image_promotion->file('file')->store('public/images-promotion/');
+        $url = Storage::url($route_image);
 
         $promotion = new Promotion();
         $promotion->product_stores_id = $this->id_product_store;
         $promotion->date_init = $this->date_init;
         $promotion->date_end = $this->date_end;
         $promotion->price = $this->price_promotion;
-        $promotion->image = $imagePath;
+        $promotion->image = $url;
         $promotion->description = $this->description_promotion;
         $promotion->created_at = Carbon::now();
         $promotion->save();
@@ -107,12 +109,13 @@ class Promotions extends Component
             'title.required' => 'El titulo es requerido'
         ]);
 
-        $imagePath = $this->image->store('images/publicities', 'public');
+        $route_image = $this->image->file('file')->store('public/images-publicities/');
+        $url = Storage::url($route_image);
 
         $publicities = new Publicity();
         $publicities->stores_id = $this->global_store['id'];
         $publicities->type_publicities_id = $this->global_store['id'];
-        $publicities->image = $imagePath;
+        $publicities->image = $url;
         $publicities->description = $this->description_ofer;
         $publicities->link =  $this->link;
         $publicities->status =  true;

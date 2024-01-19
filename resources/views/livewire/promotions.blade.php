@@ -3,6 +3,11 @@
         <h4 class="ms-3">Agregar promoción a producto</h4>
     </div>
     <div>
+        <div class="alert alert-info">
+            Debes escribir y seleccionar un producto que ya este asociado a tu tienda para poder crear una promoción
+        </div>
+    </div>
+    <div>
 
         @if (session()->has('message'))
 

@@ -10,4 +10,8 @@ class MainController extends Controller{
     public function detailStore(){
         return view('detail-store');
     }
+
+    public function admin(){
+        return view('admin.dashboard'); 
+    }
 }
