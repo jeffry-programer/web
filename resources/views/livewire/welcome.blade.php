@@ -25,6 +25,13 @@
           <span class="visually-hidden">Next</span>
         </button>
     </div>
+    <div class="row">
+      @for($i = 0; $i < 6; $i++)
+        <div class="col-2">
+          <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="...">
+        </div>
+      @endfor
+    </div>
     <div class="alert alert-secondary mx-3" role="alert">
       <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas con promociones</h6>
     </div>

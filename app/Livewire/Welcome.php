@@ -8,7 +8,7 @@ use Livewire\Component;
 class Welcome extends Component
 {
     public function render(){
-        $stores = Store::all();
+        $stores = Store::has('promotions')->take(6)->get();
         return view('livewire.welcome', ['stores' => $stores]);
     }
 }

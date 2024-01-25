@@ -10,6 +10,6 @@ class Store extends Model
     use HasFactory;
 
     public function promotions(){
-        return $this->hasMany(Promotion::class);
+        return $this->hasMany(Promotion::class, 'stores_id');
     }
 }

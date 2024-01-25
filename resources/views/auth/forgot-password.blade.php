@@ -1,34 +1,38 @@
-<x-guest-layout>
+<x-app-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
         </x-slot>
 
+        <img class="img-fluid" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;margin-bottom:2rem" onclick="window.location.replace('/');">
+
+
         <div class="mb-4 text-sm text-gray-600">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+            {{ __('¿Olvidaste tu contraseña? Ningún problema. Simplemente háganos saber su dirección de correo electrónico y le enviaremos un enlace para restablecer su contraseña que le permitirá elegir una nueva.') }}
         </div>
 
         @if (session('status'))
             <div class="mb-4 font-medium text-sm text-green-600">
-                {{ session('status') }}
+                Le hemos enviado por correo electrónico el enlace para restablecer su contraseña.            
             </div>
         @endif
 
         <x-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('password.email') }}">
-            @csrf
+        @if (!session('status'))
+            <form method="POST" action="{{ route('password.email') }}" autocomplete="off">
+                @csrf
 
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
+                <div class="block">
+                    <x-label for="email" value="{{ __('Correo') }}" />
+                    <x-input id="email" class="block mt-1 w-full" type="email" placeholder="Ingrese tu correo para recuperar la cuenta" name="email" :value="old('email')" required autofocus/>
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-button>
-            </div>
-        </form>
+                <div class="flex items-center justify-center mt-4">
+                    <x-button>
+                        {{ __('Enviar enlace de recuperación a mi correo electrónico') }}
+                    </x-button>
+                </div>
+            </form>
+        @endif
     </x-authentication-card>
-</x-guest-layout>
+</x-app-layout>
