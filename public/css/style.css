@@ -334,3 +334,45 @@ body {
   .card img {
     border-radius: 15px !important;
   }
+
+  .zoom-container {
+    overflow: hidden;
+    width: 100%;
+    height: 14rem;
+  }
+
+  .zoomed-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajusta cómo la imagen se ajusta al contenedor */
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Agrega transiciones suaves a los efectos de zoom y opacidad */
+  }
+
+  .zoom-container:hover .zoomed-image {
+    transform: scale(1.2); /* Ajusta el valor de escala según sea necesario para el nivel de zoom deseado */
+    opacity: 0.8; /* Ajusta el valor de opacidad según sea necesario para el aclarado deseado */
+  }
+
+  .image-container {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .image-list {
+    display: flex;
+    animation: scroll 10s linear infinite; /* Ajusta la duración según tus necesidades */
+  }
+
+  .image-item {
+    width: 100%;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }

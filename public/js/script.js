@@ -20,6 +20,11 @@ $(document).ready(() => {
     testQr();
 
     initImages();
+
+    $('.carousel').carousel({
+        interval: 2000, // Cambia este valor según el tiempo deseado entre transiciones en milisegundos
+        pause: 'hover'
+    });
 });
 
 $(document).ready(function() {
@@ -175,5 +180,3 @@ function magnificar(elemento) {
       lupa.style.backgroundPosition = `${backgroundPosX}% ${backgroundPosY}%`;
     });
 }
-  
-

@@ -26,7 +26,9 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ], [
             'password.min' => 'La contraseña debe tener minimo 8 caracteres',
-            'password.confirmed' => 'Las contraseñas no coinciden'
+            'password.confirmed' => 'Las contraseñas no coinciden',
+            'password.confirmed' => 'Las contraseñas no coinciden',
+            'email.unique' => 'Este correo ya existe en base de datos',
         ])->validate();
 
         return User::create([

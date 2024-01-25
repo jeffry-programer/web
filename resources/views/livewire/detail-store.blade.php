@@ -153,7 +153,9 @@
                             <div class="col-12 col-md-4 mt-3">
                                 <a href="/tienda/{{ str_replace(' ','-', $store->name) }}/{{$product->link}}">
                                     <div class="card card-store">
-                                        <img src="{{ asset('http://127.0.0.1:8000'.$product->image) }}" class="card-img-top" alt="...">
+                                        <div class="zoom-container">
+                                            <img class="zoomed-image" src="{{ asset('http://127.0.0.1:8000'.$product->image) }}" alt="Descripción de la imagen">
+                                        </div>
                                         <div class="card-body" style="padding-bottom: 4rem;">
                                         <h5 class="card-title">{{$product->name}}</h5>
                                         <p class="card-text">{{$product->description}}</p>
@@ -272,7 +274,13 @@
                                         <div class="row py-2 mt-3" style="border-bottom: solid 1px #dee2e6;">
                                             <div class="col-2">
                                                 <?php
-                                                    $url_profile = 'http://127.0.0.1:8000/storage/'.$subscription->user->profile_photo_path;
+                                                    $url_profile = "";
+                                                    if($subscription->user->profile_photo_path == null){
+                                                        $letter = strtoupper($subscription->user->name[0]);
+                                                        $url_profile = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
+                                                    }else{
+                                                        $url_profile = 'http://127.0.0.1:8000/storage/'.$subscription->user->profile_photo_path;
+                                                    }
                                                 ?>
                                                 <img class="h-8 w-8 rounded-full object-cover" src="{{ $url_profile}}" alt="{{$subscription->user->name}}">
                                             </div>

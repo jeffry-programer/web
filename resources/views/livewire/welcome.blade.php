@@ -25,50 +25,6 @@
           <span class="visually-hidden">Next</span>
         </button>
     </div>
-    <div class="row">
-      <div class="col-12 col-md-2">
-        <div class="card">
-          <div class="card-body" style="background: #f3f4f6;">
-            <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-2">
-        <div class="card">
-          <div class="card-body" style="background: #f3f4f6;">
-            <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-2">
-        <div class="card">
-          <div class="card-body" style="background: #f3f4f6;">
-            <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-2">
-        <div class="card">
-          <div class="card-body" style="background: #f3f4f6;">
-            <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-2">
-        <div class="card">
-          <div class="card-body" style="background: #f3f4f6;">
-            <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-2">
-        <div class="card">
-          <div class="card-body" style="background: #f3f4f6;">
-            <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="alert alert-secondary mx-3" role="alert">
       <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas con promociones</h6>
     </div>
@@ -78,7 +34,9 @@
           <div class="col-12 col-md-4 mt-3">
             <a href="/tienda/{{ str_replace(' ','-', $store->name) }}">
               <div class="card card-store">
-                  <img src="{{ asset('http://127.0.0.1:8000'.$store->image) }}" class="card-img-top" alt="...">
+                  <div class="zoom-container">
+                    <img class="zoomed-image" src="{{ asset('http://127.0.0.1:8000'.$store->image) }}" alt="Descripción de la imagen">
+                  </div>
                   <div class="card-body" style="padding-bottom: 4rem;">
                   <h5 class="card-title">{{$store->name}}</h5>
                   <p class="card-text">{{$store->description}}</p>
