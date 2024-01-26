@@ -21,9 +21,11 @@ $(document).ready(() => {
 
     initImages();
 
-    $('.carousel').carousel({
-        interval: 2000, // Cambia este valor según el tiempo deseado entre transiciones en milisegundos
-        pause: 'hover'
+    document.addEventListener('DOMContentLoaded', function () {
+        var myCarousel = new bootstrap.Carousel(document.getElementById('carouselExample'), {
+            interval: 2000, // Ajusta el intervalo de tiempo en milisegundos
+            wrap: true
+        });
     });
 });
 

@@ -25,12 +25,45 @@
           <span class="visually-hidden">Next</span>
         </button>
     </div>
-    <div class="row">
-      @for($i = 0; $i < 6; $i++)
-        <div class="col-2">
-          <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="...">
+    <div class="row py-2" style="height: 5.5rem;">
+      <div class="slide-option">
+        <div id="infinite" class="highway-slider">
+          <div class="container highway-barrier" style="padding-bottom: 0rem;width: 100%;max-width: 99%;height: 4rem;">
+            <ul class="highway-lane">
+              @for ($i = 0; $i < 5; $i++)
+                <li class="highway-car">
+                  <div class="card">
+                    <div class="card-body">
+                      <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="">
+                    </div>
+                  </div>
+                </li>
+                <li class="highway-car">
+                  <div class="card">
+                    <div class="card-body">
+                      <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="">
+                    </div>
+                  </div>
+                </li>
+                <li class="highway-car">
+                  <div class="card">
+                    <div class="card-body">
+                      <img src="{{ asset('images/3.png') }}" class="img-fluid" alt="">
+                    </div>
+                  </div>
+                </li>
+                <li class="highway-car">
+                  <div class="card">
+                    <div class="card-body">
+                      <img src="{{ asset('images/4.png') }}" class="img-fluid" alt="">
+                    </div>
+                  </div>
+                </li>
+              @endfor
+            </ul>
+          </div>
         </div>
-      @endfor
+      </div>
     </div>
     <div class="alert alert-secondary mx-3" role="alert">
       <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas con promociones</h6>
