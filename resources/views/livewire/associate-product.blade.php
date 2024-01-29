@@ -99,8 +99,8 @@
                 </div>  
                 @if($product_id == null)
                     <div class="col-12 form-group">
-                        <label class="mt-3">Imagenes</label>
-                        <div class="dropzone" id="myDropzone"></div>
+                        <label style="margin-bottom: 1rem;">Imagenes</label>
+                        <div class="dropzone" id="myDropzone3"></div>
                     </div> 
                     <input type="hidden" id="maxFiles" value="5">
                 @endif
@@ -124,39 +124,10 @@
 
         var isset_images = false;
 
-        let myDropzone = new Dropzone("#myDropzone", { 
-            url: "{{route('imgs-store')}}",
-            headers: {
-                'X-CSRF-TOKEN' : "{{csrf_token()}}",
-            },
-            dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: ${$("#maxFiles").val()})`,
-            dictMaxFilesExceeded: "No puedes subir más archivos",
-            dictCancelUpload: "Cancelar subida",
-            dictInvalidFileType: "No puedes subir archivos de este tipo",
-            dictRemoveFile: "Remover archivo",
-            acceptedFiles: 'image/*',
-            maxFilesize : 5,
-            maxFiles: $("#maxFiles").val(),
-            autoProcessQueue: false,
-            addRemoveLinks: true,
-            parallelUploads: 5,
-            init: function(){
-                this.on("sending", function(file, xhr, formData){
-                    formData.append("id", `${$("#id_table").val()}`);
-                    formData.append("table", `${$("#table").val()}`);
-                });
-
-                this.on("success", function(file, response) {
-                    if(file.status != 'success'){
-                        return false;
-                    }
-                    if(this.getUploadingFiles().length === 0){
-                        isset_images = true;
-                        hideAlertTime();
-                    }
-                });
-            }
-        });
+        if ($('#myDropzone3').length) {
+            $("div#myDropzone3").dropzone({ url: "/file/post" });
+            alert('enter here');
+        }
 
         $("#store").click((e) => {
             validateDataStore();

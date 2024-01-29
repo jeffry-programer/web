@@ -20,13 +20,6 @@ $(document).ready(() => {
     testQr();
 
     initImages();
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var myCarousel = new bootstrap.Carousel(document.getElementById('carouselExample'), {
-            interval: 2000, // Ajusta el intervalo de tiempo en milisegundos
-            wrap: true
-        });
-    });
 });
 
 $(document).ready(function() {

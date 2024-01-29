@@ -301,40 +301,41 @@
         </div>
         <div class="col-12 col-lg-2">
             <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                          <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
+                <div class="slider-container" style="height: 50rem;">
+                    <div class="slider-container">
+                        <div class="slider">
+                            @for ($i = 0; $i < 100; $i++)
+                            <li class="slide">
+                              <div class="card">
+                                <div class="card-body">
+                                  <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="">
+                                </div>
+                              </div>
+                            </li>
+                            <li class="slide">
+                              <div class="card">
+                                <div class="card-body">
+                                  <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="">
+                                </div>
+                              </div>
+                            </li>
+                            <li class="slide">
+                              <div class="card">
+                                <div class="card-body">
+                                  <img src="{{ asset('images/3.png') }}" class="img-fluid" alt="">
+                                </div>
+                              </div>
+                            </li>
+                            <li class="slide">
+                              <div class="card">
+                                <div class="card-body">
+                                  <img src="{{ asset('images/4.png') }}" class="img-fluid" alt="">
+                                </div>
+                              </div>
+                            </li>
+                          @endfor
                         </div>
-                    </div>                
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                          <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-                        </div>
-                    </div>                
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                          <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-                        </div>
-                    </div>                
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                          <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-                        </div>
-                    </div>                
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                          <img class="img-fluid" src="{{ asset('images/2.png') }}" alt="..">
-                        </div>
-                    </div>                
+                    </div>
                 </div>
             </div>
         </div>
