@@ -14,4 +14,11 @@ class MainController extends Controller{
     public function admin(){
         return view('admin.dashboard'); 
     }
+
+    public function terminos(){
+        return view('terminos');
+    }
+    public function preguntas(){
+        return view('preguntas');
+    }
 }

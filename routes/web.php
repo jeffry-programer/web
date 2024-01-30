@@ -13,6 +13,10 @@ Route::get('/', function () {
     return view('dashboard');
 });
 
+
+
+Route::get('/terminos', [MainController::class, 'terminos'])->name('terminos');
+Route::get('/preguntas', [MainController::class, 'preguntas'])->name('preguntas');
 Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
 
 

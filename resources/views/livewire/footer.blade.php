@@ -17,10 +17,10 @@
 
                 <div class="col-12 py-3 m-auto d-flex flex-column flex-lg-row justify-content-center">
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="https://tucomparas.com.co/privacidad" class="links-footer" target="_blank" rel="noopener noreferrer">Políticas de privacidad</a>
+                        <a href="http://127.0.0.1:8000/terminos" class="links-footer" target="_blank" rel="noopener noreferrer">Terminos y condiciones</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="https://tucomparas.com.co/contacto" class="links-footer" target="_blank" rel="noopener noreferrer">Contacto</a>
+                        <a href="http://127.0.0.1:8000/preguntas" class="links-footer" target="_blank" rel="noopener noreferrer">Preguntas frecuentes</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
                         <a href="https://tucomparas.com.co/sugerencias" class="links-footer" target="_blank" rel="noopener noreferrer">Sugerencias</a>
