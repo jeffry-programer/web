@@ -88,8 +88,11 @@ class SearchStores extends Component
         $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('cities_id', $city_id);
 
         if($categories_id != 'Categoria'){
-            $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
-            $query = $query->where('products.sub_categories_id', $id_sub_category);
+            $category = Category::find($categories_id);
+            if($category->subCategories->isNotEmpty()){
+                $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
+                $query = $query->where('products.sub_categories_id', $id_sub_category);
+            }
         }
         return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
@@ -99,8 +102,11 @@ class SearchStores extends Component
         $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('municipalities.states_id', $state_id);
 
         if($categories_id != 'Categoria'){
-            $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
-            $query = $query->where('products.sub_categories_id', $id_sub_category);
+            $category = Category::find($categories_id);
+            if($category->subCategories->isNotEmpty()){
+                $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
+                $query = $query->where('products.sub_categories_id', $id_sub_category);
+            }
         }
         return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
@@ -110,8 +116,11 @@ class SearchStores extends Component
         $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('countries.id', $country_id);
 
         if($categories_id != 'Categoria'){
-            $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
-            $query = $query->where('products.sub_categories_id', $id_sub_category);
+            $category = Category::find($categories_id);
+            if($category->subCategories->isNotEmpty()){
+                $id_sub_category = SubCategory::where('categories_id', $categories_id)->select('id')->first()->id;
+                $query = $query->where('products.sub_categories_id', $id_sub_category);
+            }
         }
         return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
