@@ -17,10 +17,13 @@
                 <a class="nav-link" href="http://127.0.0.1:8000/preguntas">Preguntas frecuentes</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Politica de privacidad</a>
+                <a class="nav-link" href="http://127.0.0.1:8000/politicas">Politica de privacidad</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Contacto</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="http://127.0.0.1:8000/ayuda">Ayuda</a>
               </li>
             </ul>
           </div>
@@ -43,15 +46,7 @@
                 <h2 class="text-justify mt-5">¿Lo talleres mecanicos son recomendados?</h2>            
                 <p class="text-justify mt-10">Los talleres mecánicos registrados en la plataforma de Tulobuscas ofrecen a los usuarios una valiosa información para tomar decisiones informadas. Además de una calificación que refleja la satisfacción de los clientes, cada taller cuenta con comentarios detallados que comparten las experiencias de otros usuarios. Estos testimonios brindan una visión completa de la calidad del servicio, permitiendo a los usuarios evaluar si desean o no optar por los servicios de un taller en particular. En última instancia, esta transparencia promueve una relación de confianza entre talleres y usuarios, garantizando una experiencia satisfactoria para ambas partes.</p>
                                 
-                <div class="container">
-                    <div class="row justify-content-center">
-                      <div class="col-md-8">
-                        <div class="embed-responsive embed-responsive-16by9">
-                          <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/w2dM_hI0hmY" allowfullscreen></iframe>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                
             </div> 
             
             

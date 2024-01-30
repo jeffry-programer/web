@@ -17,10 +17,13 @@
                 <a class="nav-link" href="http://127.0.0.1:8000/preguntas">Preguntas frecuentes</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Politica de privacidad</a>
+                <a class="nav-link" href="http://127.0.0.1:8000/politicas">Politica de privacidad</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Contacto</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="http://127.0.0.1:8000/ayuda">Ayuda</a>
               </li>
             </ul>
           </div>

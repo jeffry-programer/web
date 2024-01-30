@@ -21,4 +21,10 @@ class MainController extends Controller{
     public function preguntas(){
         return view('preguntas');
     }
+    public function ayuda(){
+        return view('ayuda');
+    }
+    public function politicas(){
+        return view('politicas');
+    }
 }

@@ -17,6 +17,8 @@ Route::get('/', function () {
 
 Route::get('/terminos', [MainController::class, 'terminos'])->name('terminos');
 Route::get('/preguntas', [MainController::class, 'preguntas'])->name('preguntas');
+Route::get('/ayuda', [MainController::class, 'ayuda'])->name('ayuda');
+Route::get('/politicas', [MainController::class, 'politicas'])->name('politicas');
 Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
 
 
