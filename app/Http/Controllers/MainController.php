@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Publicity;
+use App\Models\Publicy;
+
 class MainController extends Controller{ 
     public function searchStores(){
         return view('search-stores');
@@ -26,5 +29,10 @@ class MainController extends Controller{
     }
     public function politicas(){
         return view('politicas');
+    }
+    public function publicity($id){
+        $publicity = Publicity::find($id);
+        $publicities = Publicity::all();
+        return view('publicity', ['publicity' => $publicity, 'publicities' => $publicities]);
     }
 }

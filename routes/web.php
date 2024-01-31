@@ -27,6 +27,7 @@ Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
 Route::get('/tienda/{nameStore}/{linkProduct}', [MainController::class, 'detailStore']);
 Route::get('/imgs-store', [AssociateProduct::class, 'store'])->name('imgs-store');
 Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('table-store-imgs');
+Route::get('/publicities/{id}', [MainController::class, 'publicity']);
 
 //Admin
 Route::middleware('auth')->group(function () {

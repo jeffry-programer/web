@@ -347,6 +347,7 @@ class UserManagement extends Component
                 $error = true;
             }
         }
+
         if($name_table == 'type_publicities'){
             if(count(Publicy::where('type_publicities_id', $request->id)->get()) > 0){
                 $error = true;
@@ -493,7 +494,7 @@ class UserManagement extends Component
             $route_image = $request->file('file')->store('public/images-social/'.$request->id);
         }else if($request->table == 'promotion'){
             $route_image = $request->file('file')->store('public/images-promotion/'.$request->id);
-        }else if($request->table == 'publicity'){
+        }else if($request->table == 'publicities'){
             $route_image = $request->file('file')->store('public/images-publicity/'.$request->id);
         }else{
             $route_image = $request->file('file')->store('public/images-user/'.$request->id);

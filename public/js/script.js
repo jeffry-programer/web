@@ -22,6 +22,10 @@ $(document).ready(() => {
     initImages();
 });
 
+function goPagePublicity(id){
+    window.location.replace("/publicities/"+id);
+}
+
 $(document).ready(function() {
     $("#imagenPrincipal").mousemove((e) => {
         $("#lupa").removeClass('d-none');

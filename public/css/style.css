@@ -450,7 +450,7 @@ body {
     }
     &::after {
       top:0;right:0;
-      background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+      background: linear-gradient(to left, #ffffff 0%, rgba(255,255,255,0) 100%);
     }
     ul.highway-lane {
       width:calc(180px * 24);
@@ -509,4 +509,35 @@ body {
 
   
   /* Agrega más puntos de control según sea necesario */
+}
+
+.imagen-zoom {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  max-height: 100%;
+  width: 12rem !important;
+  height: 5rem !important;
+  object-fit: cover;
+}
+.contenedor-imagen {
+  overflow: hidden;
+  cursor: pointer;
+}
+.contenedor-imagen:hover .imagen-zoom {
+  transform: scale(1.2);
+  filter: brightness(50%);
+}
+.texto-encima {
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;  
+  font-size: 1rem;
+  width: 10rem;
+}
+.contenedor-imagen:hover .texto-encima {
+  opacity: 1;
 }
