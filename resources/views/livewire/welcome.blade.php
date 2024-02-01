@@ -37,7 +37,7 @@
                     <div class="card-body" style="padding: 0rem;">
                       <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})">
                         <img src="{{ asset('http://127.0.0.1:8000'.$key->image) }}" class="img-fluid imagen-zoom" alt="Imagen 1">
-                        <div class="texto-encima">{{ $key->description }}</div>
+                        <div class="texto-encima">{{ $key->title }}</div>
                       </div>
                     </div>
                   </div>

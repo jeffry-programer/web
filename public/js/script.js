@@ -20,6 +20,14 @@ $(document).ready(() => {
     testQr();
 
     initImages();
+
+    $("#subscribe").click(() => {
+        $("#subscribe-form").submit();
+    });
+
+    $("#unsubscribe").click(() => {
+        $("#unsubscribe-form").submit();
+    });
 });
 
 function goPagePublicity(id){

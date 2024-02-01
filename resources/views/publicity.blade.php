@@ -18,6 +18,11 @@
             overflow: auto;
             padding: 1rem;
         }
+
+        .dropdown-toggle::after{
+            margin-left: .4rem !important;
+            margin-top: .3rem !important;
+        }
     </style>
     @endsection
 
@@ -26,24 +31,46 @@
             <div class="card mb-3">
                 <div class="row g-0">
                   <div class="col-md-6">
-                    <img style="height: 100%;
-                    object-fit: cover;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start" alt="...">
+                    <img style="object-fit: fill;
+                    width: 100%;
+                    height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start" alt="...">
                   </div>
                   <div class="col-md-6">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8 col-md-9">
-                                <a href="#"><p style="font-size: .74rem;text-decoration: underline;color: #666;">http://127.0.0.1:8000/publicities/6</p></a>
+                                <a href="http://127.0.0.1:8000/tienda/{{ $publicity->link }}"><p style="font-size: .74rem;text-decoration: underline;color: #666;">http://127.0.0.1:8000/tienda/{{ $publicity->link }}</p></a>
                             </div>
+                            <form action=" {{ route('subscribe') }} " method="POST" id="subscribe-form" class="d-none">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $store->id }}">
+                                <input type="hidden" name="id_p" value="{{ $publicity->id }}">
+                            </form>
+                            <form action=" {{ route('unsubscribe') }} " method="POST" id="unsubscribe-form" class="d-none">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $store->id }}">
+                                <input type="hidden" name="id_p" value="{{ $publicity->id }}">
+                            </form>
                             <div class="col-4 col-md-3">
-                                <button class="btn btn-primary" style="font-size: .6rem;display: flex;"><i class="fa-solid fa-bell me-1" style="margin-top: .2rem;"></i>Suscribete</button>
+                                @if(!$subscribed)
+                                    <button class="btn btn-primary" id="subscribe" style="font-size: .6rem;display: flex;"><i class="fa-solid fa-bell me-1" style="margin-top: .2rem;"></i>Suscribete</button>
+                                @else
+                                    <div class="dropdown">
+                                        <button class="btn  btn-primary dropdown-toggle" style="font-size: .6rem;display: flex;" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-bell me-1" style="margin-top: .2rem;"></i>Suscrito
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                            <li><a class="dropdown-item" id="unsubscribe">Anular</a></li>
+                                        </ul>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <h5 class="card-title">Título de la Tarjeta</h5>
+                                <h5 class="card-title">{{ $publicity->title }}</h5>
                                 <p class="card-text">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec lacus vitae odio rutrum vehicula eu non massa. Nullam aliquet metus at consectetur dapibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris dapibus ligula sed urna aliquet, a convallis ex tincidunt. Nulla facilisi. Integer pulvinar aliquam odio, vel tincidunt sapien. Duis nec velit ultricies, commodo ex sit amet, dapibus risus. Mauris maximus vulputate dolor, vel hendrerit tortor malesuada nec. Integer ut malesuada nisi.
+                                    {{ $publicity->description }}                                
                                 </p>                            
                             </div>
                         </div>
@@ -59,38 +86,19 @@
         </div>
 
         <div class="row px-5">
-            <div class="col-md-4 mt-3 mt-md-0">
-                <div class="card">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTV8fHxlbnwwfHx8fHw%3D" class="img-fluid rounded-start" alt="...">
+            @foreach ($publicities as $key)
+                <div class="col-md-4 mt-3">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="contenedor-imagen" onclick="goPagePublicity({{$key->id}})" style="width: 100%;">
+                            <img src="{{ asset($key->image) }}" style="width: 100% !important;
+                            height: 12rem !important;
+                            object-fit: fill;
+                          " class="img-fluid imagen-zoom" alt="Imagen 1">
+                            <div class="texto-encima">{{ $key->title }}</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4 mt-3 mt-md-0">
-                <div class="card">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTV8fHxlbnwwfHx8fHw%3D" class="img-fluid rounded-start" alt="...">
-                </div> 
-            </div>
-            <div class="col-md-4 mt-3 mt-md-0">
-                <div class="card">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTV8fHxlbnwwfHx8fHw%3D" class="img-fluid rounded-start" alt="...">
-                </div>
-            </div>
-        </div>
-        <div class="row px-5 pt-3">
-            <div class="col-md-4 mt-3 mt-md-0">
-                <div class="card">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTV8fHxlbnwwfHx8fHw%3D" class="img-fluid rounded-start" alt="...">
-                </div>
-            </div>
-            <div class="col-md-4 mt-3 mt-md-0">
-                <div class="card">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTV8fHxlbnwwfHx8fHw%3D" class="img-fluid rounded-start" alt="...">
-                </div> 
-            </div>
-            <div class="col-md-4 mt-3 mt-md-0">
-                <div class="card">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTV8fHxlbnwwfHx8fHw%3D" class="img-fluid rounded-start" alt="...">
-                </div>
-            </div>
+            @endforeach
         </div>
 
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('stores_id');
             $table->foreignId('type_publicities_id');
             $table->string('image');
-            $table->string('description', 45);
+            $table->string('description');
             $table->string('link');
             $table->boolean('status');
             $table->timestamp('date_init')->nullable();

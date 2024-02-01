@@ -21,6 +21,8 @@ Route::get('/ayuda', [MainController::class, 'ayuda'])->name('ayuda');
 Route::get('/politicas', [MainController::class, 'politicas'])->name('politicas');
 Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
 
+Route::post('/subscribe', [MainController::class, 'subscribe'])->name('subscribe');
+Route::post('/unsubscribe', [MainController::class, 'unsubscribe'])->name('unsubscribe');
 
 Route::get('/search-stores', [MainController::class, 'searchStores'])->name('search-stores');
 Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
