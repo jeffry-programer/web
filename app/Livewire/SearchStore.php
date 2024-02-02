@@ -19,7 +19,7 @@ class SearchStore extends Component
     public $disabled = true;
     public $city_id;
     public $name_store;
-
+    public $empty_stores = false;
     public $data_stores = [];
 
     public function render()
@@ -54,9 +54,15 @@ class SearchStore extends Component
 
     public function searchStore(){
         $stores = Store::where('cities_id', $this->city_id);
-        if($this->name_store == ""){
+        if($this->name_store != ""){
             $stores->where('name', 'like', $this->name_store.'%');
         }
-        $this->data_stores = $stores->get();
+        $response = $stores->get();
+        if(count($response) == 0){
+            $this->empty_stores = true;
+        }else{
+            $this->empty_stores = false;
+        }
+        $this->data_stores = $response;
     }
 }

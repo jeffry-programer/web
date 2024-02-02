@@ -51,6 +51,16 @@
                     </a>
                 </div>
             @endforeach
+            @if($empty_stores)
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h2 class="ms-5 mt-5">Ups no hemos encontrado resultados a tu búsqueda</h2>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <img src="{{ asset('images/store.png') }}" class="img-fluid" alt="">
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
     <div class="modal-footer">

@@ -17,7 +17,7 @@
                 <div class="col-12 col-md-4 mt-3">
                     <a href="/tienda/{{ str_replace(' ','-', $store->name) }}/{{$store->link}}">
                         <div class="card card-store">
-                            <img src="{{ asset('http://127.0.0.1:8080'.$store->image) }}" class="card-img-top" alt="...">
+                            <img src="{{ asset($store->image) }}" class="card-img-top" alt="...">
                             <div class="card-body" style="padding-bottom: 4rem;">
                             <h5 class="card-title">{{$store->name}}</h5>
                             <p class="card-text">{{$store->description}}</p>
