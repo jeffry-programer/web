@@ -26,7 +26,7 @@
                         <a href="http://127.0.0.1:8000/politicas" class="links-footer" target="_blank" rel="noopener noreferrer">Politicas y privacidad</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="https://tucomparas.com.co/preguntas" class="links-footer" target="_blank" rel="noopener noreferrer">Contacto</a>
+                        <a href="http://127.0.0.1:8000/contacto" class="links-footer" target="_blank" rel="noopener noreferrer">Contacto</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
                         <a href="http://127.0.0.1:8000/ayuda" class="links-footer" target="_blank" rel="noopener noreferrer">Ayuda</a>

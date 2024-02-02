@@ -27,4 +27,7 @@ class MainController extends Controller{
     public function politicas(){
         return view('politicas');
     }
+    public function contacto(){
+        return view('contacto');
+    }
 }

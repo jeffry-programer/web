@@ -28,7 +28,7 @@
                 <a class="nav-link" href="http://127.0.0.1:8000/politicas">Politica de privacidad</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Contacto</a>
+                <a class="nav-link" href="http://127.0.0.1:8000/contacto">Contacto</a>
               </li>
               <li class="nav-item active">
                 <a class="nav-link" href="#">Ayuda</a>
