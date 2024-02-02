@@ -20,7 +20,19 @@ $(document).ready(() => {
     testQr();
 
     initImages();
+
+    $("#subscribe").click(() => {
+        $("#subscribe-form").submit();
+    });
+
+    $("#unsubscribe").click(() => {
+        $("#unsubscribe-form").submit();
+    });
 });
+
+function goPagePublicity(id){
+    window.location.replace("/publicities/"+id);
+}
 
 $(document).ready(function() {
     $("#imagenPrincipal").mousemove((e) => {

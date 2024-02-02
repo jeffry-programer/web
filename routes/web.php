@@ -22,12 +22,15 @@ Route::get('/politicas', [MainController::class, 'politicas'])->name('politicas'
 Route::get('/contacto', [MainController::class, 'contacto'])->name('contacto');
 Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
 
+Route::post('/subscribe', [MainController::class, 'subscribe'])->name('subscribe');
+Route::post('/unsubscribe', [MainController::class, 'unsubscribe'])->name('unsubscribe');
 
 Route::get('/search-stores', [MainController::class, 'searchStores'])->name('search-stores');
 Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
 Route::get('/tienda/{nameStore}/{linkProduct}', [MainController::class, 'detailStore']);
 Route::get('/imgs-store', [AssociateProduct::class, 'store'])->name('imgs-store');
 Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('table-store-imgs');
+Route::get('/publicities/{id}', [MainController::class, 'publicity']);
 
 //Admin
 Route::middleware('auth')->group(function () {
