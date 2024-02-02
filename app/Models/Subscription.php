@@ -12,4 +12,8 @@ class Subscription extends Model
     public function user(){
         return $this->belongsTo(User::class, 'users_id');
     }
+
+    public function store(){
+        return $this->belongsTo(Store::class, 'stores_id');
+    }
 }

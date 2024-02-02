@@ -30,7 +30,7 @@
         <div id="infinite" class="highway-slider">
           <div class="container highway-barrier" style="padding-bottom: 0rem;width: 100%;max-width: 99%;height: 4rem;">
             <ul class="highway-lane">
-              @for ($i = 0; $i < 5; $i++)
+              @for ($i = 0; $i < 3; $i++)
                 @foreach ($publicities as $key)
                 <li class="highway-car">
                   <div class="card">

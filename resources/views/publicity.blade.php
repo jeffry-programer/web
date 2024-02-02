@@ -31,7 +31,7 @@
             <div class="card mb-3">
                 <div class="row g-0">
                   <div class="col-md-6">
-                    <img style="object-fit: fill;
+                    <img style="object-fit: cover;
                     width: 100%;
                     height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start" alt="...">
                   </div>
@@ -92,7 +92,7 @@
                         <div class="contenedor-imagen" onclick="goPagePublicity({{$key->id}})" style="width: 100%;">
                             <img src="{{ asset($key->image) }}" style="width: 100% !important;
                             height: 12rem !important;
-                            object-fit: fill;
+                            object-fit: cover;
                           " class="img-fluid imagen-zoom" alt="Imagen 1">
                             <div class="texto-encima">{{ $key->title }}</div>
                         </div>

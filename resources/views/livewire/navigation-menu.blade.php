@@ -1,6 +1,35 @@
 <div>
     <nav x-data="{ open: false }" class="bg-white border-b border-gray-100" style="height: 6rem;height: 6rem;border: solid 0px;border-bottom: solid 1.4rem #6495ED;padding-bottom: 6rem;margin-bottom: 0rem;">
         <div class="row pt-3" style="width: 100%;">
+            <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center">
+                <button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample" style="font-size: 1.2rem;
+                border: solid 1px #dfdfdf;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+              
+              <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                <div class="offcanvas-header">
+                  <h5 class="offcanvas-title" id="offcanvasExampleLabel">Tulobuscas</h5>
+                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                    <div class="block px-4 py-2 text-xs text-gray-400">
+                        {{ __('Otras opciones') }}
+                    </div>
+
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal25" style="text-decoration: none">
+                        <i class="fa-solid fa-user me-1"></i>{{ __('Suscripciones') }}
+                    </x-dropdown-link>
+
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal26" style="text-decoration: none">
+                        <i class="fa-solid fa-circle-user me-1"></i>{{ __('Tiendas') }}
+                    </x-dropdown-link>
+
+                    
+                    <x-dropdown-link href="#" style="text-decoration: none">
+                        <i class="fa-solid fa-house me-1"></i>{{ __('Talleres') }}
+                    </x-dropdown-link>
+              </div>
             <div class="col-10 col-md-3 d-flex align-items-center justify-content-center">
                 <img class="img-fluid" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;" onclick="window.location.replace('/');">
             </div>
@@ -46,7 +75,7 @@
                     <input type="hidden" id="value-country" name="iSVBGR6m3mmQdQRQCa">  
                     <input type="hidden" id="value-state" name="DPLY40rNOyz0hl">  
                     <input type="hidden" id="value-city" name="I9CLmGfm0ppURDM">   
-                    <div class="col-2 col-md-3 d-flex align-items-center justify-content-center">
+                    <div class="col-2 col-md-2 d-flex align-items-center justify-content-center">
                         <button type="button" style="display: flex;" data-bs-toggle="modal" data-bs-target="#exampleModal" class="select-search"><i class="fa-solid fa-location-dot me-3"></i><span class="d-none d-md-flex" id="btn-ubi">Ubicacion</span></button>
                     </div> 
                     <div class="col-2 d-none d-md-flex align-items-center justify-content-center">
@@ -57,7 +86,7 @@
                             @endforeach
                         </select>   
                     </div>
-                    <div class="col-8 col-md-5 d-flex align-items-center justify-content-center">
+                    <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
                         <input class="input-search" name="product" placeholder="Busca y compara productos" type="text">
                     </div>
                     <div class="col-2 d-flex align-items-center justify-content-center">
@@ -66,7 +95,7 @@
                     </div>
                 </form>            
             </div>
-            <div class="d-none d-md-flex col-md-3 align-items-center justify-content-center">
+            <div class="d-none d-md-flex col-md-2 align-items-center justify-content-center">
                 @if(Auth::user())
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -88,7 +117,12 @@
                             </x-dropdown-link>
 
                             <x-dropdown-link href="/admin/table-management/Cajas" style="text-decoration: none">
-                                <i class="fa-solid fa-user me-1"></i>{{ __('Adminstación') }}
+                                <i class="fa-solid fa-circle-user me-1"></i>{{ __('Adminstación') }}
+                            </x-dropdown-link>
+
+                            
+                            <x-dropdown-link href="/tienda/{{ $link_store }}" style="text-decoration: none">
+                                <i class="fa-solid fa-house me-1"></i>{{ __('Mi tienda') }}
                             </x-dropdown-link>
                     
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -134,4 +168,45 @@
       </div>
     </div>
   </div>
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal25" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Suscripciones</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <ul class="list-group">
+                @foreach ($subscribeds as $key)
+                    <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}">
+                        <li class="list-group-item d-flex" style="justify-content: start;align-items: center;">
+                            <img src="{{ asset($key->store->image) }}" alt="img" style="width: 3rem;
+                            height: 3rem;
+                            border-radius: 100%;
+                            margin-right: 1rem;
+                            border: solid 1px #dee2e6;
+                            object-fit: cover;">{{ $key->store->name }}
+                        </li> 
+                    </a>               
+                @endforeach
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal26" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tiendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @livewire('search-store')
+      </div>
+    </div>
+  </div>
 </div>
+

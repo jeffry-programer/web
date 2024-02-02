@@ -11,6 +11,11 @@ class State extends Model
 
     public function country()
     {
-        return $this->belongsTo('App\Country');
+        return $this->belongsTo(Country::class, 'countries_id');
+    }
+
+    public function municipalities()
+    {
+        return $this->hasMany(Municipality::class, 'municipalities_id');
     }
 }

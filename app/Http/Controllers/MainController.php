@@ -35,15 +35,18 @@ class MainController extends Controller{
         return view('politicas');
     }
     public function publicity($id){
+
+        $date = Carbon::now();
+
         $publicity = Publicity::find($id);
         $store = Store::find($publicity->stores_id);
-        $publicities = Publicity::take(6)->get();
+        $publicities = Publicity::where('date_end', '>', $date)->take(6)->get();
 
         $subscribed = false;
 
         if(isset(Auth::user()->id)){
-            $subscribe = Subscription::where('users_id', Auth::user()->id)->where('stores_id', $store->id)->get();
-            if(count($subscribe) != 0){
+            $subscribe = Subscription::where('users_id', Auth::user()->id)->where('stores_id', $store->id)->first();
+            if($subscribe != false){
                 $subscribed = true;
             }
 
