@@ -39,7 +39,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8 col-md-9">
-                                <a href="http://127.0.0.1:8000/tienda/{{ $publicity->link }}"><p style="font-size: .74rem;text-decoration: underline;color: #666;">http://127.0.0.1:8000/tienda/{{ $publicity->link }}</p></a>
+                                <a href="{{ asset('tienda/'.$publicity->link) }}"><p style="font-size: .74rem;text-decoration: underline;color: #666;">{{ asset('tienda/'.$publicity->link) }}</p></a>
                             </div>
                             <form action=" {{ route('subscribe') }} " method="POST" id="subscribe-form" class="d-none">
                                 @csrf

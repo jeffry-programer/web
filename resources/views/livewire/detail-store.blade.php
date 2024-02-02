@@ -279,7 +279,7 @@
                                                         $letter = strtoupper($subscription->user->name[0]);
                                                         $url_profile = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
                                                     }else{
-                                                        $url_profile = 'http://127.0.0.1:8000/storage/'.$subscription->user->profile_photo_path;
+                                                        $url_profile = {{ asset($subscription->user->profile_photo_path) }};
                                                     }
                                                 ?>
                                                 <img class="h-8 w-8 rounded-full object-cover" src="{{ $url_profile}}" alt="{{$subscription->user->name}}">

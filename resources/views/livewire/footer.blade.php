@@ -17,19 +17,19 @@
 
                 <div class="col-12 py-3 m-auto d-flex flex-column flex-lg-row justify-content-center">
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="http://127.0.0.1:8000/terminos" class="links-footer" target="_blank" rel="noopener noreferrer">Terminos y condiciones</a>
+                        <a href="{{ asset('terminos') }}" class="links-footer" target="_blank" rel="noopener noreferrer">Terminos y condiciones</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="http://127.0.0.1:8000/preguntas" class="links-footer" target="_blank" rel="noopener noreferrer">Preguntas frecuentes</a>
+                        <a href="{{ asset('preguntas') }}" class="links-footer" target="_blank" rel="noopener noreferrer">Preguntas frecuentes</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="http://127.0.0.1:8000/politicas" class="links-footer" target="_blank" rel="noopener noreferrer">Politicas y privacidad</a>
+                        <a href="{{ asset('politicas') }}" class="links-footer" target="_blank" rel="noopener noreferrer">Politicas y privacidad</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="http://127.0.0.1:8000/contacto" class="links-footer" target="_blank" rel="noopener noreferrer">Contacto</a>
+                        <a href="{{ asset('contacto') }}" class="links-footer" target="_blank" rel="noopener noreferrer">Contacto</a>
                     </div>
                     <div class="container-enlace-footer d-flex align-items-end">
-                        <a href="http://127.0.0.1:8000/ayuda" class="links-footer" target="_blank" rel="noopener noreferrer">Ayuda</a>
+                        <a href="{{ asset('ayuda') }}" class="links-footer" target="_blank" rel="noopener noreferrer">Ayuda</a>
                     </div>                
                 </div>
 
