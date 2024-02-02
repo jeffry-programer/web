@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -40,7 +41,9 @@ class NavigationMenu extends Component
         $subscribeds = [];
 
         if(isset(Auth::user()->id)){
-            $link_store = Store::where('users_id', Auth::user()->id)->first()->name;
+            if(Auth::user()->stores->count() > 0){
+                $link_store = Store::where('users_id', Auth::user()->id)->first()->name;
+            }
             $subscribeds = Subscription::where('users_id', Auth::user()->id)->get();
         }
 

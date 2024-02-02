@@ -70,12 +70,12 @@
                 </div>
               </div>
             </div>
-            <div class="col-12 d-flex col-md-6 align-items-center justify-content-center">
+            <div class="col-12 d-flex col-md-5 align-items-center justify-content-center">
                 <form action="{{ route('search-stores') }}" class="row" id="form-search" autocomplete="off">
                     <input type="hidden" id="value-country" name="iSVBGR6m3mmQdQRQCa">  
                     <input type="hidden" id="value-state" name="DPLY40rNOyz0hl">  
                     <input type="hidden" id="value-city" name="I9CLmGfm0ppURDM">   
-                    <div class="col-2 col-md-2 d-flex align-items-center justify-content-center">
+                    <div class="col-2 col-md-3 d-flex align-items-center justify-content-center">
                         <button type="button" style="display: flex;" data-bs-toggle="modal" data-bs-target="#exampleModal" class="select-search"><i class="fa-solid fa-location-dot me-3"></i><span class="d-none d-md-flex" id="btn-ubi">Ubicacion</span></button>
                     </div> 
                     <div class="col-2 d-none d-md-flex align-items-center justify-content-center">
@@ -89,13 +89,13 @@
                     <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
                         <input class="input-search" name="product" placeholder="Busca y compara productos" type="text">
                     </div>
-                    <div class="col-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>
-                        <i class="fa-solid fa-microphone icons-search pointer"></i>
+                    <div class="col-1 d-flex align-items-center justify-content-center">
+                      <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>
+                      <i class="fa-solid fa-microphone icons-search pointer" style="margin-left: -1rem;"></i>
                     </div>
                 </form>            
             </div>
-            <div class="d-none d-md-flex col-md-2 align-items-center justify-content-center">
+            <div class="d-none d-md-flex col-md-3 align-items-center justify-content-center">
                 @if(Auth::user())
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
