@@ -34,6 +34,11 @@ class MainController extends Controller{
     public function politicas(){
         return view('politicas');
     }
+
+    public function contacto(){
+        return view('contacto');
+    }
+
     public function publicity($id){
 
         $date = Carbon::now();
