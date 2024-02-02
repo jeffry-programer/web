@@ -36,7 +36,7 @@
                   <div class="card">
                     <div class="card-body" style="padding: 0rem;">
                       <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})">
-                        <img src="{{ asset('http://127.0.0.1:8000'.$key->image) }}" class="img-fluid imagen-zoom" alt="Imagen 1">
+                        <img src="{{ asset($key->image) }}" class="img-fluid imagen-zoom" alt="Imagen 1">
                         <div class="texto-encima">{{ $key->title }}</div>
                       </div>
                     </div>
@@ -55,21 +55,21 @@
       <div class="container">
         <div class="row">
           @foreach ($stores as $store)
-          <div class="col-12 col-md-4 mt-3">
-            <a href="/tienda/{{ str_replace(' ','-', $store->name) }}">
-              <div class="card card-store">
-                  <div class="zoom-container">
-                    <img class="zoomed-image" src="{{ asset('http://127.0.0.1:8000'.$store->image) }}" alt="Descripción de la imagen">
-                  </div>
-                  <div class="card-body" style="padding-bottom: 4rem;">
-                  <h5 class="card-title">{{$store->name}}</h5>
-                  <p class="card-text">{{$store->description}}</p>
-                  <p class="position-absolute bottom-0 start-0" style="padding: 1rem;"><i class="fa-solid fa-location-dot me-1"></i>{{$store->address}}</p>
-                  <a href="/tienda/{{ str_replace(' ','-', $store->name) }}" class="btn btn-warning position-absolute bottom-0 end-0" style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
-                  </div>
-              </div>
-            </a>
-          </div>
+            <div class="col-12 col-md-4 mt-3">
+              <a href="/tienda/{{ str_replace(' ','-', $store->name) }}">
+                <div class="card card-store">
+                    <div class="zoom-container">
+                      <img class="zoomed-image" src="{{ asset($store->image) }}" alt="Descripción de la imagen">
+                    </div>
+                    <div class="card-body" style="padding-bottom: 4rem;">
+                    <h5 class="card-title">{{$store->name}}</h5>
+                    <p class="card-text">{{$store->description}}</p>
+                    <p class="position-absolute bottom-0 start-0" style="padding: 1rem;"><i class="fa-solid fa-location-dot me-1"></i>{{$store->address}}</p>
+                    <a href="/tienda/{{ str_replace(' ','-', $store->name) }}" class="btn btn-warning position-absolute bottom-0 end-0" style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
+                    </div>
+                </div>
+              </a>
+            </div>
         @endforeach
       </div>
       </div>

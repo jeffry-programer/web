@@ -4,16 +4,23 @@ namespace App\Livewire;
 
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Store;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class SearchStore extends Component
 {
+
+    use WithPagination;
 
     public $dataCities = [];
     public $cityInput;
     public $country_id;
     public $disabled = true;
     public $city_id;
+    public $name_store;
+
+    public $data_stores = [];
 
     public function render()
     {
@@ -42,5 +49,14 @@ class SearchStore extends Component
         $this->cityInput = $name;
         $this->disabled = false;
         $this->city_id = $id;
+        $this->dataCities = [];
+    }
+
+    public function searchStore(){
+        $stores = Store::where('cities_id', $this->city_id);
+        if($this->name_store == ""){
+            $stores->where('name', 'like', $this->name_store.'%');
+        }
+        $this->data_stores = $stores->get();
     }
 }
