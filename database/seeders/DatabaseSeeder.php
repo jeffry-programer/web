@@ -198,7 +198,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'product_stores',
                 'label' => 'Productos tienda',  
-                'type' => '1',
+                'type' => '2',
                 'created_at' => now()   
             ],
             [

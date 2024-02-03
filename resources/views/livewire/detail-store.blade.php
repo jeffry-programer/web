@@ -305,34 +305,18 @@
                     <div class="slider-container">
                         <div class="slider">
                             @for ($i = 0; $i < 100; $i++)
-                            <li class="slide">
-                              <div class="card">
-                                <div class="card-body">
-                                  <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="">
-                                </div>
-                              </div>
+                            @foreach ($publicities as $key)
+                            <li class="slide" style="margin-top: .5rem;border-radius: 15px;">
+                                <div class="card">
+                                    <div class="card-body" style="padding: 0rem;">
+                                      <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})">
+                                        <img src="{{ asset($key->image) }}" class="img-fluid imagen-zoom" alt="Imagen 1">
+                                        <div class="texto-encima">{{ $key->title }}</div>
+                                      </div>
+                                    </div>
+                                  </div>
                             </li>
-                            <li class="slide">
-                              <div class="card">
-                                <div class="card-body">
-                                  <img src="{{ asset('images/2.png') }}" class="img-fluid" alt="">
-                                </div>
-                              </div>
-                            </li>
-                            <li class="slide">
-                              <div class="card">
-                                <div class="card-body">
-                                  <img src="{{ asset('images/3.png') }}" class="img-fluid" alt="">
-                                </div>
-                              </div>
-                            </li>
-                            <li class="slide">
-                              <div class="card">
-                                <div class="card-body">
-                                  <img src="{{ asset('images/4.png') }}" class="img-fluid" alt="">
-                                </div>
-                              </div>
-                            </li>
+                            @endforeach
                           @endfor
                         </div>
                     </div>

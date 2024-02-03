@@ -26,7 +26,7 @@
                     </x-dropdown-link>
 
                     
-                    <x-dropdown-link href="#" style="text-decoration: none">
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal27" style="text-decoration: none">
                         <i class="fa-solid fa-house me-1"></i>{{ __('Talleres') }}
                     </x-dropdown-link>
               </div>
@@ -76,7 +76,7 @@
                     <input type="hidden" id="value-state" name="DPLY40rNOyz0hl">  
                     <input type="hidden" id="value-city" name="I9CLmGfm0ppURDM">   
                     <div class="col-2 col-md-3 d-flex align-items-center justify-content-center">
-                        <button type="button" style="display: flex;" data-bs-toggle="modal" data-bs-target="#exampleModal" class="select-search"><i class="fa-solid fa-location-dot me-3"></i><span class="d-none d-md-flex" id="btn-ubi">Ubicacion</span></button>
+                        <button type="button" style="display: flex;" data-bs-toggle="modal" data-bs-target="#exampleModal" class="select-search"><i class="fa-solid fa-location-dot me-3 my-auto"></i><span class="d-none d-md-flex" id="btn-ubi">Ubicacion</span></button>
                     </div> 
                     <div class="col-2 d-none d-md-flex align-items-center justify-content-center">
                         <select id="select-search-categories" name="tBGZall1t5CCeUqrQOkM" class="select-search">
@@ -205,6 +205,17 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         @livewire('search-store')
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="exampleModal27" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Talleres</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @livewire('search-taller')
       </div>
     </div>
   </div>

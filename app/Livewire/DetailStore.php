@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductStore;
+use App\Models\Publicity;
 use App\Models\Store;
 use App\Models\SubCategory;
 use App\Models\Subscription;
@@ -86,11 +87,13 @@ class DetailStore extends Component
             $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->paginate($this->paginate);
         }
 
+        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->take(6)->get();
 
         $array_data = [
             'store' => $store, 
             'categories' => $categories,
-            'products' => $products
+            'products' => $products,
+            'publicities' => $publicities
         ];
         
         return view('livewire.detail-store', $array_data);

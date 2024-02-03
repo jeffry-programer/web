@@ -5,7 +5,7 @@
 
         <img class="img-fluid" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;margin-bottom:2rem" onclick="window.location.replace('/');">
 
-        <div class="mb-4 text-sm text-gray-600">
+        <div class="mb-4 text-sm text-gray-600" style="text-align: justify;">
             {{ __('Antes de continuar, ingresa por favor a tu bandeja de correo electrónico y da clic en el enlace que te enviamos, si no recibiste el correo electrónico, con gusto te enviaremos otro.') }}
         </div>
 

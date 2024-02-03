@@ -1,5 +1,10 @@
 <div>
     <div class="modal-body">
+        <div>    
+            <div class="alert alert-info">
+                Debes selecionar una ciudad para guardar tu ubicación
+            </div>
+        </div>
         <label for="">País</label>
         <select wire:change="updateCountry" wire:model="country" id="country" class="form-select my-3">
             <option selected>Seleccione un país</option>

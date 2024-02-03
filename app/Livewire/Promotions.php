@@ -102,27 +102,31 @@ class Promotions extends Component
             'image' => 'required',
             'link' => 'required',
             'title' => 'required'
-        ],[            
-            'description_ofer.required' => 'La descripción requerida',
-            'image.required' => 'La imagen es requerida',
-            'link.required' => 'El link es requerido',
-            'title.required' => 'El titulo es requerido'
         ]);
-
-        $route_image = $this->image->file('file')->store('public/images-publicities/');
-        $url = Storage::url($route_image);
 
         $publicities = new Publicity();
         $publicities->stores_id = $this->global_store['id'];
         $publicities->type_publicities_id = $this->global_store['id'];
-        $publicities->image = $url;
+        $publicities->title = $this->title;
+        $publicities->image = '';
         $publicities->description = $this->description_ofer;
         $publicities->link =  $this->link;
-        $publicities->status =  true;
+        $publicities->status =  false;
         $publicities->date_init = Carbon::now();
         $publicities->date_end = Carbon::now()->addMonth();
         $publicities->created_at = Carbon::now();
         $publicities->save();
+
+        $route_image = $this->image->store('images/images-publicity/'.$publicities->id, 'public');
+        $url = Storage::url($route_image);
+
+        $publicities->image = $url;
+        $publicities->save();
+
+        $this->title = null;
+        $this->image = null;
+        $this->description_ofer = null;
+        $this->link = null;
 
         session()->flash('message2', 'Publicidad creada exitosamente.');
     }

@@ -481,7 +481,7 @@ body {
 .slider {
   display: flex;
   flex-direction: column;
-  animation:slide 5000s linear infinite;
+  animation:slide 3000s linear infinite;
 }
 
 .slide {
@@ -540,4 +540,8 @@ body {
 }
 .contenedor-imagen:hover .texto-encima {
   opacity: 1;
+}
+
+.card{
+  border-radius: 15px !important;
 }
