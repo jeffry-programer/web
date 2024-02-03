@@ -1,11 +1,3 @@
-<style>
-    p{
-        font-size: 1.2rem;
-        font-weight: 900;
-    }
-</style>
-
-
 <x-app-layout>
     <div class="container" style="max-width: 100%;
     padding: 3rem !important;
@@ -17,11 +9,11 @@
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
                 <h1 class="mb-4">Ahorra tiempo y dinero</h1>
-                <p>Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero,¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
-                <p>Es gratis pertenecer a la red tulobuscas y por tiempo ilimitado.</p>
-                <p>Al unirte podrás encontrar gran información del repuesto que estásbuscando en tiempo record y con la ubicación exacta.</p>
-                <p>Al registrarte, obtienes acceso completo a todas nuestras funciones y servicios. Sin una cuenta, solo puedes acceder a una fracción de lo que ofrecemos.</p>
-                <p>Podemos personalizar tu experiencia en función de tus intereses y necesidades. Cuanto más use nuestro sitio, mejor podremos adaptarlo a ti.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero,¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;">Es gratis pertenecer a la red tulobuscas y por tiempo ilimitado.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;">Al unirte podrás encontrar gran información del repuesto que estásbuscando en tiempo record y con la ubicación exacta.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;">Al registrarte, obtienes acceso completo a todas nuestras funciones y servicios. Sin una cuenta, solo puedes acceder a una fracción de lo que ofrecemos.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;">Podemos personalizar tu experiencia en función de tus intereses y necesidades. Cuanto más use nuestro sitio, mejor podremos adaptarlo a ti.</p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
