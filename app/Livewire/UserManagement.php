@@ -104,8 +104,14 @@ class UserManagement extends Component
                 }
             }
         }
+        if($name_table == 'product_stores'){
+            if(count(ProductStore::where('products_id', $request->products_id)->where('stores_id', $request->stores_id)->get()) > 0){
+                $error = true;
+            }
+        }
         return $error;
     }
+    
 
     public function store(Request $request){
         $name_table = Table::where('label', $request->label)->first()->name;
@@ -355,7 +361,8 @@ class UserManagement extends Component
         }
 
         if($name_table == 'product_stores'){
-            if(count(Promotion::where('product_stores_id', $request->id)->get()) > 0){
+            $product_store = ProductStore::find($request->id);
+            if(count(Promotion::where('products_id', $product_store->products_id)->where('stores_id', $product_store->stores_id)->get()) > 0){
                 $error = true;
             }
         }

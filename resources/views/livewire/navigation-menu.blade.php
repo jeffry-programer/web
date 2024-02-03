@@ -60,10 +60,10 @@
                       </li>
                     @else
                       <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ route('register') }}"><i class="fa-solid fa-user-plus me-2"></i>Registro</a>
+                        <a class="nav-link active" aria-current="page" href="{{ route('registro') }}"><i class="fa-solid fa-user-plus me-2"></i>Registro</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ route('register') }}"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</a>
+                        <a class="nav-link active" aria-current="page" href="{{ route('login') }}"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</a>
                       </li>
                     @endif
                   </ul>
@@ -147,7 +147,7 @@
                             <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500" style="text-decoration: none"><i class="fa-solid fa-right-to-bracket me-1"></i>Iniciar sesión</a>
                         </div>
                         <div class="col-12 mt-2 col-lg-6 mt-lg-0">
-                            <a href="{{ route('register') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500" style="text-decoration: none"><i class="fa-solid fa-user-plus me-1"></i>Registro</a>
+                            <a href="{{ route('registro') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500" style="text-decoration: none"><i class="fa-solid fa-user-plus me-1"></i>Registro</a>
                         </div>
                       </div>
                   @endif

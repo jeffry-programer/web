@@ -14,7 +14,7 @@ Route::get('/', function () {
 });
 
 
-
+Route::get('/registro', [MainController::class, 'register'])->name('registro');
 Route::get('/terminos', [MainController::class, 'terminos'])->name('terminos');
 Route::get('/preguntas', [MainController::class, 'preguntas'])->name('preguntas');
 Route::get('/ayuda', [MainController::class, 'ayuda'])->name('ayuda');

@@ -82,4 +82,8 @@ class MainController extends Controller{
         //session()->flash('message', 'Suscripción anulada exitosamente!!');
         return redirect('/publicities/'.str_replace(' ', '-', $request->id_p));
     }
+
+    public function register(){
+        return view('register');
+    }
 }
