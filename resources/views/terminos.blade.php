@@ -48,9 +48,9 @@
                     Además, tiene la responsabilidad exclusiva de la utilización y protección de su contraseña.<br><br>
                     La cuenta que se crea tras completar el proceso de registro es personal e intransferible. Esto significa que,
                     bajo ninguna circunstancia, las cuentas pueden ser vendidas o cedidas a otras personas<br><br>Al detectar un uso no autorizado de su cuenta, deberá notificar de forma inmediata  a Tulobuscas, por los diferentes medios
-                    de notificcación.</p>
+                    de notificación.</p>
 
-                    <h2 class="text-justify mt-5">privacidad y datos</h2>            
+                    <h2 class="text-justify mt-5">Privacidad y datos</h2>            
                     <p class="text-justify mt-10">En Tulobuscas, manejamos de manera responsable la información personal, salvaguardando la privacidad de los usuarios
                         que nos han confiado sus datos, y adoptando las medidas necesarias para asegurar su protección.</p>
                   

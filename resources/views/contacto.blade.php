@@ -64,14 +64,10 @@
       </div>
     
       <div class="row justify-content-center">
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-12">
             <h3 class="ms-5 mt-5">Venezuela</h3> 
             <p class="ms-5 mt-5">+58 414 9875 25</p> 
-          </div>
-            <div class="col-12 col-md-6">
-              <h3 class="ms-5 mt-5">Colombia</h3>
-              <p class="ms-5 mt-5">+57 556 565 65</p>
-          </div>        
+          </div>      
       </div>
 
   
