@@ -8,12 +8,15 @@
     background-position: center;">
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
-                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Posiciona tu Taller y aumenta el trafico de clientes</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero,
-                    ¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de tulobuscas por los primeros 30 días</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tendras un link de pagina web y un perfil dentro de la red tulobuscas, podras compartirlo en tus redes sociales
-                    y los clientes podran acceder desde cualquier navegador.</p>
+                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Bienvenido a <b style="color: #6495ed;font-size: 2.0rem;">Tulobuscas</b>, puedes dar a conocer el servicio que brindas en tu taller</h1>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos para darte la mejor experiencia posible.
+                    ¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de mucho más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> los primeros 30 días</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Los usuarios podrán comunicarse directamente contigo y acceder a los servicios de tu Taller.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tendrás un link de página web y los clientes podrán ingresar desde cualquier dispositivo.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, te garantizamos una experiencia segura y protegida.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Es importante que te registres para poder ofrecerte este servicio</p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
@@ -85,7 +88,7 @@
     <div class="row text-center" style="background: #6495ed;
     color: white;
     padding: 2rem;">
-        <h1 class="py-3">¿Cuáles son los beneficios de registrar tu taller en tulobuscas?</h1>
+        <h1 class="py-3">¿Cuáles son los beneficios de registrar tu Grúa en tulobuscas?</h1>
         <div class="row">
             <div class="col-md-3">
                 <div class="card" style="background: transparent !important;
@@ -95,10 +98,10 @@
                 color: white;
                 text-align: left;height: 16rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta el trafico de clientes a tu taller
+                    font-weight: bolder;">Aumenta el trafico de clientes a tu servicio
         desde tulobuscas</h6>
                     <p> Logra aunmentar el número de clientes gracias a la gran red
-                        de usuarios de tulobuscas.</p>
+                        de usuarios de tulobuscas</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -109,9 +112,10 @@
                 color: white;
                 text-align: left;height: 16rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta la exposición de tu taller con tulobuscas</h6>
-                    <p>  Aumenta la visibilidad de tu taller y atrae mayor clientes, desde
-                        el sistema tulobuscas, sin importar cual sea la dirección en la ciudad.</p>
+                    font-weight: bolder;">Aumenta la exposición de tu servicio con tulobuscas</h6>
+                    <p>Potencia la visibilidad de tu servicio de grúa para atraer a más clientes.
+                        Con nuestro sistema ‘TuLoBuscas’, puedes asistir a personas que se encuentran
+                        en situaciones de emergencia con sus vehículos accidentados. ¡Únete a nosotros y marca la diferencia!</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -122,10 +126,10 @@
                 color: white;
                 text-align: left;height: 16rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;"> Captar nuevos clientes con tu QR</h6>
-                    <p> Con el código QR en fisico, expuesto en el taller, los posibles clientes pueden
-                        consultar el perfil del taller dentro de la red de tulobuscas y ver información como
-                        horarios y números de contacto.</p>
+                    font-weight: bolder;"> Obtendras información extra</h6>
+                    <p>  O Obtendrás información valiosa que potenciará tus servicios. Por ejemplo, te proporcionaremos datos sobre
+                        las zonas con mayor índice de accidentes en tu ciudad de registro. Esta información te permitirá optimizar
+                        tus operaciones y brindar un servicio más eficiente..</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -137,8 +141,9 @@
                 text-align: left;height: 16rem;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Tendras un código QR</h6>
-                    <p>  Con el código QR en fisico, expuesto en la tienda fisica, los posibles clientes pueden
-                        consultar los repuestos aun cuando la tienda este cerrada y crear una comunicación con la tienda</p>
+                    <p>   Mediante el uso de un código QR físico, ubicado en las puertas del camión,
+                        los clientes potenciales pueden consultar fácilmente los horarios y servicios de la grúa registrada.
+                        Esta es una forma eficiente y moderna de proporcionar información esencial a tus clientes.</p>
                 </div>
             </div>
         </div>
