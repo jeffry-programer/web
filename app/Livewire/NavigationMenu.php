@@ -41,7 +41,7 @@ class NavigationMenu extends Component
         $subscribeds = [];
 
         if(isset(Auth::user()->id)){
-            if(Auth::user()->stores->count() > 0){
+            if(Auth::user()->store){
                 $link_store = Store::where('users_id', Auth::user()->id)->first()->name;
             }
             $subscribeds = Subscription::where('users_id', Auth::user()->id)->get();

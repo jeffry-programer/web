@@ -14,6 +14,13 @@ Route::get('/', function () {
 });
 
 
+
+Route::get('/register-grua', [MainController::class, 'registerGrua'])->name('register-grua');
+Route::get('/register-taller', [MainController::class, 'registerTaller'])->name('register-taller');
+Route::get('/register-store', [MainController::class, 'registerStore'])->name('register-store');
+Route::post('/register-store', [MainController::class, 'registerStorePost'])->name('register-store');
+
+
 Route::get('/registro', [MainController::class, 'register'])->name('registro');
 Route::get('/terminos', [MainController::class, 'terminos'])->name('terminos');
 Route::get('/preguntas', [MainController::class, 'preguntas'])->name('preguntas');
@@ -32,8 +39,15 @@ Route::get('/imgs-store', [AssociateProduct::class, 'store'])->name('imgs-store'
 Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('table-store-imgs');
 Route::get('/publicities/{id}', [MainController::class, 'publicity']);
 
-//Admin
-Route::middleware('auth')->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+    Route::get('/register-data-store', [MainController::class, 'registerDataStore'])->name('register-data-store');
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');
     Route::post('table-store', [UserManagement::class, 'store'])->name('table-store');
     Route::post('table-update', [UserManagement::class, 'update'])->name('table-update');
@@ -44,15 +58,6 @@ Route::middleware('auth')->group(function () {
     Route::post('imgs-update', [UserManagement::class, 'saveImgs'])->name('imgs-update');
     Route::post('delete-img', [UserManagement::class, 'deleteImg'])->name('delete-img');
     Route::post('search-data', [UserManagement::class, 'searchData'])->name('search-data');
-});
 
-
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    
 });

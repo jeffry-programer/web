@@ -60,7 +60,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'profile_photo_url',
     ];
 
-    public function stores(){
-        return $this->hasMany(Store::class, 'users_id');
+    public function store(){
+        return $this->hasOne(Store::class, 'users_id');
     }
 }

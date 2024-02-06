@@ -1,4 +1,16 @@
 <div>
+    @php
+        if(isset(Auth::user()->id)){
+            if(Auth::user()->email_verified_at == "" && $_SERVER['REQUEST_URI'] != '/email/verify'){
+              echo "<script>window.location.replace('/email/verify');</script>";
+            }
+            if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 2 && !Auth::user()->store){
+              if($_SERVER['REQUEST_URI'] != '/register-data-store'){
+                echo "<script>window.location.replace('/register-data-store');</script>";
+              }
+            }
+        }
+    @endphp
     <nav x-data="{ open: false }" class="bg-white border-b border-gray-100" style="height: 6rem;height: 6rem;border: solid 0px;border-bottom: solid 1.4rem #6495ED;padding-bottom: 6rem;margin-bottom: 0rem;">
         <div class="row pt-3" style="width: 100%;">
             <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center">
@@ -120,10 +132,11 @@
                                 <i class="fa-solid fa-circle-user me-1"></i>{{ __('Adminstación') }}
                             </x-dropdown-link>
 
-                            
-                            <x-dropdown-link href="/tienda/{{ $link_store }}" style="text-decoration: none">
+                            @if(Auth::user()->store)
+                              <x-dropdown-link href="/tienda/{{ $link_store }}" style="text-decoration: none">
                                 <i class="fa-solid fa-house me-1"></i>{{ __('Mi tienda') }}
-                            </x-dropdown-link>
+                              </x-dropdown-link>
+                            @endif
                     
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                 <x-dropdown-link href="{{ route('api-tokens.index') }}">

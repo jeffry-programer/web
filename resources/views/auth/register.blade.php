@@ -1,19 +1,19 @@
 <x-app-layout>
     <div class="container" style="max-width: 100%;
     padding: 3rem !important;
-    background-image: url('{{asset('images/formulario-taller.jpg')}}');
+    background-image: url('{{asset('images/para-usuario.jpg')}}');
     background-repeat: no-repeat;
     background-size: 85rem;
     background-size: cover;
     background-position: center;">
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
-                <h1 class="mb-4">Ahorra tiempo y dinero</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero,¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;">Es gratis pertenecer a la red tulobuscas y por tiempo ilimitado.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;">Al unirte podrás encontrar gran información del repuesto que estásbuscando en tiempo record y con la ubicación exacta.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;">Al registrarte, obtienes acceso completo a todas nuestras funciones y servicios. Sin una cuenta, solo puedes acceder a una fracción de lo que ofrecemos.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;">Podemos personalizar tu experiencia en función de tus intereses y necesidades. Cuanto más use nuestro sitio, mejor podremos adaptarlo a ti.</p>
+                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Ahorra tiempo y dinero</h1>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero,¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Es gratis pertenecer a la red tulobuscas y por tiempo ilimitado.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Al unirte podrás encontrar gran información del repuesto que estásbuscando en tiempo record y con la ubicación exacta.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Al registrarte, obtienes acceso completo a todas nuestras funciones y servicios. Sin una cuenta, solo puedes acceder a una fracción de lo que ofrecemos.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Podemos personalizar tu experiencia en función de tus intereses y necesidades. Cuanto más use nuestro sitio, mejor podremos adaptarlo a ti.</p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
@@ -29,6 +29,8 @@
         
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
+
+                            <input type="hidden" name="profiles_id" value="3">
             
                             <div>
                                 <x-label for="name" value="{{ __('Nombre') }}" />

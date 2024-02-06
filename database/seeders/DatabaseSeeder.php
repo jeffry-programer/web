@@ -18,6 +18,34 @@ class DatabaseSeeder extends Seeder
         DB::table('profiles')->insert($array);
 
         $array = [
+            'description' => 'Tienda',
+            'created_at' => now()
+        ];
+
+        DB::table('profiles')->insert($array);
+
+        $array = [
+            'description' => 'Cliente',
+            'created_at' => now()
+        ];
+
+        DB::table('profiles')->insert($array);
+
+        $array = [
+            'description' => 'Taller',
+            'created_at' => now()
+        ];
+
+        DB::table('profiles')->insert($array);
+
+        $array = [
+            'description' => 'Grua',
+            'created_at' => now()
+        ];
+
+        DB::table('profiles')->insert($array);
+
+        $array = [
             'description' => 'Venezuela',
             'created_at' => now()
         ];

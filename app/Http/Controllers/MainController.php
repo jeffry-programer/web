@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Publicity;
 use App\Models\Store;
 use App\Models\Subscription;
+use App\Models\TypeStore;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Laravel\Jetstream\Jetstream;
 
 class MainController extends Controller{ 
     public function searchStores(){
@@ -86,4 +92,31 @@ class MainController extends Controller{
     public function register(){
         return view('register');
     }
+
+    public function registerStore(){
+        return view('register-store');
+    }
+
+    public function registerTaller(){
+        return view('register-taller');
+    }
+
+    public function registerGrua(){
+        return view('register-grua');
+    }
+
+    public function registerStorePost(Request $request){
+        dd($request->all());
+    }
+
+    public function registerDataStore(){
+        $type_stores = TypeStore::all();
+        $cities = City::all();
+        $array_data = [
+            'type_stores' => $type_stores,
+            'cities' => $cities
+        ];
+        return view('register-data-store', $array_data);
+    }
+
 }

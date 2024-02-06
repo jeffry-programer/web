@@ -30,6 +30,103 @@ $(document).ready(() => {
     });
 });
 
+
+$(document).ready(() => {
+  Dropzone.autoDiscover = false;
+
+  var isset_images = false;
+
+  let myDropzone = new Dropzone("#myDropzone24", { 
+      url: "{{route('imgs-store')}}",
+      headers: {
+          'X-CSRF-TOKEN' : "{{csrf_token()}}",
+      },
+      dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: 2)`,
+      dictMaxFilesExceeded: "No puedes subir más archivos",
+      dictCancelUpload: "Cancelar subida",
+      dictInvalidFileType: "No puedes subir archivos de este tipo",
+      dictRemoveFile: "Remover archivo",
+      acceptedFiles: 'image/*',
+      maxFilesize : 5,
+      maxFiles: 2,
+      autoProcessQueue: false,
+      addRemoveLinks: true,
+      parallelUploads: 5,
+      init: function(){
+          this.on("sending", function(file, xhr, formData){
+              formData.append("id", `${$("#id_table").val()}`);
+              formData.append("table", `${$("#table").val()}`);
+          });
+
+          this.on("success", function(file, response) {
+              if(file.status != 'success'){
+                  return false;
+              }
+              if(this.getUploadingFiles().length === 0){
+                  isset_images = true;
+                  hideAlertTime();
+              }
+          });
+      }
+  });      
+});
+
+
+
+$(document).ready(function(){
+    // Variable para almacenar el último valor seleccionado
+    var ultimoValorSeleccionado = "";
+  
+    // Función para reiniciar el autocompletado
+    function reiniciarAutocompletado() {
+      $("#myUL li").show(); // Mostrar todas las opciones
+    }
+  
+    // Mostrar la lista al hacer clic en el input
+    $("#myInput").click(function() {
+      $("#myUL").show();
+      reiniciarAutocompletado(); // Reiniciar autocompletado al hacer clic en el input
+    });
+    
+    // Seleccionar una opción de la lista
+    $("#myUL").on("click", "li", function() {
+      var value = $(this).text();
+      $("#myInput").val(value); // Colocar el valor seleccionado en el input
+      ultimoValorSeleccionado = value; // Actualizar el último valor seleccionado
+      $("#myUL").hide(); // Ocultar la lista después de seleccionar
+    });
+    
+    // Filtrar opciones según la entrada del usuario
+    $("#myInput").on("input", function() {
+      reiniciarAutocompletado(); // Reiniciar autocompletado al escribir en el input
+      var value = $(this).val().toLowerCase();
+      $("#myUL li").each(function() {
+        var text = $(this).text().toLowerCase();
+        if (text.indexOf(value) > -1) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+    
+    // Controlar clic fuera del área de autocompletado
+    $(document).click(function(event) {
+      var $target = $(event.target);
+      var inputValue = $("#myInput").val();
+      if(!$target.closest('.autocomplete').length) {
+        if (inputValue !== ultimoValorSeleccionado) {
+          $("#myInput").val(""); // Vaciar el input si no se seleccionó una opción recientemente
+        }
+        $("#myUL").hide(); // Ocultar la lista en cualquier caso
+      }
+    });
+});
+
+function seleccionarCiudad(id){
+    $("#city_store_data_id").val(id);
+}  
+
 function goPagePublicity(id){
     window.location.replace("/publicities/"+id);
 }

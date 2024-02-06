@@ -3,6 +3,8 @@
         <x-authentication-card>
             <x-slot name="logo">
             </x-slot>
+
+            <img class="img-fluid" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;margin-bottom:2rem" onclick="window.location.replace('/');">
     
             <x-validation-errors class="mb-4" />
     
