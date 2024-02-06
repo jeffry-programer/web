@@ -8,17 +8,17 @@
     background-position: center;">
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
-                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Posiciona tu grua y aumenta el trafico de clientes</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero,
-                    ¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de tulobuscas por los primeros 30 días</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los productos de tu tienda estaran expuestos a ser consultados por los usuarios
-                    de la gran red de tulobuscas.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tendras un link de pagina web dentro de la red tulobuscas y las clientes podran acceder desde cualquier
-                    navegador.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, podemos garantizar una experiencia segura y protegida.</p>
+                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Posiciona tu grúa y aumenta el tráfico de clientes</h1>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible.
+                    ¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de mucho más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> los primeros 30 días.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los servicios de tu grúa podrán ser consultados por los usuarios.
+                    a través de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b>.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí también tienes tu propia página web que permite a los clientes acceder desde cualquier
+                    dispositivo y comunicarse directamente contigo.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, te garantizamos una experiencia segura y protegida.</p>
                 <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte.
-                    Pero necesitamos que te registres para poder ofrecerte este servicio</p>
+                    Es importante que te registres para poder ofrecerte este servicio</p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
