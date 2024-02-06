@@ -72,7 +72,7 @@ class UserManagement extends Component
     public function validateRequest(Request $request, $name_table){
         $error = false;
         if(isset($request->name)){
-            if(strlen($request->name) > 40){
+            if(strlen($request->name) > 100){
                 $error = true;
             }
         }
@@ -82,7 +82,7 @@ class UserManagement extends Component
                     $error = true;
                 }
             }else{
-                if(strlen($request->description) > 45){
+                if(strlen($request->description) > 100){
                     $error = true;
                 }
             }

@@ -65,7 +65,7 @@
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
                     <h5 class="card-title text-center fw-bolder">Registra tu grua</h5>
                     <p class="card-text" style="color: #86878a;
-                    text-align: justify;">Brinda asistencia en un momento de emergencia y ayuda a los usuarios a través de <b style="color: #6495ed;font-size: 1.2rem;">Tulobuscas</b> </p>
+                    text-align: justify;">Proporciona asistencia rápida en momentos de emergencia y brinda ayuda a los usuarios de <b style="color: #6495ed;font-size: 1.2rem;">Tulobuscas</b> </p>
                     <button class="btn w-100" style="background: #00a3e8;
                     color: white;
                     position: absolute;
