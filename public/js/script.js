@@ -31,47 +31,6 @@ $(document).ready(() => {
 });
 
 
-$(document).ready(() => {
-  Dropzone.autoDiscover = false;
-
-  var isset_images = false;
-
-  let myDropzone = new Dropzone("#myDropzone24", { 
-      url: "{{route('imgs-store')}}",
-      headers: {
-          'X-CSRF-TOKEN' : "{{csrf_token()}}",
-      },
-      dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: 2)`,
-      dictMaxFilesExceeded: "No puedes subir más archivos",
-      dictCancelUpload: "Cancelar subida",
-      dictInvalidFileType: "No puedes subir archivos de este tipo",
-      dictRemoveFile: "Remover archivo",
-      acceptedFiles: 'image/*',
-      maxFilesize : 5,
-      maxFiles: 2,
-      autoProcessQueue: false,
-      addRemoveLinks: true,
-      parallelUploads: 5,
-      init: function(){
-          this.on("sending", function(file, xhr, formData){
-              formData.append("id", `${$("#id_table").val()}`);
-              formData.append("table", `${$("#table").val()}`);
-          });
-
-          this.on("success", function(file, response) {
-              if(file.status != 'success'){
-                  return false;
-              }
-              if(this.getUploadingFiles().length === 0){
-                  isset_images = true;
-                  hideAlertTime();
-              }
-          });
-      }
-  });      
-});
-
-
 
 $(document).ready(function(){
     // Variable para almacenar el último valor seleccionado

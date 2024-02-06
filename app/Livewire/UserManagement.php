@@ -227,6 +227,63 @@ class UserManagement extends Component
         return json_encode($name_table.'-'.$id);
     }
 
+    public function store3(Request $request){
+        $name_table = Table::where('label', $request->label)->first()->name;
+        $validate = $this->validateRequest($request, $name_table);
+        if($validate){
+            abort(404);
+        }
+        $validate =  $this->validateExist($request, $name_table);
+        if($validate){
+            abort(404);
+        }
+        $atributes = Schema::getColumnListing($name_table);
+        $data = $request->all();
+        $query = 'insert into '.$name_table. ' (';
+        $count = 0;
+        foreach($atributes as $field){
+            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token'){
+                if($count == 0){
+                    $query .= $field;
+                }else{
+                    $query .= ','.$field;
+                }
+                $count++;
+            }
+        }
+        $query .= ',created_at) values (';
+        $count = 0;
+        foreach($atributes as $field){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token'){
+                if($field == 'image' || $field == 'image2'){
+                    $data[$field] = '';
+                } 
+                if($data[$field] != $request->label && $data[$field] != $request->_token){
+                    if($count == 0){
+                        if($field == 'product_stores_id') $data[$field] = ProductStore::where('products_id', $data['products_id'])->where('stores_id', $data['stores_id'])->first()->id;
+                        $query .= "'".$data[$field]."'";
+                    }else{
+                        if($field == 'password') $data[$field] = Hash::make($data[$field]);
+                        if($field == 'link' && $name_table == 'publicities'){
+                            $link_store = Store::find($data['stores_id'])->link;
+                            $data[$field] = $link_store;
+                        }else if($field == 'link' && $name_table != 'publicities'){
+                            $data[$field] = str_replace(' ','-', $data['name']);
+                        } 
+
+                        $query .= ",'".$data[$field]."'";
+                    }
+                    $count++;
+                }
+            }
+        }
+        $date = Carbon::now();
+        $query .= ",'".$date."')";
+        DB::insert($query);
+        $id = DB::table($name_table)->latest('id')->first()->id;
+        return json_encode($name_table.'-'.$id);
+    }
+
     public function delete(Request $request){
         $name_table = Table::where('label', $request->label)->first()->name;
         return $this->validateTablesDelete($request, $name_table);
@@ -545,6 +602,31 @@ class UserManagement extends Component
             $query = "update $request->table set image = '$url' where id = $request->id";
             DB::update($query);
         }
+    }
+
+    public function saveImgs2(Request $request){        
+        $request->validate([
+            'file' => 'required|image|max:2048'
+        ]);
+
+        $route_image = $request->file('file')->store('public/images-stores/'.$request->id);
+
+        $url = Storage::url($route_image);
+
+        $image = DB::table($request->table)->find($request->id);
+
+        $store = Store::find($request->id);
+        if($store->image == ''){
+            $query = "update $request->table set image = '$url' where id = $request->id";
+        }else if($store->image2 == ''){
+            $query = "update $request->table set image2 = '$url' where id = $request->id";
+        }else if($store->image != '' && $store->image2 != ''){
+            $image = str_replace('/storage', 'public', $store->image2);
+            Storage::delete($image);  
+            $query = "update $request->table set image = '$url', image2 = '$store->image' where id = $request->id";          
+        }
+
+        DB::update($query);
     }
 
     public function deleteImg(Request $request){
