@@ -31,7 +31,7 @@
 @php
     if(isset(Auth::user()->id)){
         if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 2 || Auth::user()->profiles_id == 4 || Auth::user()->profiles_id == 5 && Auth::user()->store){
-            if($_SERVER['REQUEST_URI'] == '/register-data-store'){
+            if($_SERVER['REQUEST_URI'] == '/register-data-taller'){
                 echo "<script>window.location.replace('/dashboard');</script>";
             }
         }
@@ -43,7 +43,7 @@
         <div class="row mt-3">
             <div>
                 <div class="alert alert-info" style="text-align: center">
-                    Estas a un paso, por favor registra la información de tu tienda para poder disfrutar de todos nuestros beneficios
+                    Estas a un paso, por favor registra la información de tu taller para poder disfrutar de todos nuestros beneficios
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 background: white;
                 padding: 1rem;
                 border-radius: 15px;">
-                    <h3 class="fw-bolder">Registra los datos de tu tienda</h3>
+                    <h3 class="fw-bolder">Registra los datos de tu taller</h3>
                 </div>
                 <div class="card-body">
                     <x-validation-errors class="mb-4" />
@@ -71,7 +71,7 @@
                         <div class="row">
                             <div class="col-md-6 form-group d-none">
                                 <label class="py-3" for="name">{{ __('Tipo de tienda') }}</label>
-                                <select name="type_stores_id" class="form-select mt-1" value="1">
+                                <select name="type_stores_id" class="form-select mt-1" value="2">
                                     @foreach ($type_stores as $type_store)
                                         <option value="{{$type_store->id}}">{{$type_store->description}}</option>
                                     @endforeach
@@ -90,15 +90,15 @@
                                   </div>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label class="py-3" for="name">{{ __('Nombre de la tienda') }}</label>
+                                <label class="py-3" for="name">{{ __('Nombre del taller') }}</label>
                                 <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="name" id="name" required/>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label class="py-3" for="name">{{ __('Descripcion de la tienda') }}</label>
+                                <label class="py-3" for="name">{{ __('Descripcion del taller') }}</label>
                                 <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="description" required/>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label class="py-3" for="name">{{ __('Correo de la tienda') }}</label>
+                                <label class="py-3" for="name">{{ __('Correo del taller') }}</label>
                                 <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="email" name="email" required/>
                             </div>
                             <div class="col-md-6 form-group">

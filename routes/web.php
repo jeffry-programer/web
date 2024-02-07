@@ -47,7 +47,9 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/register-data-grua', [MainController::class, 'registerDataGrua'])->name('register-data-grua');
     Route::get('/register-data-store', [MainController::class, 'registerDataStore'])->name('register-data-store');
+    Route::get('/register-data-taller', [MainController::class, 'registerDataTaller'])->name('register-data-taller');
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');
     Route::post('table-store', [UserManagement::class, 'store'])->name('table-store');
     Route::post('table-update', [UserManagement::class, 'update'])->name('table-update');

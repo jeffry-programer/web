@@ -32,6 +32,8 @@
         
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
+
+                            <input type="hidden" name="profiles_id" value="4">
             
                             <div>
                                 <x-label for="name" value="{{ __('Nombre') }}" />

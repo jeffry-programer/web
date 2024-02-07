@@ -8,17 +8,12 @@
     background-position: center;">
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
-                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Posiciona tu grúa y aumenta el tráfico de clientes</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible.
-                    ¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de mucho más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> los primeros 30 días.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los servicios de tu grúa podrán ser consultados por los usuarios.
-                    a través de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b>.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí también tienes tu propia página web que permite a los clientes acceder desde cualquier
-                    dispositivo y comunicarse directamente contigo.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, te garantizamos una experiencia segura y protegida.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte.
-                    Es importante que te registres para poder ofrecerte este servicio</p>
+                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Bienvenido a tulobuscas, puedes dar a conocer el servicio que brindas</h1>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero, ¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> por los primeros 30 días.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los usuarios podrán comunicarse directamente y acceder a los servicios que brinda con la grúa.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tendras un link de pagina web dentro de la red tulobuscas y los clientes podran acceder desde cualquier navegador, para consultar las respuestas a sus servicios.</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte. Pero necesitamos que te registres para poder ofrecerte este servicio</p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
@@ -34,6 +29,8 @@
         
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
+
+                            <input type="hidden" name="profiles_id" value="5">
             
                             <div>
                                 <x-label for="name" value="{{ __('Nombre de dueño') }}" />
@@ -90,7 +87,7 @@
     <div class="row text-center" style="background: #6495ed;
     color: white;
     padding: 2rem;">
-        <h1 class="py-3">¿Cuáles son los beneficios de registrar tu grua en tulobuscas?</h1>
+        <h1 class="py-3">¿Cuáles son los beneficios de registrar tu Grúa en tulobuscas?</h1>
         <div class="row">
             <div class="col-md-3">
                 <div class="card" style="background: transparent !important;
@@ -98,10 +95,10 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: 19.5rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta el trafico de clientes a tu tienda desde tulobuscas</h6>
-                    <p> Logra aunmentar el número de clientes gracias a la gran red
+                    font-weight: bolder;">Aumenta el trafico de clientes a tu servicio desde tulobuscas</h6>
+                    <p> Logra aumentar el número de clientes gracias a la gran red
                         de usuarios de tulobuscas</p>
                 </div>
             </div>
@@ -111,11 +108,12 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: 19.5rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta la exposición de tu tienda con tulobuscas</h6>
-                    <p> Aumenta la visibilidad de tu tienda y atrae mayor clientes, desde
-                        la el sistema tulobuscas</p>
+                    font-weight: bolder;">Aumenta la exposición de tu servicio con tulobuscas</h6>
+                    <p> Potencia la visibilidad de tu servicio de grúa para atraer a más clientes.
+                        Con nuestro sistema ‘TuLoBuscas’, puedes asistir a personas que se encuentran
+                        en situaciones de emergencia con sus vehículos accidentados. ¡Únete a nosotros y marca la diferencia!</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -124,11 +122,12 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: 19.5rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">  Obtendras información extra</h6>
-                    <p>  Obtendras informción que te ayudara en tus ventas, como por ejemplo
-                        el producto más vendida en mi zona.</p>
+                    font-weight: bolder;">Obtendras información extra</h6>
+                    <p> Obtendrás información valiosa que potenciará tus servicios. Por ejemplo, te proporcionaremos datos sobre
+                        las zonas con mayor índice de accidentes en tu ciudad de registro. Esta información te permitirá optimizar
+                        tus operaciones y brindar un servicio más eficiente.</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -137,11 +136,12 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: 19.5rem;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Tendras un código QR</h6>
-                    <p>  Con el código QR en fisico, expuesto en la tienda fisica, los posibles clientes pueden
-                        consultar los repuestos aun cuando la tienda este cerrada y crear una comunicación con la tienda</p>
+                    <p>Mediante el uso de un código QR físico, ubicado en las puertas del camión,
+                        los clientes potenciales pueden consultar fácilmente los horarios y servicios de la grúa registrada.
+                        Esta es una forma eficiente y moderna de proporcionar información esencial a tus clientes.</p>
                 </div>
             </div>
         </div>

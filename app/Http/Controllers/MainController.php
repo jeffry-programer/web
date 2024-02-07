@@ -119,4 +119,25 @@ class MainController extends Controller{
         return view('register-data-store', $array_data);
     }
 
+
+    public function registerDataTaller(){
+        $type_stores = TypeStore::all();
+        $cities = City::all();
+        $array_data = [
+            'type_stores' => $type_stores,
+            'cities' => $cities
+        ];
+        return view('register-data-taller', $array_data);
+    }
+
+    public function registerDataGrua(){
+        $type_stores = TypeStore::all();
+        $cities = City::all();
+        $array_data = [
+            'type_stores' => $type_stores,
+            'cities' => $cities
+        ];
+        return view('register-data-grua', $array_data);
+    }
+
 }

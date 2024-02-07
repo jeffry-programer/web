@@ -9,6 +9,16 @@
                 echo "<script>window.location.replace('/register-data-store');</script>";
               }
             }
+            if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 4 && !Auth::user()->store){
+              if($_SERVER['REQUEST_URI'] != '/register-data-taller'){
+                echo "<script>window.location.replace('/register-data-taller');</script>";
+              }
+            }
+            if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 5 && !Auth::user()->store){
+              if($_SERVER['REQUEST_URI'] != '/register-data-grua'){
+                echo "<script>window.location.replace('/register-data-grua');</script>";
+              }
+            }
         }
     @endphp
     <nav x-data="{ open: false }" class="bg-white border-b border-gray-100" style="height: 6rem;height: 6rem;border: solid 0px;border-bottom: solid 1.4rem #6495ED;padding-bottom: 6rem;margin-bottom: 0rem;">
