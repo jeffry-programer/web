@@ -18,7 +18,7 @@
                     <input class="form-select" type="text" id="myInput2" placeholder="Busca y selecciona una ciudad...">
                     <ul id="myUL2">
                         @foreach ($dataCities as $city) 
-                            <li><a onclick="seleccionarCiudad({{$city->id}})" wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
+                            <li><a wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
                         @endforeach
                     </ul>
                 </div>

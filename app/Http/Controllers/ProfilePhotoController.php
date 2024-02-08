@@ -9,15 +9,15 @@ class ProfilePhotoController extends Controller
 {
     public function update(Request $request)
     {
+        dd('enter here!!');
+        
         $request->validate([
             'profile_photo' => 'required|image|max:2048', // Ajusta la validación según tus necesidades
         ]);
 
-        $route_image = $request->file('profile_photo')->store('public/images-user/'.$request->id);
-        $url = Storage::url($route_image);
+        $path = $request->file('profile_photo')->store('profile-photos', 'public');
 
-
-        auth()->user()->updage(['image' => $path]);
+        auth()->user()->update(['profile_photo_path' => $path]);
 
         return redirect()->route('profile.show');
     }
