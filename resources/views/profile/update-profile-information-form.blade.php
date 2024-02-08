@@ -29,7 +29,7 @@
                 <!-- Current Profile Photo -->
                 <?php
                     $assets = asset('');
-                    $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->profile_photo_url);
+                    $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->image);
                 ?>
                 <div class="mt-2" x-show="! photoPreview">
                     <img src="{{ $ruta_imagen }}" alt="{{ $this->user->name }}" class="rounded-full h-20 w-20 object-cover">

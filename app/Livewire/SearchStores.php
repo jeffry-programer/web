@@ -84,7 +84,7 @@ class SearchStores extends Component
 
     public function queryDataCity($categories_id, $product_search, $city_id){        
         $query = Store::join('product_stores', 'stores.id' , '=' , 'product_stores.stores_id')->join('products', 'products.id' , '=' , 'product_stores.products_id');
-        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('cities_id', $city_id);
+        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('cities_id', $city_id)->where('stores.status', 1);
 
         if($categories_id != 'Categoria'){
             $category = Category::find($categories_id);
@@ -98,7 +98,7 @@ class SearchStores extends Component
 
     public function queryDataState($categories_id, $product_search, $state_id){
         $query = Store::join('product_stores', 'stores.id' , '=' , 'product_stores.stores_id')->join('products', 'products.id' , '=' , 'product_stores.products_id')->join('cities', 'stores.cities_id' , '=' , 'cities.id')->join('municipalities', 'cities.municipalities_id' , '=' , 'municipalities.id');
-        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('municipalities.states_id', $state_id);
+        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('municipalities.states_id', $state_id)->where('stores.status', 1);
 
         if($categories_id != 'Categoria'){
             $category = Category::find($categories_id);
@@ -112,7 +112,7 @@ class SearchStores extends Component
 
     public function queryDataCountry($categories_id, $product_search, $country_id){
         $query = Store::join('product_stores', 'stores.id' , '=' , 'product_stores.stores_id')->join('products', 'products.id' , '=' , 'product_stores.products_id')->join('cities', 'stores.cities_id' , '=' , 'cities.id')->join('municipalities', 'cities.municipalities_id' , '=' , 'municipalities.id')->join('states', 'municipalities.states_id' , '=' , 'states.id')->join('countries', 'states.countries_id' , '=' , 'countries.id');
-        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('countries.id', $country_id);
+        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('countries.id', $country_id)->where('stores.status', 1);
 
         if($categories_id != 'Categoria'){
             $category = Category::find($categories_id);

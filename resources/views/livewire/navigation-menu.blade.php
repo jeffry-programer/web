@@ -32,24 +32,28 @@
               
               <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
                 <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasExampleLabel">Tulobuscas</h5>
+                  <h5 class="offcanvas-title" id="offcanvasExampleLabel" style="font-size: 1.5rem;">Tulobuscas</h5>
                   <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                    <div class="block px-4 py-2 text-xs text-gray-400">
+                    <div class="block px-4 py-2 text-xs text-gray-400" style="font-size: .9rem;">
                         {{ __('Otras opciones') }}
                     </div>
 
-                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal25" style="text-decoration: none">
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal25" style="text-decoration: none" style="font-size: 1rem;">
                         <i class="fa-solid fa-user me-1"></i>{{ __('Suscripciones') }}
                     </x-dropdown-link>
 
-                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal26" style="text-decoration: none">
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal26" style="text-decoration: none" style="font-size: 1rem;">
                         <i class="fa-solid fa-circle-user me-1"></i>{{ __('Tiendas') }}
                     </x-dropdown-link>
 
                     
-                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal27" style="text-decoration: none">
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal27" style="text-decoration: none" style="font-size: 1rem;">
                         <i class="fa-solid fa-house me-1"></i>{{ __('Talleres') }}
+                    </x-dropdown-link>
+
+                    <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal28" style="text-decoration: none" style="font-size: 1rem;">
+                        <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Gruas') }}
                     </x-dropdown-link>
               </div>
             <div class="col-10 col-md-3 d-flex align-items-center justify-content-center">
@@ -123,7 +127,7 @@
                         <x-slot name="trigger">
                           <?php
                             $assets = asset('');
-                            $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->profile_photo_url);
+                            $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->image);
                           ?>
                             <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
                                 <img class="h-8 w-8 rounded-full object-cover" src="{{ $ruta_imagen }}" alt="{{ Auth::user()->name }}" />
@@ -243,5 +247,18 @@
       </div>
     </div>
   </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal28" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Gruas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      @livewire('search-grua')
+    </div>
+  </div>
+</div>
 </div>
 

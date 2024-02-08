@@ -15,8 +15,8 @@
                 <label for="name" class="pb-3">{{ __('Ciudad') }}</label>
                 <input type="hidden" name="cities_id" wire:model="city_id" id="city_store_data_id">
                 <div class="autocomplete">
-                    <input class="form-select" type="text" id="myInput2" placeholder="Busca y selecciona una ciudad...">
-                    <ul id="myUL2">
+                    <input class="form-select" type="text" id="myInput3" placeholder="Busca y selecciona una ciudad...">
+                    <ul id="myUL3">
                         @foreach ($dataCities as $city) 
                             <li><a onclick="seleccionarCiudad({{$city->id}})" wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
                         @endforeach
@@ -63,5 +63,3 @@
         <button type="button" class="btn btn-primary" id="btn-search-store" @if($disabled) disabled @endif wire:click="searchStore">Buscar</button>
     </div>
 </div>
-
-

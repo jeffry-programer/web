@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('phone', 14)->nullable();
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
-            $table->string('profile_photo_path', 2048)->nullable();
+            $table->string('image', 2048)->nullable();
             $table->timestamps();
         });
     }

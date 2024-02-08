@@ -275,14 +275,15 @@
                                             <div class="col-2">
                                                 <?php
                                                     $url_profile = "";
-                                                    if($subscription->user->profile_photo_path == null){
+                                                    if($subscription->user->image == null){
                                                         $letter = strtoupper($subscription->user->name[0]);
-                                                        $url_profile = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
+                                                        $ruta_imagen = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
                                                     }else{
-                                                        $url_profile = asset($subscription->user->profile_photo_path);
+                                                        $assets = asset('');
+                                                        $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->image);
                                                     }
                                                 ?>
-                                                <img class="h-8 w-8 rounded-full object-cover" src="{{ $url_profile}}" alt="{{$subscription->user->name}}">
+                                                <img class="h-8 w-8 rounded-full object-cover" src="{{ $ruta_imagen}}" alt="{{$subscription->user->name}}">
                                             </div>
                                             <div class="col-10 d-flex align-items-center">
                                                 <p>{{ $subscription->user->name }} {{ $subscription->user->last_name }}</p>

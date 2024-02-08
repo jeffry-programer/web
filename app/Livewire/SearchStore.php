@@ -29,40 +29,34 @@ class SearchStore extends Component
     }
 
     public function search(){
-        if($this->cityInput == ''){
-            $this->dataCities = [];
-            return false;
-        }
-
         $id = $this->country_id;
 
         $cities = City::whereIn('municipalities_id', function($query) use ($id) {
             $query->select('id')->from('municipalities')->whereIn('states_id', function($query) use ($id) {
                 $query->select('id')->from('states')->where('countries_id', $id);
             });
-        })->where('name', 'LIKE', $this->cityInput . '%')->get();
+        })->get();
 
         $this->dataCities = $cities;
     }
 
-    public function seleccionar($name, $id){
-        $this->cityInput = $name;
-        $this->disabled = false;
-        $this->city_id = $id;
-        $this->dataCities = [];
-    }
-
     public function searchStore(){
-        $stores = Store::where('cities_id', $this->city_id);
+        $stores = Store::where('cities_id', $this->city_id)->where('type_stores_id', 1);
         if($this->name_store != ""){
             $stores->where('name', 'like', $this->name_store.'%');
         }
         $response = $stores->get();
+
         if(count($response) == 0){
             $this->empty_stores = true;
         }else{
             $this->empty_stores = false;
         }
         $this->data_stores = $response;
+    }
+
+    public function selectCity($id){
+        $this->city_id = $id;
+        $this->disabled = false;
     }
 }

@@ -562,7 +562,7 @@ input:focus{
 
 #myInput {
   border: 1px solid #ccc;
-  padding: 10px;
+  /*padding: 10px;*/
 }
 
 #myUL {
@@ -592,5 +592,110 @@ input:focus{
 }
 
 #myUL li a:hover {
+  background-color: #f4f4f4;
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+#myInput2 {
+  border: 1px solid #ccc;
+}
+
+#myUL2 {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  width: 100%;
+  z-index: 1000;
+  max-height: 150px; /* Altura máxima para el scroll */
+  overflow-y: auto; /* Habilitar el scroll vertical */
+  display: none; /* Ocultar la lista inicialmente */
+}
+
+#myUL2 li {
+  cursor: pointer;
+}
+
+#myUL2 li a {
+  padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: #000;
+}
+
+#myUL2 li a:hover {
+  background-color: #f4f4f4;
+}
+
+/*----------------------------------------------------------------------------------*/
+#myInput3 {
+  border: 1px solid #ccc;
+}
+
+#myUL3 {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  width: 100%;
+  z-index: 1000;
+  max-height: 150px; /* Altura máxima para el scroll */
+  overflow-y: auto; /* Habilitar el scroll vertical */
+  display: none; /* Ocultar la lista inicialmente */
+}
+
+#myUL3 li {
+  cursor: pointer;
+}
+
+#myUL3 li a {
+  padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: #000;
+}
+
+#myUL3 li a:hover {
+  background-color: #f4f4f4;
+}
+
+/*----------------------------------------------------------------------------------*/
+#myInput4 {
+  border: 1px solid #ccc;
+}
+
+#myUL4 {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  width: 100%;
+  z-index: 1000;
+  max-height: 150px; /* Altura máxima para el scroll */
+  overflow-y: auto; /* Habilitar el scroll vertical */
+  display: none; /* Ocultar la lista inicialmente */
+}
+
+#myUL4 li {
+  cursor: pointer;
+}
+
+#myUL4 li a {
+  padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: #000;
+}
+
+#myUL4 li a:hover {
   background-color: #f4f4f4;
 }

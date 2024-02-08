@@ -185,7 +185,7 @@ class UserManagement extends Component
         $query = 'insert into '.$name_table. ' (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
                 if($count == 0){
                     $query .= $field;
                 }else{
@@ -197,7 +197,7 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
                 if($field == 'image' || $field == 'image2'){
                     $data[$field] = '';
                 } 
@@ -207,6 +207,7 @@ class UserManagement extends Component
                         $query .= "'".$data[$field]."'";
                     }else{
                         if($field == 'password') $data[$field] = Hash::make($data[$field]);
+                        if($field == 'email_verified_at') $data[$field] = Carbon::now();
                         if($field == 'link' && $name_table == 'publicities'){
                             $link_store = Store::find($data['stores_id'])->link;
                             $data[$field] = $link_store;

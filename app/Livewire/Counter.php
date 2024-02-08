@@ -23,10 +23,6 @@ class Counter extends Component{
     public $count = 0;
 
     public function search(){
-        if($this->cityInput == ''){
-            $this->dataCities = [];
-            return false;
-        }
         $this->dataCities = City::join('municipalities', 'cities.municipalities_id', '=', 'municipalities.id')->join('states', 'municipalities.states_id', '=', 'states.id')->where('cities.name','like',$this->cityInput.'%')->where('municipalities.states_id',$this->state)->select('cities.id','cities.name')->distinct()->get();
     }
 
@@ -44,6 +40,7 @@ class Counter extends Component{
     public function updateState(){
         $this->cities = true;
         $this->disabledButton = false;
+        $this->search();
     }
 
     public function render(){

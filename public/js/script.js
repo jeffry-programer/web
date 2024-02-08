@@ -28,57 +28,57 @@ $(document).ready(() => {
     $("#unsubscribe").click(() => {
         $("#unsubscribe-form").submit();
     });
-});
+
+    var arraySelects = ['','2','3','4'];
+    var ultimoValorSeleccionado = [];
+    var reiniciarAutocompletado = [];
 
 
-
-$(document).ready(function(){
-    // Variable para almacenar el último valor seleccionado
-    var ultimoValorSeleccionado = "";
-  
-    // Función para reiniciar el autocompletado
-    function reiniciarAutocompletado() {
-      $("#myUL li").show(); // Mostrar todas las opciones
-    }
-  
-    // Mostrar la lista al hacer clic en el input
-    $("#myInput").click(function() {
-      $("#myUL").show();
-      reiniciarAutocompletado(); // Reiniciar autocompletado al hacer clic en el input
-    });
-    
-    // Seleccionar una opción de la lista
-    $("#myUL").on("click", "li", function() {
-      var value = $(this).text();
-      $("#myInput").val(value); // Colocar el valor seleccionado en el input
-      ultimoValorSeleccionado = value; // Actualizar el último valor seleccionado
-      $("#myUL").hide(); // Ocultar la lista después de seleccionar
-    });
-    
-    // Filtrar opciones según la entrada del usuario
-    $("#myInput").on("input", function() {
-      reiniciarAutocompletado(); // Reiniciar autocompletado al escribir en el input
-      var value = $(this).val().toLowerCase();
-      $("#myUL li").each(function() {
-        var text = $(this).text().toLowerCase();
-        if (text.indexOf(value) > -1) {
-          $(this).show();
-        } else {
-          $(this).hide();
+    arraySelects.forEach((element, index) => { 
+        // Función para reiniciar el autocompletado
+        reiniciarAutocompletado[index] = () => {
+          $(`#myUL${element} li`).show(); // Mostrar todas las opciones
         }
-      });
-    });
-    
-    // Controlar clic fuera del área de autocompletado
-    $(document).click(function(event) {
-      var $target = $(event.target);
-      var inputValue = $("#myInput").val();
-      if(!$target.closest('.autocomplete').length) {
-        if (inputValue !== ultimoValorSeleccionado) {
-          $("#myInput").val(""); // Vaciar el input si no se seleccionó una opción recientemente
-        }
-        $("#myUL").hide(); // Ocultar la lista en cualquier caso
-      }
+      
+        // Mostrar la lista al hacer clic en el input
+        $(`#myInput${element}`).click(function() {
+          $(`#myUL${element}`).show();
+          reiniciarAutocompletado[index](); // Reiniciar autocompletado al hacer clic en el input
+        });
+        
+        // Seleccionar una opción de la lista
+        $(`#myUL${element}`).on("click", "li", function() {
+          var value = $(this).text();
+          $(`#myInput${element}`).val(value); // Colocar el valor seleccionado en el input
+          ultimoValorSeleccionado[index] = value; // Actualizar el último valor seleccionado
+          $(`#myUL${element}`).hide(); // Ocultar la lista después de seleccionar
+        });
+        
+        // Filtrar opciones según la entrada del usuario
+        $(`#myInput${element}`).on("input", function() {
+          reiniciarAutocompletado[index](); // Reiniciar autocompletado al escribir en el input
+          var value = $(this).val().toLowerCase();
+          $(`#myUL${element} li`).each(function() {
+            var text = $(this).text().toLowerCase();
+            if (text.indexOf(value) > -1) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
+        });
+        
+        // Controlar clic fuera del área de autocompletado
+        $(document).click(function(event) {
+          var $target = $(event.target);
+          var inputValue = $(`#myInput${element}`).val();
+          if(!$target.closest('.autocomplete').length) {
+            if (inputValue !== ultimoValorSeleccionado[index]) {
+              $(`#myInput${element}`).val(""); // Vaciar el input si no se seleccionó una opción recientemente
+            }
+            $(`#myUL${element}`).hide(); // Ocultar la lista en cualquier caso
+          }
+        });
     });
 });
 
@@ -148,7 +148,7 @@ function testQr(){
 
 //Guardar ubicación
 $("#btn-save-ubi").click(() => {
-    var cityId = $("#value-city").val();
+    var cityId = $("#value4-city").val();
     var nameCity = $("#city").val();
     var stateId = $("#state").val();
     var countryId = $("#country").val();

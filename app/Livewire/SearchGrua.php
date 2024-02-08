@@ -8,7 +8,7 @@ use App\Models\Store;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class SearchTaller extends Component
+class SearchGrua extends Component
 {
     use WithPagination;
 
@@ -24,7 +24,7 @@ class SearchTaller extends Component
     public function render()
     {
         $countries = Country::all();
-        return view('livewire.search-taller', ['countries' => $countries]);
+        return view('livewire.search-grua', ['countries' => $countries]);
     }
 
     public function search(){
@@ -39,9 +39,8 @@ class SearchTaller extends Component
         $this->dataCities = $cities;
     }
 
-
     public function searchStore(){
-        $stores = Store::where('cities_id', $this->city_id)->where('type_stores_id', 2);
+        $stores = Store::where('cities_id', $this->city_id)->where('type_stores_id', 3);
         if($this->name_store != ""){
             $stores->where('name', 'like', $this->name_store.'%');
         }

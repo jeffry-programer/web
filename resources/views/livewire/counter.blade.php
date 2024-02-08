@@ -22,15 +22,16 @@
             </select>  
         @endif
         @if(!is_null($cities))
-        <label for="">Ciudad</label>
-        <div class="autocompletar mt-3">
-            <input class="form-control" placeholder="Ingrese y seleccione la ciudad" id="city" wire:model="cityInput" wire:keydown="search">
-            <div id="tipo-mascota-lista-autocompletar" class="lista-autocompletar-items">
-                @foreach ($dataCities as $key)
-                    <div onclick="seleccionar('{{ $key->name }}', {{ $key->id }});"><strong>{{ substr($key->name, 0, strlen($cityInput)) }}</strong>{{ substr($key->name, strlen($cityInput)) }}</div>
-                @endforeach
+            <label for="name" class="pb-3">{{ __('Ciudad') }}</label>
+            <input type="hidden" name="cities_id" wire:model="city_id" id="city_store_data_id">
+            <div class="autocomplete">
+                <input class="form-select" type="text" id="myInput4" placeholder="Busca y selecciona una ciudad...">
+                <ul id="myUL4">
+                    @foreach ($dataCities as $city) 
+                        <li><a onclick="seleccionarCiudad({{$city->id}})" wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
+                    @endforeach
+                </ul>
             </div>
-        </div> 
         @endif
     </div>
     <div class="modal-footer">
