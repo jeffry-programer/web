@@ -81,8 +81,8 @@
                                 <label class="py-3" for="name">{{ __('Ciudad') }}</label>
                                 <input type="hidden" name="cities_id" id="city_store_data_id">
                                 <div class="autocomplete">
-                                    <input class="form-select" type="text" id="myInput" placeholder="Busca y selecciona una ciudad...">
-                                    <ul id="myUL">
+                                    <input class="form-select" type="text" id="myInput5" placeholder="Busca y selecciona una ciudad...">
+                                    <ul id="myUL5">
                                         @foreach ($cities as $city)
                                             <li><a onclick="seleccionarCiudad({{$city->id}})">{{$city->name}}</a></li>
                                         @endforeach
