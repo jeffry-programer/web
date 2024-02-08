@@ -38,12 +38,12 @@
                             <input type="hidden" name="profiles_id" value="2">
             
                             <div>
-                                <x-label for="name" value="{{ __('Nombre del dueño') }}" />
+                                <x-label for="name" value="{{ __('Nombre del titular o responsable') }}" />
                                 <x-input id="name" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
                             </div>
             
                             <div class="mt-4">
-                                <x-label for="email" value="{{ __('Correo del dueño') }}" />
+                                <x-label for="email" value="{{ __('Correo del titular o responsable') }}" />
                                 <x-input id="email" placeholder="Por favor ingrese un correo" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
                             </div>
             
