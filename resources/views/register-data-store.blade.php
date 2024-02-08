@@ -30,7 +30,7 @@
 
 @php
     if(isset(Auth::user()->id)){
-        if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 2 || Auth::user()->profiles_id == 4 || Auth::user()->profiles_id == 5 && Auth::user()->store){
+        if(Auth::user()->email_verified_at != "" && Auth::user()->store){
             if($_SERVER['REQUEST_URI'] == '/register-data-store'){
                 echo "<script>window.location.replace('/dashboard');</script>";
             }
