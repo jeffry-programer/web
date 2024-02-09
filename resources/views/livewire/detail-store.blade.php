@@ -224,7 +224,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal3">Editar datos del producto</button>
-                                            <h4 style="color: gray;">{{ $this->brand }}</h4>
+                                            <h4 style="color: gray;">{{ $this->product_detail->brand->description }}</h4>
                                             <h3>{{ $this->product_detail->name }}</h3>
                                             <p>Ref. {{ $this->product_detail->reference }}</p>
                                             <p>$<b>{{ $this->product_store->price }}</b></p>
@@ -269,11 +269,9 @@
                     <div class="container">
                         <h4>Suscripciones</h4>
                         <div class="row">
-                            <div class="col-md-6 offset-md-3" style="border: solid 1px #dee2e6;border-top: solid 2px #606060;">
-                                <div class="div">
-                                    @foreach($subscriptions as $subscription)
-                                        <div class="row py-2 mt-3" style="border-bottom: solid 1px #dee2e6;">
-                                            <div class="col-2">
+                            <div class="col-md-6 offset-md-3" style="border-top: solid 2px #606060;">
+                                    <ul class="list-group">
+                                        @foreach($subscriptions as $subscription)
                                                 <?php
                                                     $url_profile = "";
                                                     if($subscription->user->image == null){
@@ -286,14 +284,18 @@
                                                         if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
                                                     }
                                                 ?>
-                                                <img class="h-8 w-8 rounded-full object-cover" src="{{ $ruta_imagen}}" alt="{{$subscription->user->name}}">
-                                            </div>
-                                            <div class="col-10 d-flex align-items-center">
-                                                <p>{{ $subscription->user->name }} {{ $subscription->user->last_name }}</p>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>            
+                                            <a href="/tienda/Tiendita">
+                                                <li class="list-group-item d-flex" style="justify-content: start;align-items: center;border: none;">
+                                                    <img src="{{ $ruta_imagen }}" alt="img" style="width: 3rem;
+                                                    height: 3rem;
+                                                    border-radius: 100%;
+                                                    margin-right: 1rem;
+                                                    border: solid 1px #dee2e6;
+                                                    object-fit: cover;">{{ $subscription->user->name }}
+                                                </li> 
+                                            </a> 
+                                        @endforeach
+                                    </ul>
                             </div>
                         </div>
                     </div>
