@@ -46,6 +46,10 @@ class SearchStores extends Component
             $stores = $this->queryData($categories_id, $product_search);
         }
 
+        foreach($stores as $index => $store){
+            $stores[$index]['city'] = Store::find($store->id)->city->name;
+        }
+
         if($search_found != 'cities' && $search_found != ''){
             if($search_found == 'estado'){
                 $search_found = $search_found . ' ' . State::find($state_id)->name;
@@ -79,7 +83,7 @@ class SearchStores extends Component
                 $query = $query->where('products.sub_categories_id', $id_sub_category);
             }
         }
-        return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
+        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
 
     public function queryDataCity($categories_id, $product_search, $city_id){        
@@ -93,7 +97,7 @@ class SearchStores extends Component
                 $query = $query->where('products.sub_categories_id', $id_sub_category);
             }
         }
-        return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
+        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
 
     public function queryDataState($categories_id, $product_search, $state_id){
@@ -107,7 +111,7 @@ class SearchStores extends Component
                 $query = $query->where('products.sub_categories_id', $id_sub_category);
             }
         }
-        return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
+        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
 
     public function queryDataCountry($categories_id, $product_search, $country_id){
@@ -121,6 +125,6 @@ class SearchStores extends Component
                 $query = $query->where('products.sub_categories_id', $id_sub_category);
             }
         }
-        return $query->select('stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
+        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
 }

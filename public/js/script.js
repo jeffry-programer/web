@@ -83,7 +83,7 @@ $(document).ready(() => {
 });
 
 function seleccionarCiudad(id){
-    $("#city_store_data_id").val(id);
+    $("#cities_id").val(id);
 }  
 
 function seleccionarCiudad5(id){

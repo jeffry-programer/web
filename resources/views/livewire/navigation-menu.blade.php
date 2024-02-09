@@ -126,11 +126,18 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                           <?php
-                            $assets = asset('');
-                            $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->image);
+                              if(Auth::user()->image == null){
+                                $letter = strtoupper(Auth::user()->name[0]);
+                                $ruta_imagen = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
+                              }else{
+                                $assets = asset('');
+                                $ruta_imagen = Auth::user()->image;
+                                if(!str_contains($ruta_imagen, 'storage')) $ruta_imagen = '/storage/'.$ruta_imagen;
+                                if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
+                              }
                           ?>
                             <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                <img class="h-8 w-8 rounded-full object-cover" src="{{ $ruta_imagen }}" alt="{{ Auth::user()->name }}" />
+                                <img class="h-8 w-8 rounded-full object-cover" src="{{ asset($ruta_imagen) }}" alt="{{ Auth::user()->name }}" />
                             </button>
                         </x-slot>
                     
@@ -208,7 +215,7 @@
             <ul class="list-group">
                 @foreach ($subscribeds as $key)
                     <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}">
-                        <li class="list-group-item d-flex" style="justify-content: start;align-items: center;">
+                        <li class="list-group-item d-flex" style="justify-content: start;align-items: center;border: none;">
                             <img src="{{ asset($key->store->image) }}" alt="img" style="width: 3rem;
                             height: 3rem;
                             border-radius: 100%;

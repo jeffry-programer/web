@@ -38,6 +38,29 @@
 
 
 <div class="container">
+
+    @php
+        if(isset(Auth::user()->id)){
+            if(Auth::user()->email_verified_at == "" && $_SERVER['REQUEST_URI'] != '/email/verify'){
+            echo "<script>window.location.replace('/email/verify');</script>";
+            }
+            if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 2 && !Auth::user()->store){
+            if($_SERVER['REQUEST_URI'] != '/register-data-store'){
+                echo "<script>window.location.replace('/register-data-store');</script>";
+            }
+            }
+            if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 4 && !Auth::user()->store){
+            if($_SERVER['REQUEST_URI'] != '/register-data-taller'){
+                echo "<script>window.location.replace('/register-data-taller');</script>";
+            }
+            }
+            if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 5 && !Auth::user()->store){
+            if($_SERVER['REQUEST_URI'] != '/register-data-grua'){
+                echo "<script>window.location.replace('/register-data-grua');</script>";
+            }
+            }
+        }
+    @endphp
     
     <div class="row">
         <div class="col-md-2">

@@ -10,6 +10,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -62,5 +64,20 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function store(){
         return $this->hasOne(Store::class, 'users_id');
+    }
+
+    public function updateProfilePhoto(UploadedFile $photo, $storagePath = 'images-user')
+    {
+        tap($this->profile_photo_path, function ($previous) use ($photo, $storagePath) {
+            $this->forceFill([
+                'image' => $photo->storePublicly(
+                    $storagePath, ['disk' => $this->profilePhotoDisk()]
+                ),
+            ])->save();
+
+            if ($previous) {
+                Storage::disk($this->profilePhotoDisk())->delete($previous);
+            }
+        });
     }
 }

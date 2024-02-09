@@ -18,7 +18,7 @@
                     <input class="form-select" type="text" id="myInput" placeholder="Busca y selecciona una ciudad...">
                     <ul id="myUL">
                         @foreach ($dataCities as $city) 
-                            <li><a onclick="seleccionarCiudad({{$city->id}})" wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
+                            <li><a wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -39,7 +39,7 @@
                         <div class="card-body" style="padding-bottom: 4rem;">
                         <h5 class="card-title">{{$store->name}}</h5>
                         <p class="card-text">{{$store->description}}</p>
-                        <p class="position-absolute bottom-0 start-0" style="padding: 1rem;"><i class="fa-solid fa-location-dot me-1"></i>{{$store->address}}</p>
+                        <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 18rem;"><i class="fa-solid fa-location-dot me-1"></i>{{$store->city->name}} - {{$store->address}}</p>
                         <a href="/tienda/{{ str_replace(' ','-', $store->name) }}" class="btn btn-warning position-absolute bottom-0 end-0" style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
                         </div>
                     </div>

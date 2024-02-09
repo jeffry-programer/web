@@ -12,4 +12,8 @@ class Store extends Model
     public function promotions(){
         return $this->hasMany(Promotion::class, 'stores_id');
     }
+
+    public function city(){
+        return $this->belongsTo(City::class, 'cities_id', 'id');
+    }
 }

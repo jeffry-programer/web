@@ -124,7 +124,7 @@
                                             <p><b>Descripción:</b></p>
                                             <p>{{$store->description}}</p>
                                             <p><b>Dirección:</b></p>
-                                            <p><i class="fa-solid fa-location-dot me-2"></i>{{$store->address}}</p>
+                                            <p><i class="fa-solid fa-location-dot me-2"></i>{{$store->city->municipality->state->name}} - {{$store->city->name}} - {{$store->address}}</p>
                                             <p><b>Correo electronico:</b></p>
                                             <p>{{$store->email}}</p>
                                             <p><b>Numero de contacto:</b></p>
@@ -280,7 +280,9 @@
                                                         $ruta_imagen = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
                                                     }else{
                                                         $assets = asset('');
-                                                        $ruta_imagen = str_replace('http://localhost/', $assets, Auth::user()->image);
+                                                        $ruta_imagen = Auth::user()->image;
+                                                        if(!str_contains($ruta_imagen, 'storage')) $ruta_imagen = '/storage/'.$ruta_imagen;
+                                                        if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
                                                     }
                                                 ?>
                                                 <img class="h-8 w-8 rounded-full object-cover" src="{{ $ruta_imagen}}" alt="{{$subscription->user->name}}">

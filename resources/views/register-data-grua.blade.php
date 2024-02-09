@@ -78,7 +78,7 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Ciudad') }}</label>
-                                <input type="hidden" name="cities_id" id="city_store_data_id">
+                                <input type="hidden" name="cities_id" id="cities_id">
                                 <div class="autocomplete">
                                     <input class="form-select" type="text" id="myInput5" placeholder="Busca y selecciona una ciudad...">
                                     <ul id="myUL5">

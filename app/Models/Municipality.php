@@ -11,7 +11,7 @@ class Municipality extends Model
 
     public function state()
     {
-        return $this->belongsTo(State::class, 'municipalities_id');
+        return $this->belongsTo(State::class, 'states_id', 'id');
     }
 
     public function cities()

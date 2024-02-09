@@ -67,6 +67,9 @@
                         <input type="hidden" name="link" value="">
                         <input type="hidden" name="status" value="0">
                         <input type="hidden" name="score_store" value="0">
+                        <input type="hidden" name="capacidad">
+                        <input type="hidden" name="tipo">
+                        <input type="hidden" name="dimensiones">
                         
                         <div class="row">
                             <div class="col-md-6 form-group d-none">
@@ -79,7 +82,7 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Ciudad') }}</label>
-                                <input type="hidden" name="cities_id" id="city_store_data_id">
+                                <input type="hidden" name="cities_id" id="cities_id">
                                 <div class="autocomplete">
                                     <input class="form-select" type="text" id="myInput5" placeholder="Busca y selecciona una ciudad...">
                                     <ul id="myUL5">
@@ -188,6 +191,9 @@ function validateDataStore(){
         let field = key.split('=')[0];
         if(field.includes('link')) return false;
         if(field.includes('product_stores_id')) return false;
+        if(field.includes('capacidad')) return false;
+        if(field.includes('tipo')) return false;
+        if(field.includes('dimensiones')) return false;
         if(value == null || value == ''){
             boolean = false;
         }

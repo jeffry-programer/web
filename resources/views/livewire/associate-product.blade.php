@@ -126,7 +126,6 @@
 
         if ($('#myDropzone3').length) {
             $("div#myDropzone3").dropzone({ url: "/file/post" });
-            alert('enter here');
         }
 
         $("#store").click((e) => {
