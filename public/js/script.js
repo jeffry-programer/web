@@ -29,7 +29,7 @@ $(document).ready(() => {
         $("#unsubscribe-form").submit();
     });
 
-    var arraySelects = ['','2','3','4','5'];
+    var arraySelects = ['','2','3','4','5', '6'];
     var ultimoValorSeleccionado = [];
     var reiniciarAutocompletado = [];
 
@@ -150,7 +150,7 @@ function testQr(){
 //Guardar ubicación
 $("#btn-save-ubi").click(() => {
     var cityId = $("#value4-city").val();
-    var nameCity = $("#city").val();
+    var nameCity = $("#myInput6").val();
     var stateId = $("#state").val();
     var countryId = $("#country").val();
     //guardamos en local storage la información
@@ -164,7 +164,7 @@ $("#btn-save-ubi").click(() => {
     $("#value-state").val(stateId);
     $("#value-city").val(cityId);
 
-    $("#btn-ubi").html(`${$("#city").val()}`);
+    $("#btn-ubi").html(`${$("#myInput6").val()}`);
     $("#btn-save-ubi").attr('disabled', true);
     $("#exampleModal").modal('hide');
 });
