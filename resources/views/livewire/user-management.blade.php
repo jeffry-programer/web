@@ -298,6 +298,19 @@
                         @csrf
                         <?php $count_autocomplete = 0; ?>
                         <?php $data_autocomplete = []; ?>
+                        @if($label == 'Productos')
+                            <label for="">Categorias</label>
+                            <select class="form-select" id="select1" wire:model="category">
+                                <option value="" selected>Seleccione una categoria</option>
+                                @foreach ($categories as $key)
+                                    <option value="{{$key->id}}">{{$key->name}}</option>
+                                @endforeach
+                            </select>
+                            <label for="">Sub Categoria</label>
+                            <select class="form-select" id="select2" name="sub_categories_id">
+                                <option value="" selected>Seleccione una subcategoria</option>
+                            </select>
+                        @endif
                         @foreach ($atributes as $field)
                             @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'about')
                                 @if(str_contains($field, '_id'))
@@ -331,17 +344,19 @@
                                             array_push($data_autocomplete, $field);
                                         ?>
                                     @else
-                                        <label for="">{{__($field)}}</label>
-                                        <select class="form-select" name="{{$field}}">
-                                            @foreach ($extra_data[$field]['values'] as $value)
-                                                @foreach ($extra_data[$field]['fields'] as $field2)
-                                                    @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
-                                                        <option value="{{$value->id}}">{{$value->$field2}}</option>
-                                                        @break
-                                                    @endif
+                                        @if($label != 'Productos')
+                                            <label for="">{{__($field)}}</label>
+                                            <select class="form-select" name="{{$field}}">
+                                                @foreach ($extra_data[$field]['values'] as $value)
+                                                    @foreach ($extra_data[$field]['fields'] as $field2)
+                                                        @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
+                                                            <option value="{{$value->id}}">{{$value->$field2}}</option>
+                                                            @break
+                                                        @endif
+                                                    @endforeach
                                                 @endforeach
-                                            @endforeach
-                                        </select>
+                                            </select>
+                                        @endif
                                     @endif
                                 @elseif((str_contains($field, 'status')))
                                     <label for="">{{__($field)}}</label>
@@ -997,4 +1012,34 @@
         }
     </script>
     @endisset
+
+    <script>
+        $('#select1').change(function() {
+            var select1Value = $(this).val();
+            $('#select2').empty();
+            if(select1Value !== '') {
+                $.ajax({
+                    url: "{{ route('obtener-sucategorias') }}",
+                    data: {'id' : select1Value},
+                    headers: {
+                        'X-CSRF-TOKEN' : "{{csrf_token()}}",
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#select2').append($('<option>', { 
+                            value: '',
+                            text : 'Selecciona una opción'
+                        }));
+                        $.each(data, function(key, value) {
+                            $('#select2').append($('<option>', { 
+                                value: value.id,
+                                text : value.name
+                            }));
+                        });
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

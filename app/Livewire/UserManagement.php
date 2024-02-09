@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\AditionalPicturesProduct;
 use App\Models\AttentionTime;
 use App\Models\Branch;
+use App\Models\Category;
 use App\Models\City;
 use App\Models\Municipality;
 use App\Models\Plan;
@@ -30,9 +31,17 @@ use Livewire\Component;
 class UserManagement extends Component
 {
 
+    public $category;
+    public $subcategories = [];
+
     protected $listeners = ['deleteUser'];
 
+    public function changeCategory(Request $request){
+        return json_encode(SubCategory::where('categories_id', $request->id)->get());
+    }
+
     public function render(){
+        $categories = [];
         $name_label = explode("/", $_SERVER['REQUEST_URI'])[3];
         $name_label = str_replace("_", " ", $name_label);
         $name_label = str_replace("%20", " ", $name_label);
@@ -58,14 +67,15 @@ class UserManagement extends Component
         $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
         $tables2 = Table::where('type', 2)->get();
 
-        return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2]);
+        if($name_label == 'Productos') $categories = Category::all();
+        return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2, 'categories' => $categories]);
     }
 
     public function searchData(Request $request){
         if($request->table == 'users'){
-            return json_encode(DB::table($request->table)->where('email', 'like',$request->value.'%')->select('id','email')->get());
+            return json_encode(DB::table($request->table)->where('email', 'like', '%'.$request->value.'%')->select('id','email')->get());
         }else{
-            return json_encode(DB::table($request->table)->where('name', 'like',$request->value.'%')->select('id','name')->get());
+            return json_encode(DB::table($request->table)->where('name', 'like', '%'.$request->value.'%')->select('id','name')->get());
         }
     }
 

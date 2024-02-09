@@ -74,11 +74,11 @@
         <div class="col-12 col-lg-10">
             <ul class="nav nav-tabs product-details-tab" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link me-2 @if($product_detail == null) active @endif" id="productEspecification" data-bs-toggle="tab" data-bs-target="#especificationProduct" type="button" role="tab" aria-controls="especificationProduct" aria-selected="true">Información de la tienda</button>
+                    <button class="nav-link me-2 @if($product_detail == null && $search_products == false) active @endif" id="productEspecification" data-bs-toggle="tab" data-bs-target="#especificationProduct" type="button" role="tab" aria-controls="especificationProduct" aria-selected="true">Información de la tienda</button>
                 </li>
 
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="productDescription" data-bs-toggle="tab" data-bs-target="#descriptionProduct" type="button" role="tab" aria-controls="descriptionProduct" aria-selected="false">Productos</button>
+                    <button class="nav-link @if($search_products == true) active @endif" id="productDescription" data-bs-toggle="tab" data-bs-target="#descriptionProduct" type="button" role="tab" aria-controls="descriptionProduct" aria-selected="false">Productos</button>
                 </li>
 
                 @if($product_detail != null)
@@ -96,7 +96,7 @@
                 </li>
             </ul>
             <div class="tab-content pt-3 product-details-tab-content" id="myTabContent">
-                <div class="tab-pane fade @if($product_detail == null) active show @endif" id="especificationProduct" role="tabpanel" aria-labelledby="productEspecification">
+                <div class="tab-pane fade @if($product_detail == null && $search_products == false) active show @endif" id="especificationProduct" role="tabpanel" aria-labelledby="productEspecification">
                     <div class="container">
                         <div>
                             @if (session()->has('messageUpdateStore'))
@@ -136,7 +136,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="descriptionProduct" role="tabpanel" aria-labelledby="productDescription">
+                <div class="tab-pane fade @if($search_products == true) active show @endif" id="descriptionProduct" role="tabpanel" aria-labelledby="productDescription">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-4 offset-md-4">
@@ -226,7 +226,8 @@
                                             <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal3">Editar datos del producto</button>
                                             <h4 style="color: gray;">{{ $this->brand }}</h4>
                                             <h3>{{ $this->product_detail->name }}</h3>
-                                            <p><b>Ref.{{ $this->product_store->price }}</b></p>
+                                            <p>Ref. {{ $this->product_detail->reference }}</p>
+                                            <p>$<b>{{ $this->product_store->price }}</b></p>
                                             <p>Iva incluido</p>
                                         </div>
                                     </div>

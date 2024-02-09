@@ -60,4 +60,5 @@ Route::middleware([
     Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
     Route::post('/subscribe', [MainController::class, 'subscribe'])->name('subscribe');
     Route::post('/unsubscribe', [MainController::class, 'unsubscribe'])->name('unsubscribe');
+    Route::post('/obtener-subcategorias', [UserManagement::class, 'changeCategory'])->name('obtener-sucategorias');
 });

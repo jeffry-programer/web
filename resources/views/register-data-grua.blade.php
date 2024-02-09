@@ -83,7 +83,7 @@
                                     <input class="form-select" type="text" id="myInput5" placeholder="Busca y selecciona una ciudad...">
                                     <ul id="myUL5">
                                         @foreach ($cities as $city)
-                                            <li><a onclick="seleccionarCiudad5({{$city->id}})">{{$city->name}}</a></li>
+                                            <li><a onclick="seleccionarCiudad({{$city->id}})">{{$city->name}}</a></li>
                                         @endforeach
                                     </ul>
                                   </div>

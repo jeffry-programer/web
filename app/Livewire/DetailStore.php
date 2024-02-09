@@ -30,6 +30,8 @@ class DetailStore extends Component
     public $subscribed = false;
     public $subscriptions = [];
 
+    public $search_products = false;
+
     public function render(){
         if(str_contains($_SERVER['REQUEST_URI'], '?')){
             $array = explode('&', explode('?', $_SERVER['REQUEST_URI'])[1]);
@@ -73,7 +75,7 @@ class DetailStore extends Component
         if(isset($product)){
             if($category != 'Categoria'){
                 $id_sub_category = SubCategory::where('categories_id', $category)->select('id')->first()->id;
-                $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->where('products.categories_id', $product)->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
+                $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
             }else{
                 $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->paginate($this->paginate);
             }
@@ -82,6 +84,8 @@ class DetailStore extends Component
                 $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->paginate($this->paginate);
                 $this->showMessageNotFoundProducts = true;
             }
+
+            $this->search_products = true;
 
         }else{
             $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->paginate($this->paginate);

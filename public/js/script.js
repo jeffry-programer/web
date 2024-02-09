@@ -86,11 +86,6 @@ function seleccionarCiudad(id){
     $("#cities_id").val(id);
 }  
 
-function seleccionarCiudad5(id){
-  $("#city_store_data_id").val(id);
-} 
-
-
 
 function goPagePublicity(id){
     window.location.replace("/publicities/"+id);
