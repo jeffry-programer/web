@@ -124,7 +124,7 @@
                                             <p><b>Descripción:</b></p>
                                             <p>{{$store->description}}</p>
                                             <p><b>Dirección:</b></p>
-                                            <p><i class="fa-solid fa-location-dot me-2"></i>{{$store->address}}</p>
+                                            <p><i class="fa-solid fa-location-dot me-2"></i>{{$store->city->municipality->state->name}} - {{$store->city->name}} - {{$store->address}}</p>
                                             <p><b>Correo electronico:</b></p>
                                             <p>{{$store->email}}</p>
                                             <p><b>Numero de contacto:</b></p>

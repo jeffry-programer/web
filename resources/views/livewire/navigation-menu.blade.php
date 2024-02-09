@@ -215,7 +215,7 @@
             <ul class="list-group">
                 @foreach ($subscribeds as $key)
                     <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}">
-                        <li class="list-group-item d-flex" style="justify-content: start;align-items: center;">
+                        <li class="list-group-item d-flex" style="justify-content: start;align-items: center;border: none;">
                             <img src="{{ asset($key->store->image) }}" alt="img" style="width: 3rem;
                             height: 3rem;
                             border-radius: 100%;

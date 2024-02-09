@@ -85,7 +85,7 @@
             <h4>Más publicidad</h4>
         </div>
 
-        <div class="row px-5">
+        <div class="row px-5 pb-5">
             @foreach ($publicities as $key)
                 <div class="col-md-4 mt-3">
                     <div class="card" style="border-radius: 15px;">
