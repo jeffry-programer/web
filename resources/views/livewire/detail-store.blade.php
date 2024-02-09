@@ -188,7 +188,9 @@
                                               <div class="col-12">
                                                 <div class="card" style="width: 7rem;height: 5rem;">
                                                     <div class="card-body" style="padding: .5rem;">
-                                                        <img class="thumbnail img-fluid" src="{{ asset($product_detail->image) }}" alt="Imagen 1" style="height: 100%;">
+                                                        <img class="thumbnail img-fluid" style="height: 4rem;
+                                                        width: 100%;
+                                                      " src="{{ asset($product_detail->image) }}" alt="Imagen 1" style="height: 100%;">
                                                     </div>
                                                 </div>
                                               </div>
@@ -197,7 +199,9 @@
                                                     <div class="col-12 mt-3">
                                                         <div class="card" style="width: 7rem;height: 5rem;">
                                                             <div class="card-body" style="padding: .5rem;">
-                                                                <img class="thumbnail img-fluid" src="{{ asset($key->image) }}" alt="Imagen 1" style="object-fit: cover;width: 7rem;height: 4rem;">
+                                                                <img class="thumbnail img-fluid" style="height: 4rem;
+                                                                width: 100%;
+                                                              " src="{{ asset($key->image) }}" alt="Imagen 1" style="object-fit: cover;width: 7rem;height: 4rem;">
                                                             </div>
                                                         </div>
                                                     </div>
