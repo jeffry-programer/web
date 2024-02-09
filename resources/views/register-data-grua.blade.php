@@ -118,7 +118,11 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Tipo') }}</label>
-                                <input class="form-control" placeholder="Por favor ingrese un tip" class="block mt-1 w-full" type="text" name="tipo" required/>
+                                <select class="form-select" name="tipo">
+                                    <option value="Plataforma plana">Plataforma plana</option>
+                                    <option value="Grúas de gancho">Grúas de gancho</option>
+                                    <option value="Grúas de arrastre">Grúas de arrastre</option>
+                                </select>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Dimensiones') }}</label>

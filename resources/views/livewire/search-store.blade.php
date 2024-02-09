@@ -29,6 +29,13 @@
             </div>
         </div>
         <div class="row">
+            <div>
+                @if($new_message)
+                    <div class="alert alert-info mt-3">
+                        No hemos encontrado resultados que coincidieran con tu busqueda, aqui puedes ver otros resultados en la misma ciudad.
+                    </div>
+                @endif
+            </div>
             @foreach ($data_stores as $store)
                 <div class="col-12 col-md-4 mt-3">
                     <a href="/tienda/{{ str_replace(' ','-', $store->name) }}">

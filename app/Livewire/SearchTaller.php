@@ -20,6 +20,7 @@ class SearchTaller extends Component
     public $name_store;
     public $empty_stores = false;
     public $data_stores = [];
+    public $new_message = false;
 
     public function render()
     {
@@ -39,17 +40,25 @@ class SearchTaller extends Component
         $this->dataCities = $cities;
     }
 
-
     public function searchStore(){
-        $stores = Store::where('cities_id', $this->city_id)->where('type_stores_id', 2);
+        $stores = Store::where('cities_id', $this->city_id)->where('type_stores_id', 3)->where('status', true);
         if($this->name_store != ""){
-            $stores->where('name', 'like', $this->name_store.'%');
+            $stores->whereFullText('name', $this->name_store);
         }
         $response = $stores->get();
 
         if(count($response) == 0){
-            $this->empty_stores = true;
+            $this->new_message = true;
+            $response = Store::where('cities_id', $this->city_id)->where('type_stores_id', 3)->where('status', true)->get();
+            if(count($response) == 0){
+                $this->new_message = false;
+                $this->empty_stores = true;
+            }else{
+                $this->new_message = true;
+                $this->empty_stores = false;
+            }
         }else{
+            $this->new_message = false;
             $this->empty_stores = false;
         }
         $this->data_stores = $response;
