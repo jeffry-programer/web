@@ -474,16 +474,17 @@
                             @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'about')
                                 @if(str_contains($field, '_id'))
                                         @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
-                                            <label for="">{{__($field)}}</label>
+                                        <label for="">{{__($field)}}</label>
+                                        <select class="form-select" name="{{$field}}" id="{{$field}}" disabled>
                                             @foreach ($extra_data[$field]['values'] as $value)
                                                 @foreach ($extra_data[$field]['fields'] as $field2)
                                                     @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
-                                                        <input type="text" disabled class="form-control" value="{{$value->$field2}}">
-                                                        <input type="hidden" name="{{$field}}" value="{{$value->id}}">
+                                                        <option value="{{$value->id}}">{{$value->$field2}}</option>
                                                         @break
                                                     @endif
                                                 @endforeach
                                             @endforeach
+                                        </select>
                                         @else
                                             <label for="">{{__($field)}}</label>
                                             <select class="form-select" name="{{$field}}" id="{{$field}}">
