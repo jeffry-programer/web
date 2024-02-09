@@ -29,8 +29,6 @@ Route::get('/politicas', [MainController::class, 'politicas'])->name('politicas'
 Route::get('/contacto', [MainController::class, 'contacto'])->name('contacto');
 
 Route::get('/search-stores', [MainController::class, 'searchStores'])->name('search-stores');
-Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
-Route::get('/tienda/{nameStore}/{linkProduct}', [MainController::class, 'detailStore']);
 Route::get('/imgs-store', [AssociateProduct::class, 'store'])->name('imgs-store');
 Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('table-store-imgs');
 Route::get('/publicities/{id}', [MainController::class, 'publicity']);
@@ -61,4 +59,6 @@ Route::middleware([
     Route::post('/subscribe', [MainController::class, 'subscribe'])->name('subscribe');
     Route::post('/unsubscribe', [MainController::class, 'unsubscribe'])->name('unsubscribe');
     Route::post('/obtener-subcategorias', [UserManagement::class, 'changeCategory'])->name('obtener-sucategorias');
+    Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
+    Route::get('/tienda/{nameStore}/{linkProduct}', [MainController::class, 'detailStore']);
 });

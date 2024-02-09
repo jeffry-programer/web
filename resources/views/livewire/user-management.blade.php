@@ -344,7 +344,7 @@
                                             array_push($data_autocomplete, $field);
                                         ?>
                                     @else
-                                        @if($label != 'Productos')
+                                        @if(!($label == 'Productos' && $field == 'sub_categories_id'))
                                             <label for="">{{__($field)}}</label>
                                             <select class="form-select" name="{{$field}}">
                                                 @foreach ($extra_data[$field]['values'] as $value)
