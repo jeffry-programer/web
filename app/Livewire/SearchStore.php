@@ -42,7 +42,10 @@ class SearchStore extends Component
     }
 
     public function searchStore(){
-        $stores = Store::where('cities_id', $this->city_id)->where('type_stores_id', 3)->where('status', true);
+        $stores = Store::whereHas('typeStore', function ($query) {
+            $query->where('status', true)->where('cities_id', $this->city_id)->where('description', env('TIPO_TIENDA'));
+        });
+
         if($this->name_store != ""){
             $stores->whereFullText('name', $this->name_store);
         }
@@ -50,7 +53,9 @@ class SearchStore extends Component
 
         if(count($response) == 0){
             $this->new_message = true;
-            $response = Store::where('cities_id', $this->city_id)->where('type_stores_id', 3)->where('status', true)->get();
+            $response = Store::whereHas('typeStore', function ($query) {
+                $query->where('status', true)->where('cities_id', $this->city_id)->where('description', env('TIPO_TIENDA'));
+            })->get();
             if(count($response) == 0){
                 $this->new_message = false;
                 $this->empty_stores = true;

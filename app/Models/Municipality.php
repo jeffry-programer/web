@@ -16,6 +16,6 @@ class Municipality extends Model
 
     public function cities()
     {
-        return $this->hasMany(City::class, 'id');
+        return $this->hasMany(City::class);
     }
 }

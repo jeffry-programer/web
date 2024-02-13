@@ -16,6 +16,6 @@ class State extends Model
 
     public function municipalities()
     {
-        return $this->hasMany(Municipality::class, 'id');
+        return $this->hasMany(Municipality::class);
     }
 }

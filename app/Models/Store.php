@@ -18,4 +18,8 @@ class Store extends Model
     public function city(){
         return $this->belongsTo(City::class, 'cities_id', 'id');
     }
+
+    public function typeStore(){
+        return $this->belongsTo(TypeStore::class, 'type_stores_id');
+    }
 }

@@ -51,7 +51,7 @@ class MainController extends Controller{
 
         $publicity = Publicity::find($id);
         $store = Store::find($publicity->stores_id);
-        $publicities = Publicity::where('date_end', '>', $date)->take(6)->get();
+        $publicities = Publicity::where('date_end', '>', $date)->where('status', true)->take(6)->get();
 
         $subscribed = false;
 
