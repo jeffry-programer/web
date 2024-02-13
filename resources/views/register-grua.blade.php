@@ -22,7 +22,7 @@
                     background: white;
                     padding: 1rem;
                     border-radius: 15px;">
-                        <h3 class="fw-bolder">Registrate como una grua</h3>
+                        <h3 class="fw-bolder">Registrate como una grúa</h3>
                     </div>
                     <div class="card-body">
                         <x-validation-errors class="mb-4" />
