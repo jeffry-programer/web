@@ -475,7 +475,7 @@
                                 @if(str_contains($field, '_id'))
                                         @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
                                         <label for="">{{__($field)}}</label>
-                                        <select class="form-select" name="{{$field}}" id="{{$field}}" disabled>
+                                        <select class="form-select" name="{{$field}}" id="{{$field}}">
                                             @foreach ($extra_data[$field]['values'] as $value)
                                                 @foreach ($extra_data[$field]['fields'] as $field2)
                                                     @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')

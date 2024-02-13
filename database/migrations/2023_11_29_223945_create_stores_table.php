@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('description', 100);
             $table->string('email', 45)->unique();
             $table->string('address');
-            $table->string('image');
-            $table->string('image2');
+            $table->string('image')->nullable();
+            $table->string('image2')->nullable();
             $table->string('RIF', 45);
             $table->string('link');
             $table->boolean('status');

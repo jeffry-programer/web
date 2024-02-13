@@ -238,61 +238,27 @@ class UserManagement extends Component
         return json_encode($name_table.'-'.$id);
     }
 
-    public function store3(Request $request){
-        $name_table = Table::where('label', $request->label)->first()->name;
-        $validate = $this->validateRequest($request, $name_table);
-        if($validate){
-            abort(404);
-        }
-        $validate =  $this->validateExist($request, $name_table);
-        if($validate){
-            abort(404);
-        }
-        $atributes = Schema::getColumnListing($name_table);
-        $data = $request->all();
-        $query = 'insert into '.$name_table. ' (';
-        $count = 0;
-        foreach($atributes as $field){
-            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token'){
-                if($count == 0){
-                    $query .= $field;
-                }else{
-                    $query .= ','.$field;
-                }
-                $count++;
-            }
-        }
-        $query .= ',created_at) values (';
-        $count = 0;
-        foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token'){
-                if($field == 'image' || $field == 'image2'){
-                    $data[$field] = '';
-                } 
-                if($data[$field] != $request->label && $data[$field] != $request->_token){
-                    if($count == 0){
-                        if($field == 'product_stores_id') $data[$field] = ProductStore::where('products_id', $data['products_id'])->where('stores_id', $data['stores_id'])->first()->id;
-                        $query .= "'".$data[$field]."'";
-                    }else{
-                        if($field == 'password') $data[$field] = Hash::make($data[$field]);
-                        if($field == 'link' && $name_table == 'publicities'){
-                            $link_store = Store::find($data['stores_id'])->link;
-                            $data[$field] = $link_store;
-                        }else if($field == 'link' && $name_table != 'publicities'){
-                            $data[$field] = str_replace(' ','-', $data['name']);
-                        } 
+    public function registerStore(Request $request){
+        // Validación de los datos
+        $request->validate([
+            'cities_id' => 'required',
+            'name' => 'required|string|max:45|unique:stores',
+            'description' => 'required|string|max:100',
+            'email' => 'required|email|unique:stores',
+            'address' => 'required|max:255',
+            'RIF' => 'required|max:45',
+            'phone' => ['required', 'regex:/^\+?\d{8,15}$/'], // Agrega la validación del número de teléfono
+        ]);
 
-                        $query .= ",'".$data[$field]."'";
-                    }
-                    $count++;
-                }
-            }
-        }
-        $date = Carbon::now();
-        $query .= ",'".$date."')";
-        DB::insert($query);
-        $id = DB::table($name_table)->latest('id')->first()->id;
-        return json_encode($name_table.'-'.$id);
+        $data = $request->all();
+
+        $data['link'] = str_replace(' ','-', $data['name']);
+
+        // Crear la tienda
+        $store = Store::create($data);
+
+        // Puedes devolver una respuesta JSON si lo prefieres
+        return json_encode('stores'.'-'.$store->id);
     }
 
     public function delete(Request $request){

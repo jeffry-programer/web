@@ -58,14 +58,14 @@
                 <div class="card-body">
                     <x-validation-errors class="mb-4" />
     
-                    <form method="POST" action="{{ route('register-store') }}" id="form">
-                        @csrf
-
-                        <input type="hidden" name="label" value="Tiendas">
+    
+                    <form id="form">
                         <input type="hidden" name="users_id" value="{{Auth::user()->id}}">
                         <input type="hidden" name="link" value="">
                         <input type="hidden" name="status" value="0">
                         <input type="hidden" name="score_store" value="0">
+                        <input type="hidden" name="image" value="">
+                        <input type="hidden" name="image2" value="">
                         
                         <div class="row">
                             <div class="col-md-6 form-group d-none">
@@ -195,40 +195,20 @@ var myDropzone = new Dropzone("#myDropzone24", {
     }
 }); 
 
-function validateDataStore(){
-        var data = $("#form").serialize().split('&');
-        var boolean = true;
-        data.forEach((key) => {
-        let value = key.split('=')[1];
-        let field = key.split('=')[0];
-        if(field.includes('link')) return false;
-        if(field.includes('product_stores_id')) return false;
-        if(value == null || value == ''){
-            boolean = false;
-        }
-    });
-
-    if(!boolean){
-        Swal.fire({
-            title: "Campos ingresados no válidos",
-            icon: "error",
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false
-        });
-        return false;
-    } 
-            
+function validateDataStore(){            
     showAlertTime();
     storeData();
 }
 
 function storeData(){
     $.ajax({
-        url: "{{route('table-store-imgs')}}",
+        url: "{{route('table-store-imgs-2')}}",
         data: $("#form").serialize(),
+        headers: {
+            'X-CSRF-TOKEN' : "{{csrf_token()}}",
+        },
         method: "POST",
-        success(response){
+        success: function(response) {
             var res = JSON.parse(response);
             $("#id_table").val(res.split('-')[1]);
             $("#table").val(res.split('-')[0]);
@@ -238,16 +218,33 @@ function storeData(){
                     hideAlertTime();
                 }
             }, 3000);
-        },error(err){
-            Swal.fire({
-                toast: true,
-                position: 'center',
-                icon: 'error',
-                showConfirmButton: false,
-                title: "Ups ha ocurrido un error",
-                timer: 3000
-            });
-            return false;
+        },
+        error: function(xhr) {
+            if(xhr.status === 422) {
+                var errors = xhr.responseJSON.errors;
+                var errorMessage = '';
+                $.each(errors, function(key, value) {
+                    Swal.fire({
+                        title: value[0],
+                        icon: "error",
+                        timer: 2000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false
+                    });
+                });
+            } else {
+                Swal.fire({
+                    title: "Hubo un problema al procesar la solicitud",
+                    icon: "error",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+            }
         }
     });
 }
