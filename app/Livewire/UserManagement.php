@@ -103,7 +103,11 @@ class UserManagement extends Component
     public function validateExist(Request $request, $name_table){
         $error = false;
         if(isset($request->name)){
-            if(count(DB::table($name_table)->where('name',$request->name)->get()) > 0){
+            if($name_table == 'sub_categories'){
+                if(count(DB::table($name_table)->where('name',$request->name)->where('categories_id',$request->categories_id)->get()) > 0){
+                    $error = true;
+                }
+            }else if(count(DB::table($name_table)->where('name',$request->name)->get()) > 0){
                 $error = true;
             }
         }
