@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('stores_id');
             $table->foreignId('cities_id');
-            $table->string('name', 45);
-            $table->string('address', 100);
+            $table->string('name', 100);
+            $table->string('address');
             $table->timestamps();
         });
     }

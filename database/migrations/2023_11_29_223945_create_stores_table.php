@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('type_stores_id');
             $table->foreignId('users_id');
             $table->foreignId('cities_id');
-            $table->string('name', 45)->unique();
-            $table->string('description', 100);
+            $table->string('name', 100)->unique();
+            $table->string('description');
             $table->string('email', 45)->unique();
             $table->string('address');
             $table->string('image')->nullable();

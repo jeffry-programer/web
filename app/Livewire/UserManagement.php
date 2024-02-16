@@ -88,11 +88,11 @@ class UserManagement extends Component
         }
         if(isset($request->description)){
             if($name_table == 'products' || $name_table == 'stores'){
-                if(strlen($request->description) > 100){
+                if(strlen($request->description) > 255){
                     $error = true;
                 }
             }else{
-                if(strlen($request->description) > 100){
+                if(strlen($request->description) > 45){
                     $error = true;
                 }
             }
@@ -246,8 +246,8 @@ class UserManagement extends Component
         // Validación de los datos
         $request->validate([
             'cities_id' => 'required',
-            'name' => 'required|string|max:45|unique:stores',
-            'description' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:stores',
+            'description' => 'required|string|max:255',
             'email' => 'required|email|unique:stores',
             'address' => 'required|max:255',
             'RIF' => 'required|max:45',

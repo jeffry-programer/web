@@ -20,8 +20,8 @@ return new class extends Migration
             $table->foreignId('boxes_id');
             $table->foreignId('type_products_id');
             $table->foreignId('brands_id');
-            $table->string('name');
-            $table->string('description', 100);
+            $table->string('name', 100);
+            $table->string('description');
             $table->string('code', 45);
             $table->string('image');
             $table->integer('count');
