@@ -20,8 +20,10 @@ use App\Models\Store;
 use App\Models\SubCategory;
 use App\Models\Table;
 use App\Models\User;
+use App\Notifications\RegisterStore;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -260,6 +262,8 @@ class UserManagement extends Component
 
         // Crear la tienda
         $store = Store::create($data);
+
+        Auth::user()->notify(new RegisterStore);
 
         // Puedes devolver una respuesta JSON si lo prefieres
         return json_encode('stores'.'-'.$store->id);
