@@ -3,6 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Notifications\CustomVerificationEmail;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Auth\Notifications\VerifyEmailNew;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -79,5 +83,14 @@ class User extends Authenticatable implements MustVerifyEmail
                 Storage::disk($this->profilePhotoDisk())->delete($previous);
             }
         });
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerificationEmail);
+    } 
+
+    public function profile(){
+        return $this->belongsTo(Profile::class, 'profiles_id', 'id');
     }
 }
