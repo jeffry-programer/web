@@ -1,7 +1,7 @@
 <div>
     @if(!$empty_stores)
         <div class="alert alert-info p-3 text-center alert-info-search-stores">
-            Las siguientes tiendas tienen el repuesto "{{ $product_search }}", entra a la que desees y contacta al vendedor
+            Las siguientes tiendas tienen el repuesto "{{ str_replace('+', ' ', $product_search) }}", entra a la que desees y contacta al vendedor
         </div>
         @if($search_found != 'cities' && $search_found != '')
             <div class="alert alert-warning p-3 text-center alert-info-search-stores">

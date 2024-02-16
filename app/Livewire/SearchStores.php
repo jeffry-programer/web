@@ -29,6 +29,8 @@ class SearchStores extends Component
         $categories_id = explode('=', $array_data[3])[1];
         $product_search = explode('=', $array_data[4])[1];
 
+        $product_search = '"'.$product_search.'"';
+
         $search_found = "";
 
         if($cities_id != ''){

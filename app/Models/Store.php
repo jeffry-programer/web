@@ -22,4 +22,8 @@ class Store extends Model
     public function typeStore(){
         return $this->belongsTo(TypeStore::class, 'type_stores_id');
     }
+
+    public function products(){
+        return $this->belongsToMany(Product::class, 'product_stores', 'stores_id', 'products_id');
+    }
 }
