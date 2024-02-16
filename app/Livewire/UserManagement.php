@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Jobs\EnviarCorreoJob;
 use App\Models\AditionalPicturesProduct;
 use App\Models\AttentionTime;
 use App\Models\Branch;
@@ -14,12 +15,14 @@ use App\Models\Product;
 use App\Models\ProductStore;
 use App\Models\ProfileOperation;
 use App\Models\Promotion;
+use App\Models\Publicity;
 use App\Models\Publicy;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\SubCategory;
 use App\Models\Table;
 use App\Models\User;
+use App\Notifications\NotifyUsers;
 use App\Notifications\RegisterStore;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -510,6 +513,15 @@ class UserManagement extends Component
         }
         $atributes = Schema::getColumnListing($name_table);
         $data = $request->all();
+
+        if($name_table == 'promotions'){
+            $status1 = Promotion::find($request->id)->status;
+        }
+
+        if($name_table == 'publicities'){
+            $status1 = Publicity::find($request->id)->status;
+        }
+
         $query = 'update '.$name_table. ' set ';
         $count = 0;
         foreach($atributes as $field){
@@ -527,7 +539,37 @@ class UserManagement extends Component
         }
         $query .= "where id = $request->id";
         DB::update($query);
+
+        if($name_table == 'promotions'){
+            $status2 = Promotion::find($request->id)->status;
+            if($status1 == false && $status2 == true){
+                $promotion = Promotion::find($request->id);
+                $store = Store::find($promotion->stores_id);
+                $product = Product::find($promotion->products_id);
+                $link = asset('tienda/'.str_replace(' ', '-', $store->name).'/'.str_replace(' ', '-', $product->name));
+                $this->sendEmails($promotion->stores_id, $link);
+            }   
+        }
+
+        if($name_table == 'publicities'){
+            $status2 = Publicity::find($request->id)->status;
+            if($status1 == false && $status2 == true){
+                $publicity = Publicity::find($request->id);
+                $this->sendEmails($publicity->stores_id, $publicity->link);
+            }
+        }
+
         return json_encode($name_table.'-'.$request->id);
+    }
+
+    public function sendEmails($store_id, $link){
+        $store = Store::find($store_id);
+        $users = $store->users;
+        if(!$users->isEmpty()) {
+            foreach ($users as $user) {
+                $user->notify(new NotifyUsers($user, $store, $link));
+            }
+        }
     }
 
     public function saveImgs(Request $request){

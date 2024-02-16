@@ -72,6 +72,7 @@ class Promotions extends Component
         $promotion->date_end = $this->date_end;
         $promotion->price = $this->price_promotion;
         $promotion->image = '';
+        $promotion->status = false;
         $promotion->description = $this->description_promotion;
         $promotion->created_at = Carbon::now();
         $promotion->save();
@@ -114,10 +115,11 @@ class Promotions extends Component
         $publicities->created_at = Carbon::now();
         $publicities->save();
 
-        $route_image = $this->image->file('file')->store('public/images-publicity/'.$publicities->id);
-        $url = Storage::url($route_image);
+        // Generar un nombre único para la imagen
+        $imageName = time().'.'.$this->image_promotion->extension();
+        $this->image_promotion->storeAs('public/images-publicity/', $imageName);
 
-        $publicities->image = $url;
+        $publicities->image = 'storage/images-publicity/'.$imageName; // Asignar la ruta de la imagen
         $publicities->save();
 
         $this->title = null;
