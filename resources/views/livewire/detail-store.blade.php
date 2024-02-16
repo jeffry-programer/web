@@ -60,15 +60,20 @@
             </form>         
         </div>
     </div>
-    <a href="https://api.whatsapp.com/send?phone={{$store->phone}}" class="whatsapp-btn" target="_blank" style="background: #28e26d;border-radius: 20%;width: 1rem;font-size: 3rem;">
-        <i class="fa-brands fa-whatsapp" style="position: fixed;
-        bottom: 3rem;
-        background: #28e26d;
-        border-radius: 100%;
-        padding: .6rem;
-        right: 14rem;
-        cursor: pointer;"></i>    
-    </a>
+    <?php
+        $link_whatssap = str_replace('04', '4', $store->phone);
+    ?>
+    <button style="position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background-color: #28e26d;
+    color: white;
+    border: none;
+    padding: 5px 20px;
+    cursor: pointer;
+    font-size: 3rem;
+    border-radius: 100%;" onclick="window.open('https://api.whatsapp.com/send?phone={{$link_whatssap}}', '_blank');"><i class="fa-brands fa-whatsapp"></i></button>
     <div class="row mt-3">
         <h2>{{ $store->name }}</h2>
         <div class="col-12 col-lg-10">
