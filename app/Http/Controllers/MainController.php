@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\City;
 use App\Models\Product;
 use App\Models\ProductStore;
+use App\Models\Promotion;
 use App\Models\Publicity;
 use App\Models\Store;
 use App\Models\Subscription;
@@ -160,6 +161,38 @@ class MainController extends Controller{
         return view('product-store-massive', $data);
     }
 
+    public function productDeleteMasive(){
+        $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
+        $tables2 = Table::where('type', 2)->get();
+        $stores = Store::all();
+        $products = Product::all();
+
+        $data = [
+            "tables" => $tables,
+            "tables2" => $tables2,
+            "stores" => $stores,
+            "products" => $products
+        ];
+
+        return view('product-delete-massive', $data);
+    }
+
+    public function productStoreDeleteMasive(){
+        $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
+        $tables2 = Table::where('type', 2)->get();
+        $stores = Store::all();
+        $products = ProductStore::all();
+
+        $data = [
+            "tables" => $tables,
+            "tables2" => $tables2,
+            "stores" => $stores,
+            "products" => $products
+        ];
+
+        return view('product-store-delete-massive', $data);
+    }
+
     public function associteProducts(Request $request){
         $exist = false;
         $products_ids = explode(',', $request->products_id[0]);
@@ -190,6 +223,59 @@ class MainController extends Controller{
 
         session()->flash('message', 'Registros agregados exitosamente!!');
         return redirect('/admin/product_store_masive');
+    }
+
+    public function deleteProducts(Request $request){
+        $exist = false;
+        $products_ids = explode(',', $request->products_id[0]);
+
+        array_shift($products_ids);
+
+        foreach($products_ids as $key){
+            if(count(ProductStore::where('products_id', $key)->get()) > 0){
+                $exist = true;
+                continue; // Salta a la siguiente iteración
+            }
+
+            Product::destroy($key);
+        }
+
+        if($exist){
+            session()->flash('info', 'Algunos de los productos que ud selecciono estan asociados a una tienda por lo que no se pueden eliminar');
+        }
+
+        session()->flash('message', 'Registros eliminados exitosamente!!');
+        return redirect('/admin/product_delete_masive');
+    }
+
+    public function deleteProductStore(Request $request){
+        $exist = false;
+        $products_ids = explode(',', $request->products_id[0]);
+
+        array_shift($products_ids);
+
+        foreach($products_ids as $key){
+            $product_id = ProductStore::find($key)->products_id;
+            $promotions = Promotion::where('products_id', $product_id)->where('status', true)->get();
+            if(count($promotions) > 0){
+                $promotion = Promotion::where('products_id', $product_id)->where('status', true)->first();
+                $date_end = Carbon::parse($promotion->date_end);
+                $date = Carbon::now();
+                if ($date->lte($date_end)) {
+                    $exist = true;
+                    continue; // Salta a la siguiente iteración
+                }
+            }
+
+            ProductStore::destroy($key);
+        }
+
+        if($exist){
+            session()->flash('info', 'Algunos de los productos que ud selecciono estan asociados a una promoción vigente por lo que no se pueden eliminar');
+        }
+
+        session()->flash('message', 'Registros eliminados exitosamente!!');
+        return redirect('/admin/product_store_delete_masive');
     }
 
 }

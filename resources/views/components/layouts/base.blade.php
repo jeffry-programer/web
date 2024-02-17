@@ -97,6 +97,16 @@
                 $(".item-bd2").fadeIn();
             }
         });
+
+        $("#menu3").click(() => {
+            if($("#menu3").attr('class').includes('act')){
+                $("#menu3").removeClass('act');
+                $(".item-bd3").fadeOut();
+            }else{
+                $("#menu3").addClass('act');
+                $(".item-bd3").fadeIn();
+            }
+        });
     </script>
 </body>
 

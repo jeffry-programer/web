@@ -107,6 +107,28 @@
                         <span class="nav-link-text ms-1">Masivo producto tienda</span>
                     </a>
                 </li>
+
+
+                <li class="nav-item pb-2">
+                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                        style="cursor: pointer" id="menu3">
+                        <span class="nav-link-text ms-1"><i class="fa-solid fa-bars"></i>{{__('Eliminación masiva')}}</span>
+                    </a>
+                </li>
+
+                <li class="nav-item pb-2 item-bd3 sub-item" style="display: none;">
+                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                        href="/admin/product_delete_masive">
+                        <span class="nav-link-text ms-1">Producto</span>
+                    </a>
+                </li>
+
+                <li class="nav-item pb-2 item-bd3 sub-item" style="display: none;">
+                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                        href="/admin/product_store_delete_masive">
+                        <span class="nav-link-text ms-1">Producto Tienda</span>
+                    </a>
+                </li>
         
                 <li class="nav-item pb-2">
                     <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}" href="/admin/table-management/Tiendas">

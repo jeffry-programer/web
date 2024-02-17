@@ -63,6 +63,10 @@ Route::middleware([
     Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
     Route::get('/tienda/{nameStore}/{linkProduct}', [MainController::class, 'detailStore']);
     Route::get('/admin/product_store_masive', [MainController::class, 'productStoreMasive']);
+    Route::get('/admin/product_delete_masive', [MainController::class, 'productDeleteMasive']);
+    Route::get('/admin/product_store_delete_masive', [MainController::class, 'productStoreDeleteMasive']);
     Route::post('/asociate-products', [MainController::class, 'associteProducts'])->name('asociate-products');
+    Route::post('/delete-products', [MainController::class, 'deleteProducts'])->name('delete-products');
+    Route::post('/delete-products-store', [MainController::class, 'deleteProductStore'])->name('delete-products-store');
 });
 

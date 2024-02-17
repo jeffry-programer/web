@@ -235,29 +235,17 @@
                             <div class="card mb-4 mx-4" style="padding: 1.5rem">
                                 <div class="card-title" style="font-size: 1.5rem;font-weight: bold;margin-bottom: 1.5rem">
                                     <div class="row"> 
-                                        <form style="display: flex" action="{{route('asociate-products')}}" method="POST" id="form">    
+                                        <form style="display: flex" action="{{route('delete-products-store')}}" method="POST" id="form">    
                                         @csrf                 
                                         <div class="col-md-6">
-                                            Productos tienda masivo
+                                            Eliminar productos tienda masivamente
                                         </div>
                                         <div class="col-md-4 d-flex" style="align-content: center;
                                         align-items: center;">
-                                            <label for="" style="font-size: 1rem;" class="me-2">Tienda</label>
-                                            <div class="autocomplete" style="width: 17rem;">
-                                                <input class="form-select" type="text" id="myInput" placeholder="Busca y selecciona una ciudad...">
-                                                <ul id="myUL">
-                                                    @foreach ($stores as $store)
-                                                        <li><a onclick="seleccionarCiudad({{$store->id}})">{{$store->name}}</a></li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
                                         </div>
                                         <input type="hidden" name="products_id[]" id="selectedIds">
-                                        <input type="hidden" name="amounts[]" id="amounts">
-                                        <input type="hidden" name="prices[]" id="prices">
-                                        <input type="hidden" name="store_id" id="store-id">
                                         <div class="col-md-2 text-center">
-                                            <button class="btn btn-primary w-100" type="button" id="associate">{{__('Asociar')}}</button>
+                                            <button class="btn btn-danger w-100" type="button" id="associate">{{__('Eliminar')}}</button>
                                         </div>
                                         </form>
                                     </div>
@@ -269,9 +257,8 @@
                                                 <tr>
                                                     <th></th>
                                                     <th>Producto</th>
+                                                    <th>Tienda</th>
                                                     <th>Marca</th>
-                                                    <th>Cantidad</th>
-                                                    <th>Precio</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -279,11 +266,11 @@
                                                     <tr>
                                                         <th><input style="margin-top: .75rem;" type="checkbox" class="myCheckbox" data-id="{{$product->id}}"></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->name}}</p></th>
+                                                            margin-top: .4rem;">{{$product->product->name}}</p></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->brand->description}}</p></th>
-                                                        <th><input type="number" id="amount-{{$product->id}}" class="form-control"></th>
-                                                        <th><input type="number" id="price-{{$product->id}}" class="form-control"></th>
+                                                            margin-top: .4rem;">{{$product->store->name}}</p></th>
+                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
+                                                                margin-top: .4rem;">{{$product->product->brand->description}}</p></th>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -452,19 +439,6 @@
     });
 
     function validateData(){
-        if($("#store-id").val() == '' || $("#store-id").val() == null){
-            Swal.fire({
-                    title: "Debes seleccionar una tienda",
-                    icon: "error",
-                    timer: 2000,
-                    timerProgressBar: true,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false
-                });
-            return false;
-        }
-
         if($('#selectedIds').val() == ''){
             Swal.fire({
                     title: "Debes seleccionar por lo menos un producto",
@@ -480,41 +454,23 @@
 
         var array = $('#selectedIds').val().split(',');
         array.shift();
-        validateDataProducts(array);
+
+        deleteData();
     }
 
-    function validateDataProducts(array){
-        var error = false;
-        var amounts = [];
-        var prices = [];
-        array.forEach(element => {
-            amounts.push($(`#amount-${element}`).val());
-            prices.push($(`#price-${element}`).val());
-            if($(`#amount-${element}`).val() == '' || $(`#price-${element}`).val() == ''){
-                error = true;
+    function deleteData(){
+        Swal.fire({
+            title: "¿Seguro que quieres eliminar estos registros?",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            cancelButtonText: `Cancelar`,
+            confirmButtonColor: '#dc3545',        
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#form").submit();
             }
         });
-
-        if(error){
-                Swal.fire({
-                    title: "Asegurate de ingresar todos los precios y cantidades",
-                    icon: "error",
-                    timer: 2000,
-                    timerProgressBar: true,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false
-                });
-            return false;
-        } 
-
-        storeData(amounts, prices);
-    }
-
-    function storeData(amounts, prices){
-        $('#amounts').val(amounts.join(','));
-        $('#prices').val(prices.join(','));
-        $("#form").submit();
     }
 
     </script>
