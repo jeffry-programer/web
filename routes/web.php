@@ -62,4 +62,7 @@ Route::middleware([
     Route::post('/obtener-subcategorias', [UserManagement::class, 'changeCategory'])->name('obtener-sucategorias');
     Route::get('/tienda/{nameStore}', [MainController::class, 'detailStore']);
     Route::get('/tienda/{nameStore}/{linkProduct}', [MainController::class, 'detailStore']);
+    Route::get('/admin/product_store_masive', [MainController::class, 'productStoreMasive']);
+    Route::post('/asociate-products', [MainController::class, 'associteProducts'])->name('asociate-products');
 });
+

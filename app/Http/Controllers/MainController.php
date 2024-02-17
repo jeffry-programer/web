@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\City;
+use App\Models\Product;
+use App\Models\ProductStore;
 use App\Models\Publicity;
 use App\Models\Store;
 use App\Models\Subscription;
+use App\Models\Table;
 use App\Models\TypeStore;
 use App\Models\User;
 use Carbon\Carbon;
@@ -138,6 +141,55 @@ class MainController extends Controller{
             'cities' => $cities
         ];
         return view('register-data-grua', $array_data);
+    }
+
+
+    public function productStoreMasive(){
+        $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
+        $tables2 = Table::where('type', 2)->get();
+        $stores = Store::all();
+        $products = Product::all();
+
+        $data = [
+            "tables" => $tables,
+            "tables2" => $tables2,
+            "stores" => $stores,
+            "products" => $products
+        ];
+
+        return view('product-store-massive', $data);
+    }
+
+    public function associteProducts(Request $request){
+        $exist = false;
+        $products_ids = explode(',', $request->products_id[0]);
+        $amounts = explode(',', $request->amounts[0]);
+        $prices = explode(',', $request->prices[0]);
+
+        array_shift($products_ids);
+
+        foreach($products_ids as $index => $key){
+            if(count(ProductStore::where('products_id', $key)->where('stores_id', $request->store_id)->get()) > 0){
+                $exist = true;
+                continue; // Salta a la siguiente iteración
+            }
+
+            $product_store = new ProductStore();
+            $product_store->products_id = $key;
+            $product_store->stores_id = $request->store_id;
+            $product_store->amount = $amounts[$index];
+            $product_store->price = $prices[$index];
+            $product_store->created_at = Carbon::now();
+
+            $product_store->save();
+        }
+
+        if($exist){
+            session()->flash('info', 'Algunos de los productos que ud selecciono ya estan asociados a esta tienda por lo que no fue necesario asociarlos');
+        }
+
+        session()->flash('message', 'Registros agregados exitosamente!!');
+        return redirect('/admin/product_store_masive');
     }
 
 }

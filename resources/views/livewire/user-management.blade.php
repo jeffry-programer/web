@@ -1,5 +1,5 @@
 @section('css')
-<link rel="stylesheet" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="//cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
 
@@ -101,6 +101,12 @@
                         </a>
                     </li>
                 @endforeach
+                <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                        href="/admin/product_store_masive" id="menu">
+                        <span class="nav-link-text ms-1">Masivo producto tienda</span>
+                    </a>
+                </li>
         
                 <li class="nav-item pb-2">
                     <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}" href="/admin/table-management/Tiendas">
@@ -576,7 +582,7 @@
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="//cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>  
+    <script src="//cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>  
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @isset($autocomplete)
         <script>
@@ -648,7 +654,8 @@
     <script>
         $('#myTable').DataTable({
             "oLanguage": {
-                        "sSearch": "{{__('Search')}}",
+                "sSearch": "{{__('Search')}}",
+                "sEmptyTable": "No hay información para mostrar"
             },"language": {
                 "zeroRecords": "{{__('No matching records found')}}",
                 "infoEmpty": "{{__('No records available')}}",

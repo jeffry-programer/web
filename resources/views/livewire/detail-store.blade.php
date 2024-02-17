@@ -288,7 +288,7 @@
                                                         $ruta_imagen = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
                                                     }else{
                                                         $assets = asset('');
-                                                        $ruta_imagen = Auth::user()->image;
+                                                        $ruta_imagen = $subscription->user->image;
                                                         if(!str_contains($ruta_imagen, 'storage')) $ruta_imagen = '/storage/'.$ruta_imagen;
                                                         if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
                                                     }
