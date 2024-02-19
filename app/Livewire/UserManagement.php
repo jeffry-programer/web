@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Municipality;
+use App\Models\Operation;
 use App\Models\Plan;
 use App\Models\PlanContracting;
 use App\Models\Product;
@@ -117,7 +118,11 @@ class UserManagement extends Component
             }
         }
         if(isset($request->description)){
-            if($name_table != 'products' && $name_table != 'stores' && $name_table != 'publicities' && $name_table != 'promotions'){
+            if($name_table == 'operations'){
+                if(count(Operation::where('description',$request->description)->where('modules_id',$request->modules_id)->get()) > 0){
+                    $error = true;
+                }
+            }else if($name_table != 'products' && $name_table != 'stores' && $name_table != 'publicities' && $name_table != 'promotions'){
                 if(count(DB::table($name_table)->where('description',$request->description)->get()) > 0){
                     $error = true;
                 }
