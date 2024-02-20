@@ -24,7 +24,7 @@ class DetailStore extends Component
     public $brand = null;
     public $product_store = null;
     public $numbers_store = [];
-    public $paginate = 10;
+    public $paginate = 6;
     public $showMessageNotFoundProducts = false;
     public $global_store = [];
     public $subscribed = false;
