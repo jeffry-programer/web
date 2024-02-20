@@ -8,6 +8,7 @@ use App\Models\AttentionTime;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Module;
 use App\Models\Municipality;
 use App\Models\Operation;
 use App\Models\Plan;
@@ -43,11 +44,17 @@ class UserManagement extends Component
     protected $listeners = ['deleteUser'];
 
     public function changeCategory(Request $request){
-        return json_encode(SubCategory::where('categories_id', $request->id)->get());
+        if($request->type == 'category'){
+            return json_encode(SubCategory::where('categories_id', $request->id)->get());
+        }else{
+            return json_encode(Operation::where('modules_id', $request->id)->get());
+        }
     }
 
     public function render(){
         $categories = [];
+        $modules = [];
+
         $name_label = explode("/", $_SERVER['REQUEST_URI'])[3];
         $name_label = str_replace("_", " ", $name_label);
         $name_label = str_replace("%20", " ", $name_label);
@@ -74,7 +81,8 @@ class UserManagement extends Component
         $tables2 = Table::where('type', 2)->get();
 
         if($name_label == 'Productos') $categories = Category::all();
-        return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2, 'categories' => $categories]);
+        if($name_label == 'Perfil operaciones') $modules = Module::all();
+        return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2, 'categories' => $categories, 'modules' => $modules]);
     }
 
     public function searchData(Request $request){

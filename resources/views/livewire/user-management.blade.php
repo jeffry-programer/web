@@ -328,7 +328,7 @@
                         <?php $data_autocomplete = []; ?>
                         @if($label == 'Productos')
                             <label for="">Categorias</label>
-                            <select class="form-select" id="select1" wire:model="category">
+                            <select class="form-select" id="select1" data-type="category" wire:model="category">
                                 <option value="" selected>Seleccione una categoria</option>
                                 @foreach ($categories as $key)
                                     <option value="{{$key->id}}">{{$key->name}}</option>
@@ -337,6 +337,19 @@
                             <label for="">Sub Categoria</label>
                             <select class="form-select" id="select2" name="sub_categories_id">
                                 <option value="" selected>Seleccione una subcategoria</option>
+                            </select>
+                        @endif
+                        @if($label == 'Perfil operaciones')
+                            <label for="">Modulo</label>
+                            <select class="form-select" id="select1" data-type="module" wire:model="category">
+                                <option value="" selected>Seleccione un modulo</option>
+                                @foreach ($modules as $key)
+                                    <option value="{{$key->id}}">{{$key->name}}</option>
+                                @endforeach
+                            </select>
+                            <label for="">Operaciones</label>
+                            <select class="form-select" id="select2" name="operations_id">
+                                <option value="" selected>Seleccione una operación</option>
                             </select>
                         @endif
                         @foreach ($atributes as $field)
@@ -372,7 +385,7 @@
                                             array_push($data_autocomplete, $field);
                                         ?>
                                     @else
-                                        @if(!($label == 'Productos' && $field == 'sub_categories_id'))
+                                        @if(!($label == 'Productos' && $field == 'sub_categories_id' || $label == 'Perfil operaciones' && $field == 'operations_id'))
                                             <label for="">{{__($field)}}</label>
                                             <select class="form-select" name="{{$field}}">
                                                 @foreach ($extra_data[$field]['values'] as $value)
@@ -1046,11 +1059,12 @@
     <script>
         $('#select1').change(function() {
             var select1Value = $(this).val();
+            var typeSubCategory = $(this).data('type');
             $('#select2').empty();
             if(select1Value !== '') {
                 $.ajax({
                     url: "{{ route('obtener-sucategorias') }}",
-                    data: {'id' : select1Value},
+                    data: {'id' : select1Value, 'type' : typeSubCategory},
                     headers: {
                         'X-CSRF-TOKEN' : "{{csrf_token()}}",
                     },
@@ -1062,10 +1076,17 @@
                             text : 'Selecciona una opción'
                         }));
                         $.each(data, function(key, value) {
-                            $('#select2').append($('<option>', { 
-                                value: value.id,
-                                text : value.name
-                            }));
+                            if(typeSubCategory == 'module'){
+                                $('#select2').append($('<option>', { 
+                                    value: value.id,
+                                    text : value.description
+                                }));
+                            }else{
+                                $('#select2').append($('<option>', { 
+                                    value: value.id,
+                                    text : value.name
+                                }));
+                            }
                         });
                     }
                 });
