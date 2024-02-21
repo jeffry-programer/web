@@ -1,6 +1,6 @@
 <div>
     <?php
-        $condition = Auth::user()->profiles_id == 2 && Auth::user()->store->id === $store->id;
+        $condition = (Auth::user()->profiles_id == 1 || Auth::user()->profiles_id == 2) && Auth::user()->store->id === $store->id;
         $condition2 = $store->typeStore->description == env('TIPO_TALLER') || $store->typeStore->description == env('TIPO_GRUA');
     ?>
     <div>
@@ -306,8 +306,14 @@
                                                         if(!str_contains($ruta_imagen, 'storage')) $ruta_imagen = '/storage/'.$ruta_imagen;
                                                         if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
                                                     }
+
+                                                    $link = "";
+
+                                                    if($subscription->user->store !== null){
+                                                        $link = "/tienda/".str_replace(' ', '-',$subscription->user->store->name);
+                                                    }
                                                 ?>
-                                            <a href="/tienda/Tiendita">
+                                            <a href="{{$link}}">
                                                 <li class="list-group-item d-flex" style="justify-content: start;align-items: center;border: none;">
                                                     <img src="{{ $ruta_imagen }}" alt="img" style="width: 3rem;
                                                     height: 3rem;

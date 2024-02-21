@@ -279,6 +279,20 @@ class UserManagement extends Component
         // Crear la tienda
         $store = Store::create($data);
 
+        $type_plan = Plan::where('description', 'Basico')->first();
+
+        $now = Carbon::now();
+
+        $plan = new PlanContracting();
+        $plan->plans_id = $type_plan->id;
+        $plan->stores_id = $store->id;
+        $plan->date_init = $now;
+        $plan->date_end = $now->addDay(intval($type_plan->days));
+        $plan->status = true;
+        $plan->created_at = $now;
+        $plan->save();
+
+        
         Auth::user()->notify(new RegisterStore);
 
         // Puedes devolver una respuesta JSON si lo prefieres

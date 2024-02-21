@@ -137,7 +137,8 @@
                               }
                           ?>
                             <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                <img class="h-8 w-8 rounded-full object-cover" src="{{ asset($ruta_imagen) }}" alt="{{ Auth::user()->name }}" />
+                                <img class="h-8 w-8 rounded-full object-cover" style="width: 3rem;
+                                height: 3rem;" src="{{ asset($ruta_imagen) }}" alt="{{ Auth::user()->name }}" />
                             </button>
                         </x-slot>
                     
@@ -216,7 +217,7 @@
         <div class="modal-body">
             <ul class="list-group">
                 @foreach ($subscribeds as $key)
-                    <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}">
+                    <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}" target="_blank">
                         <li class="list-group-item d-flex" style="justify-content: start;align-items: center;border: none;">
                             <img src="{{ asset($key->store->image) }}" alt="img" style="width: 3rem;
                             height: 3rem;

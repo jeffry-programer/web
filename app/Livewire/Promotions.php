@@ -91,6 +91,14 @@ class Promotions extends Component
         $this->reset('image');
 
         session()->flash('message', 'Promoción creada exitosamente.');
+
+        $this->productPromotionInput = null;
+        $this->date_init = null;
+        $this->date_end = null;
+        $this->price_promotion = null;
+        $this->description_promotion = null;
+        $this->percent_promotion = null;
+        $this->image_promotion = '';
     }
 
     public function savePublicity(){
@@ -116,8 +124,8 @@ class Promotions extends Component
         $publicities->save();
 
         // Generar un nombre único para la imagen
-        $imageName = time().'.'.$this->image_promotion->extension();
-        $this->image_promotion->storeAs('public/images-publicity/', $imageName);
+        $imageName = time().'.'.$this->image->extension();
+        $this->image->storeAs('public/images-publicity/', $imageName);
 
         $publicities->image = 'storage/images-publicity/'.$imageName; // Asignar la ruta de la imagen
         $publicities->save();

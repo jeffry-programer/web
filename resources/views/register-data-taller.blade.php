@@ -69,17 +69,9 @@
                         <input type="hidden" name="dimensiones">
                         <input type="hidden" name="image" value="">
                         <input type="hidden" name="image2" value="">
-                        
+                        <input type="hidden" name="type_stores_id" value="2">
                         
                         <div class="row">
-                            <div class="col-md-6 form-group d-none">
-                                <label class="py-3" for="name">{{ __('Tipo de tienda') }}</label>
-                                <select name="type_stores_id" class="form-select mt-1" value="2">
-                                    @foreach ($type_stores as $type_store)
-                                        <option value="{{$type_store->id}}">{{$type_store->description}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Ciudad') }}</label>
                                 <input type="hidden" name="cities_id" id="cities_id">
