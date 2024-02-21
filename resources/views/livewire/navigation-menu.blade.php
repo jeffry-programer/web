@@ -150,9 +150,11 @@
                                 <i class="fa-solid fa-user me-1"></i>{{ __('Perfil') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link href="/admin/table-management/Cajas" style="text-decoration: none">
-                                <i class="fa-solid fa-circle-user me-1"></i>{{ __('Adminstación') }}
-                            </x-dropdown-link>
+                            @if(Auth::user()->profiles_id == 1)
+                              <x-dropdown-link href="/admin/table-management/Cajas" style="text-decoration: none">
+                                  <i class="fa-solid fa-circle-user me-1"></i>{{ __('Adminstación') }}
+                              </x-dropdown-link>
+                            @endif
 
                             @if(Auth::user()->store)
                               <x-dropdown-link href="/tienda/{{ str_replace(' ','-', $link_store) }}" style="text-decoration: none">

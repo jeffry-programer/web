@@ -1,4 +1,8 @@
 <div>
+    <?php
+        $condition = Auth::user()->profiles_id == 2 && Auth::user()->store->id === $store->id;
+        $condition2 = $store->typeStore->description == env('TIPO_TALLER') || $store->typeStore->description == env('TIPO_GRUA');
+    ?>
     <div>
         @if(session()->has('message'))
             <div class="alert alert-success">
@@ -37,6 +41,7 @@
                 <button class="btn btn-subs" wire:click="subscribe">Suscribete</button>
             @endif
         </div>
+        @if(!$condition2)
         <div class="col-12 col-md-5">
             <?php
                 $link_store = str_replace(' ', '-', $store->name);
@@ -59,6 +64,7 @@
                 </div>
             </form>         
         </div>
+        @endif
     </div>
     <?php
         $link_whatssap = str_replace('04', '4', $store->phone);
@@ -82,9 +88,11 @@
                     <button class="nav-link me-2 @if($product_detail == null && $search_products == false) active @endif" id="productEspecification" data-bs-toggle="tab" data-bs-target="#especificationProduct" type="button" role="tab" aria-controls="especificationProduct" aria-selected="true">Información de la tienda</button>
                 </li>
 
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link @if($search_products == true) active @endif" id="productDescription" data-bs-toggle="tab" data-bs-target="#descriptionProduct" type="button" role="tab" aria-controls="descriptionProduct" aria-selected="false">Productos</button>
-                </li>
+                @if(!$condition2)
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @if($search_products == true) active @endif" id="productDescription" data-bs-toggle="tab" data-bs-target="#descriptionProduct" type="button" role="tab" aria-controls="descriptionProduct" aria-selected="false">Productos</button>
+                    </li>
+                @endif
 
                 @if($product_detail != null)
                     <li class="nav-item" role="presentation">
@@ -92,13 +100,15 @@
                     </li>
                 @endif
 
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link me-2" id="subs1" data-bs-toggle="tab" data-bs-target="#subs" type="button" role="tab" aria-controls="subs" aria-selected="true">Suscripciones</button>
-                </li>
+                @if($condition)
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link me-2" id="subs1" data-bs-toggle="tab" data-bs-target="#subs" type="button" role="tab" aria-controls="subs" aria-selected="true">Suscripciones</button>
+                    </li>
 
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link me-2" id="promos" data-bs-toggle="tab" data-bs-target="#promo" type="button" role="tab" aria-controls="promo" aria-selected="true">Promociones</button>
-                </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link me-2" id="promos" data-bs-toggle="tab" data-bs-target="#promo" type="button" role="tab" aria-controls="promo" aria-selected="true">Promociones</button>
+                    </li>
+                @endif
             </ul>
             <div class="tab-content pt-3 product-details-tab-content" id="myTabContent">
                 <div class="tab-pane fade @if($product_detail == null && $search_products == false) active show @endif" id="especificationProduct" role="tabpanel" aria-labelledby="productEspecification">
@@ -120,7 +130,9 @@
                                 <div class="container" style="margin-top: 5rem;">
                                     <div class="row">
                                         <div class="col-12">
-                                            <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal2">Editar datos de la tienda</button>
+                                            @if($condition)
+                                                <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal2">Editar datos de la tienda</button>
+                                            @endif
                                             <h3>{{ $store->name }}</h3>
                                         </div>
                                     </div>
@@ -144,9 +156,11 @@
                 <div class="tab-pane fade @if($search_products == true) active show @endif" id="descriptionProduct" role="tabpanel" aria-labelledby="productDescription">
                     <div class="container">
                         <div class="row">
-                            <div class="col-md-4 offset-md-4">
-                                <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal4"><i class="fa-solid fa-plus me-3"></i>Asociar producto</button>
-                            </div>
+                            @if($condition)
+                                <div class="col-md-4 offset-md-4">
+                                    <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal4"><i class="fa-solid fa-plus me-3"></i>Asociar producto</button>
+                                </div>
+                            @endif
                         </div>
                         <div class="row">
                             @if($showMessageNotFoundProducts)
