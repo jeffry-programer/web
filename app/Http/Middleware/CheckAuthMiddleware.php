@@ -16,6 +16,10 @@ class CheckAuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if(!Auth::check()){
+            return redirect()->back();
+        }
+
         if (Auth::user()->profiles_id != 1) {
             return redirect()->back();
         }
