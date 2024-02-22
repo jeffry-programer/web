@@ -30,4 +30,13 @@ class Store extends Model
     public function users(){
         return $this->belongsToMany(User::class, 'subscriptions', 'stores_id', 'users_id');
     }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'users_id');
+    }
+
+    // Relación con los planes contratados de la tienda
+    public function planContrating(){
+        return $this->hasMany(PlanContracting::class, 'stores_id');
+    }
 }
