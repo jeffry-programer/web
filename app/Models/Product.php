@@ -11,6 +11,8 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['sub_categories_id','cylinder_capacities_id','models_id','boxes_id','type_products_id','brands_id','name','description','code','image','count','link','reference','detail','created_at'];
+
     public function aditionalPictures(): HasMany
     {
         return $this->hasMany(AditionalPicturesProduct::class, 'products_id');

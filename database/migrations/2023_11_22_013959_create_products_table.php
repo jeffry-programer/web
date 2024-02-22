@@ -23,10 +23,10 @@ return new class extends Migration
             $table->string('name', 100);
             $table->string('description');
             $table->string('code', 45);
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->integer('count');
             $table->string('link');
-            $table->string('reference', 30);
+            $table->string('reference', 45);
             $table->text('detail');
             $table->timestamps();
         });

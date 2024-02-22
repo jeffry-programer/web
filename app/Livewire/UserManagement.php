@@ -281,15 +281,13 @@ class UserManagement extends Component
 
         $type_plan = Plan::where('description', 'Basico')->first();
 
-        $now = Carbon::now();
-
         $plan = new PlanContracting();
         $plan->plans_id = $type_plan->id;
         $plan->stores_id = $store->id;
-        $plan->date_init = $now;
-        $plan->date_end = $now->addDay(intval($type_plan->days));
+        $plan->date_init = Carbon::now();
+        $plan->date_end = Carbon::now()->addDay(intval($type_plan->days));
         $plan->status = true;
-        $plan->created_at = $now;
+        $plan->created_at = Carbon::now();
         $plan->save();
 
         
@@ -297,6 +295,39 @@ class UserManagement extends Component
 
         // Puedes devolver una respuesta JSON si lo prefieres
         return json_encode('stores'.'-'.$store->id);
+    }
+
+
+    public function registerProductStore(Request $request){
+        // Validación de los datos
+        $request->validate([
+            'name' => 'required|string|max:100|unique:products',
+            'description' => 'required|string|max:255',
+            'code' => 'required|string|max:45',
+            'reference' => 'required|string|max:45',
+            'detail' => 'required|string',
+            'amount' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        //Agrupar data
+        $data = $request->all();
+
+        // Crear producto
+        $product = Product::create($data);
+
+        $data2 = [
+            'products_id' => $product->id,
+            'stores_id' => $request->stores_id,
+            'amount' => $request->amount,
+            'price' => $request->price,
+        ];
+
+        //Crear producto tienda
+        ProductStore::create($data2);
+
+        //Puedes devolver una respuesta JSON si lo prefieres
+        return json_encode('products'.'-'.$product->id);
     }
 
     public function delete(Request $request){
