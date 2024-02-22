@@ -1,6 +1,15 @@
 <div>
     <?php
-        $condition = (Auth::user()->profiles_id == 1 || Auth::user()->profiles_id == 2 || Auth::user()->profiles_id == 4 || Auth::user()->profiles_id == 5) && Auth::user()->store->id === $store->id;
+        $condition = (Auth::user()->profiles_id == 1 || Auth::user()->profiles_id == 2 || Auth::user()->profiles_id == 4 || Auth::user()->profiles_id == 5);
+        if($condition){
+            if(Auth::user()->store != null){
+                if(Auth::user()->store->id != $store->id){
+                    $condition = false;
+                } 
+            }else{
+                $condition = false;
+            }
+        }
         $condition2 = $store->typeStore->description == env('TIPO_TALLER') || $store->typeStore->description == env('TIPO_GRUA');
     ?>
     <div>
