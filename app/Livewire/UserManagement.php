@@ -431,9 +431,9 @@ class UserManagement extends Component
                 $error = true;
             }
 
-            if(count(AttentionTime::where('days_id', $request->id)->get()) > 0){
+            /*if(count(AttentionTime::where('days_id', $request->id)->get()) > 0){
                 $error = true;
-            }
+            }*/
         }
 
         if($name_table == 'stores'){
