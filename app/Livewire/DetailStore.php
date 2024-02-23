@@ -33,6 +33,10 @@ class DetailStore extends Component
     public $search_products = false;
 
     public function render(){
+        if(str_contains($_SERVER['REQUEST_URI'], 'update')){
+            $this->search_products = true;
+        }
+
         if(str_contains($_SERVER['REQUEST_URI'], '?')){
             $array = explode('&', explode('?', $_SERVER['REQUEST_URI'])[1]);
             $category = explode('=', $array[0])[1];

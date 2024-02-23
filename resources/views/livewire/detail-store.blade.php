@@ -33,7 +33,7 @@
           </div>
         </div>
     </div>
-    <div class="scan" id="qrcode"></div>
+    <div class="scan" id="qrcode" wire:ignore></div>
     <div class="row">
         <div class="col-md-1 offset-md-6 d-flex align-items-center mt-3">
             @if($subscribed)
