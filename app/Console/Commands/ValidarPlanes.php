@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Store;
+use App\Models\User;
 use App\Notifications\PlanPorVencer;
 use App\Notifications\PlanVencidoNotification;
 use Carbon\Carbon;
@@ -31,7 +32,7 @@ class ValidarPlanes extends Command
     {
         // Obtener tiendas con plan vencido
         $tiendasConPlanVencido = Store::whereHas('planContrating', function($query) {
-            $query->where('date_end', '<', Carbon::now());
+            $query->where('date_end', '=', Carbon::now());
         })->get();
 
         // Obtener tiendas con plan que vence en 5 días
@@ -39,10 +40,17 @@ class ValidarPlanes extends Command
             $query->where('date_end', '>', Carbon::now())->where('date_end', '<=', Carbon::now()->addDays(5));
         })->get();
 
+        $user_admin = User::where('profiles_id', 1)->first();
+
         // Por ejemplo, para las tiendas con plan vencido
         foreach ($tiendasConPlanVencido as $tienda) {
             // Envía correo para plan vencido
-            $tienda->user->notify(new PlanVencidoNotification($tienda));
+            $tienda->status = false;
+            $tienda->statusplan = 'No Vigente';
+            $tienda->save();
+            $tienda->user->notify(new PlanVencidoNotification($tienda, 'Tulobuscas tu plan vence hoy'));
+
+            $user_admin->notify(new PlanVencidoNotification($tienda, 'Vence hoy plan para la tienda '.$tienda->name));
         }
 
         // Para las tiendas con plan que vence en 5 días

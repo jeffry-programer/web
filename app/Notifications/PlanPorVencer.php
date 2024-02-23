@@ -38,7 +38,7 @@ class PlanPorVencer extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->subject('Tulobuscas')->view('emails.validate_plan', ['store' => $this->store]);
+        return (new MailMessage)->subject('Tulobuscas tu plan vence en 5 días')->view('emails.validate_plan', ['store' => $this->store]);
     }
 
     /**

@@ -12,13 +12,15 @@ class PlanVencidoNotification extends Notification
     use Queueable;
 
     public $store;
+    public $asunto;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($store)
+    public function __construct($store, $asunto)
     {
         $this->store = $store;
+        $this->asunto = $asunto;
     }
 
     /**
@@ -36,7 +38,7 @@ class PlanVencidoNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->subject('Tulobuscas')->view('emails.validate-plan', ['store' => $this->store]);
+        return (new MailMessage)->subject($this->asunto)->view('emails.validate-plan', ['store' => $this->store]);
     }
 
     /**
