@@ -30,7 +30,8 @@ class AssociateProduct extends Component{
         $boxes = Box::all();
         $type_products = TypeProduct::all();
         $brands = Brand::all();
-        return view('livewire.associate-product', ['sub_categories' => $sub_categories, 'cylinder_capacities' => $cylinder_capacities, 'models' => $models, 'boxes' => $boxes, 'type_products' => $type_products, 'brands' => $brands]);
+        $products = Product::all();
+        return view('livewire.associate-product', ['sub_categories' => $sub_categories, 'cylinder_capacities' => $cylinder_capacities, 'models' => $models, 'boxes' => $boxes, 'type_products' => $type_products, 'brands' => $brands, 'products' => $products]);
     }
 
     public function select($name, $id_product_store){

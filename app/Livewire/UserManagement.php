@@ -299,13 +299,7 @@ class UserManagement extends Component
 
 
     public function registerProductStore(Request $request){
-        // Validación de los datos
         $request->validate([
-            'name' => 'required|string|max:100|unique:products',
-            'description' => 'required|string|max:255',
-            'code' => 'required|string|max:45',
-            'reference' => 'required|string|max:45',
-            'detail' => 'required|string',
             'amount' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
         ]);
@@ -313,21 +307,45 @@ class UserManagement extends Component
         //Agrupar data
         $data = $request->all();
 
-        // Crear producto
-        $product = Product::create($data);
+        $products_id = null;
+
+        if($request->products_id == null){
+            // Validación de los datos
+            $request->validate([
+                'name' => 'required|string|max:100|unique:products',
+                'description' => 'required|string|max:255',
+                'code' => 'required|string|max:45',
+                'reference' => 'required|string|max:45',
+                'detail' => 'required|string',
+            ]);
+            // Crear producto
+            $product = Product::create($data);
+            $products_id = $product->id;
+        }else{
+            $products_id = $request->products_id;
+        }
 
         $data2 = [
-            'products_id' => $product->id,
+            'products_id' => $products_id,
             'stores_id' => $request->stores_id,
             'amount' => $request->amount,
             'price' => $request->price,
         ];
 
+        $product_store_exist = ProductStore::where('stores_id', $request->stores_id)->where('products_id', $request->products_id)->first();
+        if($product_store_exist != null){
+            return json_encode('exist');
+        }
+
         //Crear producto tienda
         ProductStore::create($data2);
 
         //Puedes devolver una respuesta JSON si lo prefieres
-        return json_encode('products'.'-'.$product->id);
+        if($request->products_id == null){
+            return json_encode('products'.'-'.$product->id);
+        }else{
+            return json_encode('ok');
+        }
     }
 
     public function delete(Request $request){

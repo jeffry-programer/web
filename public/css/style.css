@@ -769,3 +769,38 @@ input:focus{
 #myUL6 li a:hover {
   background-color: #f4f4f4;
 }
+
+/*----------------------------------------------------------------*/
+#myInput30 {
+  border: 1px solid #ccc;
+}
+
+#myUL30 {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  width: 100%;
+  z-index: 1000;
+  max-height: 150px; /* Altura máxima para el scroll */
+  overflow-y: auto; /* Habilitar el scroll vertical */
+  display: none; /* Ocultar la lista inicialmente */
+}
+
+#myUL30 li {
+  cursor: pointer;
+}
+
+#myUL30 li a {
+  padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: #000;
+}
+
+#myUL30 li a:hover {
+  background-color: #f4f4f4;
+}
