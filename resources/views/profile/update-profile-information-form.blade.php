@@ -26,12 +26,16 @@
 
                 <x-label for="photo" value="{{ __('Fotografía') }}" />
 
-                <!-- Current Profile Photo -->
                 <?php
-                    $assets = asset('');
-                    $ruta_imagen = Auth::user()->image;
-                    if(!str_contains($ruta_imagen, 'storage')) $ruta_imagen = '/storage/'.$ruta_imagen;
-                    if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
+                    if(Auth::user()->image == null){
+                        $letter = strtoupper(Auth::user()->name[0]);
+                        $ruta_imagen = "https://ui-avatars.com/api/?name=".$letter."&amp;color=7F9CF5&amp;background=EBF4FF";
+                    }else{
+                        $assets = asset('');
+                        $ruta_imagen = Auth::user()->image;
+                        if(!str_contains($ruta_imagen, 'storage')) $ruta_imagen = '/storage/'.$ruta_imagen;
+                        if(str_contains($ruta_imagen, 'http://localhost/')) str_replace('http://localhost/', $assets, $ruta_imagen);
+                    }
                 ?>
                 <div class="mt-2" x-show="! photoPreview">
                     <img src="{{ $ruta_imagen }}" alt="{{ $this->user->name }}" class="rounded-full h-20 w-20 object-cover">

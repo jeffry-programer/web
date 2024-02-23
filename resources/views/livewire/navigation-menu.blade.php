@@ -53,7 +53,7 @@
                     </x-dropdown-link>
 
                     <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal28" style="text-decoration: none" style="font-size: 1rem;">
-                        <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Gruas') }}
+                        <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Grúas') }}
                     </x-dropdown-link>
               </div>
             <div class="col-10 col-md-3 d-flex align-items-center justify-content-center">

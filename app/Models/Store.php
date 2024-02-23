@@ -37,6 +37,6 @@ class Store extends Model
 
     // Relación con los planes contratados de la tienda
     public function planContrating(){
-        return $this->hasMany(PlanContracting::class, 'stores_id');
+        return $this->belongsTo(PlanContracting::class, 'id', 'stores_id');
     }
 }

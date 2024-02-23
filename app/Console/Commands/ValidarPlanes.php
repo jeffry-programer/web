@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\PlanContracting;
 use App\Models\Store;
 use App\Models\User;
 use App\Notifications\PlanPorVencer;
@@ -30,14 +31,14 @@ class ValidarPlanes extends Command
      */
     public function handle()
     {
-        // Obtener tiendas con plan vencido
+        // Obtener tiendas con plan que vence hoy
         $tiendasConPlanVencido = Store::whereHas('planContrating', function($query) {
-            $query->where('date_end', '=', Carbon::now());
+            $query->where('date_end', '=', Carbon::today());
         })->get();
 
         // Obtener tiendas con plan que vence en 5 días
         $tiendasConPlanPorVencer = Store::whereHas('planContrating', function($query) {
-            $query->where('date_end', '>', Carbon::now())->where('date_end', '<=', Carbon::now()->addDays(5));
+            $query->where('date_end', '=', Carbon::today()->addDays(5));
         })->get();
 
         $user_admin = User::where('profiles_id', 1)->first();
@@ -48,8 +49,12 @@ class ValidarPlanes extends Command
             $tienda->status = false;
             $tienda->statusplan = 'No Vigente';
             $tienda->save();
-            $tienda->user->notify(new PlanVencidoNotification($tienda, 'Tulobuscas tu plan vence hoy'));
 
+            $plan = PlanContracting::where('stores_id', $tienda->id)->first();
+            $plan->status = false;
+            $plan->save();
+
+            $tienda->user->notify(new PlanVencidoNotification($tienda, 'Tulobuscas tu plan vence hoy'));
             $user_admin->notify(new PlanVencidoNotification($tienda, 'Vence hoy plan para la tienda '.$tienda->name));
         }
 

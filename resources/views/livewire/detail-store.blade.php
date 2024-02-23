@@ -151,9 +151,9 @@
                                             <p>{{$store->description}}</p>
                                             <p><b>Dirección:</b></p>
                                             <p><i class="fa-solid fa-location-dot me-2"></i>{{$store->city->municipality->state->name}} - {{$store->city->name}} - {{$store->address}}</p>
-                                            <p><b>Correo electronico:</b></p>
+                                            <p><b>Correo electrónico:</b></p>
                                             <p>{{$store->email}}</p>
-                                            <p><b>Numero de contacto:</b></p>
+                                            <p><b>Número de contacto:</b></p>
                                             <p>{{ $store->phone }}</p>
                                         </div>
                                     </div>
@@ -255,7 +255,9 @@
                                     <div id="lupa" class="d-none" style="position:absolute;top: 0rem;background: rgb(255, 255, 255);width: 20rem;height: 15rem;background-image: url('{{ asset($product_detail->image) }}');background-repeat: no-repeat;"></div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal3">Editar datos del producto</button>
+                                            @if($condition)
+                                                <button class="btn btn-outline-primary w-100 mb-3"  data-bs-toggle="modal" data-bs-target="#exampleModal3">Editar datos del producto</button>
+                                            @endif
                                             <h4 style="color: gray;">{{ $this->product_detail->brand->description }}</h4>
                                             <h3>{{ $this->product_detail->name }}</h3>
                                             <p>Ref. {{ $this->product_detail->reference }}</p>
