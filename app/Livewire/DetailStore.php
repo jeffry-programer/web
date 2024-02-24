@@ -43,6 +43,34 @@ class DetailStore extends Component
             $product = explode('=', $array[1])[1];
         }
         $name_store = str_replace('-',' ', explode('?', explode('/', $_SERVER['REQUEST_URI'])[2]))[0];
+
+        // Array asociativo con las vocales acentuadas y sus codificaciones URL
+        $vocales = array(
+            '%C3%A1' => 'á',
+            '%C3%a1' => 'á',
+            '%C3%89' => 'É',
+            '%C3%89' => 'É',
+            '%C3%AD' => 'í',
+            '%C3%8D' => 'Í',
+            '%C3%B3' => 'ó',
+            '%C3%93' => 'Ó',
+            '%C3%BA' => 'ú',
+            '%C3%9A' => 'Ú',
+            '%C3%A1' => 'Á',
+            '%C3%81' => 'Á',
+            '%C3%89' => 'É',
+            '%C3%89' => 'É',
+            '%C3%8D' => 'Í',
+            '%C3%8D' => 'Í',
+            '%C3%93' => 'Ó',
+            '%C3%93' => 'Ó',
+            '%C3%9A' => 'Ú',
+            '%C3%9A' => 'Ú',
+        );
+
+        // Reemplazar cada vocal acentuada por su equivalente sin codificación URL
+        $name_store = str_replace(array_keys($vocales), array_values($vocales), $name_store);
+
         if($name_store == 'update'){
             $name_store = str_replace('-',' ', explode('?', explode('/', redirect()->getUrlGenerator()->previous())[4]))[0];
         }

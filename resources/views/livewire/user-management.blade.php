@@ -209,6 +209,10 @@
                                                                     @endif
                                                                 @endforeach
                                                             @endforeach
+                                                        @elseif((str_contains($field, 'statusplan')))
+                                                            <td class="ps-4">
+                                                                <p class="text-xs font-weight-bold mb-0">{{$key->$field}}</p>
+                                                            </td>             
                                                         @elseif((str_contains($field, 'status')))
                                                             @if($key->$field == 0)
                                                                 <td class="ps-4">
@@ -399,6 +403,9 @@
                                             </select>
                                         @endif
                                     @endif
+                                @elseif((str_contains($field, 'statusplan')))
+                                    <label for="">{{__($field)}}</label>
+                                    <input type="text" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                 @elseif((str_contains($field, 'status')))
                                     <label for="">{{__($field)}}</label>
                                     <select name="{{$field}}" class="form-select">
@@ -441,6 +448,13 @@
                                 @elseif((str_contains($field, 'schedule')))
                                     <label>{{__($field)}}</label>
                                     <textarea name="{{$field}}" class="form-control" placeholder="Ejemplo: De lunes a viernes: 8 am - 5 pm, Sabado: 9 am - 12 pm"></textarea>
+                                @elseif((str_contains($field, 'tipo')))
+                                    <label>{{__($field)}}</label>
+                                    <select class="form-select" name="tipo">
+                                        <option value="Plataforma plana">Plataforma plana</option>
+                                        <option value="Grúas de gancho">Grúas de gancho</option>
+                                        <option value="Grúas de arrastre">Grúas de arrastre</option>
+                                    </select>
                                 @else
                                     <label for="">{{__($field)}}</label>
                                     <input type="text" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
@@ -539,6 +553,9 @@
                                                 @endforeach
                                             </select>
                                         @endif
+                                    @elseif((str_contains($field, 'statusplan')))
+                                        <label for="">{{__($field)}}</label>
+                                        <input type="text" name="{{$field}}" id="{{$field}}" class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                     @elseif((str_contains($field, 'status')))
                                         <label for="">{{__($field)}}</label>
                                         <select name="{{$field}}" id="{{$field}}" class="form-select">
@@ -563,6 +580,13 @@
                                     @elseif((str_contains($field, 'hour')))
                                         <label>{{__($field)}}</label>
                                         <input type="time" name="{{$field}}" id="{{$field}}" class="form-control">
+                                    @elseif((str_contains($field, 'tipo')))
+                                        <label>{{__($field)}}</label>
+                                        <select class="form-select" name="tipo" id="tipo">
+                                            <option value="Plataforma plana">Plataforma plana</option>
+                                            <option value="Grúas de gancho">Grúas de gancho</option>
+                                            <option value="Grúas de arrastre">Grúas de arrastre</option>
+                                        </select>
                                     @else
                                         <label for="">{{__($field)}}</label>
                                         <input type="text" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">

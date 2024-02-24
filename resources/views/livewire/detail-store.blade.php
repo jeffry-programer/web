@@ -155,6 +155,18 @@
                                             <p>{{$store->email}}</p>
                                             <p><b>Número de contacto:</b></p>
                                             <p>{{ $store->phone }}</p>
+                                            @if($store->capacidad != null)
+                                            <p><b>Capacidad de la grúa:</b></p>
+                                            <p>{{$store->capacidad}}</p>
+                                            @endif
+                                            @if($store->tipo != null)
+                                            <p><b>Tipo de grúa:</b></p>
+                                            <p>{{$store->tipo}}</p>
+                                            @endif
+                                            @if($store->dimensiones != null)
+                                            <p><b>Dimensiones de la grúa:</b></p>
+                                            <p>{{$store->dimensiones}}</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
