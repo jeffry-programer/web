@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\ProductStore;
 use App\Models\Promotion;
 use App\Models\Publicity;
+use App\Models\TypePublicity;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -29,6 +30,8 @@ class Promotions extends Component
     public $link;
     public $description_promotion;
     public $image_promotion;
+    public $condition2;
+    public $type_publicity;
 
     public function rules()
     {
@@ -44,7 +47,11 @@ class Promotions extends Component
     }
 
     public function render(){
-        return view('livewire.promotions');
+        $type_publicities = TypePublicity::all();
+        $data = [
+            'type_publicities' => $type_publicities
+        ];
+        return view('livewire.promotions', $data);
     }
 
 
@@ -102,8 +109,8 @@ class Promotions extends Component
     }
 
     public function savePublicity(){
-
         $this->validate([
+            'type_publicity' => 'required',
             'description_ofer' => 'required',
             'image' => 'required',
             'link' => 'required',
@@ -112,14 +119,14 @@ class Promotions extends Component
 
         $publicities = new Publicity();
         $publicities->stores_id = $this->global_store['id'];
-        $publicities->type_publicities_id = $this->global_store['id'];
+        $publicities->type_publicities_id = $this->type_publicity;
         $publicities->title = $this->title;
         $publicities->image = '';
         $publicities->description = $this->description_ofer;
         $publicities->link =  $this->link;
         $publicities->status =  false;
         $publicities->date_init = Carbon::now();
-        $publicities->date_end = Carbon::now()->addMonth();
+        $publicities->date_end = Carbon::now()->addDay(TypePublicity::find($this->type_publicity)->amount_days);
         $publicities->created_at = Carbon::now();
         $publicities->save();
 

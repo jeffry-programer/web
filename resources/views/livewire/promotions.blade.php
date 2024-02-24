@@ -1,4 +1,5 @@
 <div>
+    @if(!$condition2)
     <div class="row" style="border-bottom: solid 0.15rem #dee2e6;padding: 1rem;">
         <h4 class="ms-3">Agregar promoción a producto</h4>
     </div>
@@ -52,14 +53,15 @@
                 <input type="date" wire:model="date_end" class="form-control w-100 mt-3">
                 @error('date_end') <span class="error text-danger">{{ $message }}</span> <br>@enderror
                 <label for="" class="mt-3">Adjuntar imagen</label>
-                <input type="file" wire:model="image_promotion" class="form-control w-100 mt-3">
+                <input type="file" id="fileInput1" wire:model="image_promotion" class="form-control w-100 mt-3">
                 @error('image_promotion') <span class="error text-danger">{{ $message }}</span> <br>@enderror
             </div>
             <div class="col-12 col-md-4 offset-md-6">
-                <button class="btn btn-primary mt-3 w-100" @if($id_product_store == null) disabled @endif id="savePromotion" wire:click="savePromotion">Guardar</button>
+                <button class="btn btn-primary mt-3 w-100" id="limpiarInputs1" @if($id_product_store == null) disabled @endif id="savePromotion" wire:click="savePromotion">Guardar</button>
             </div>
         </div>
     </div>
+    @endif
     <div class="row" style="border-bottom: solid 0.15rem #dee2e6;padding: 1rem;">
         <h4 class="ms-3">Agregar publicidad de la tienda</h4>
     </div>
@@ -79,7 +81,14 @@
     <div class="container">
         <div class="row mt-3">
             <div class="col-md-4 form-group">
-                <label for="">Descripción oferta</label>
+                <label for="">Tipo de publicidad</label>
+                <select class="form-select mt-3" wire:model="type_publicity">
+                    <option value="">Seleccione un tipo de publicidad</option>
+                    @foreach ($type_publicities as $key)
+                        <option value="{{$key->id}}">{{$key->description}}</option>
+                    @endforeach
+                </select>
+                <label for="" class="mt-3">Descripción oferta</label>
                 <input type="text" wire:model="description_ofer" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción">
                 @error('description_ofer') <span class="error text-danger">{{ $message }}</span> <br>@enderror
                 <label class="mt-3">Titulo de la publicidad</label>
@@ -88,15 +97,32 @@
             </div>
             <div class="col-md-4 offset-md-2 form-group">
                 <label for="">Adjuntar imagen</label>
-                <input type="file" wire:model="image" class="form-control w-100 mt-3">
+                <input type="file" id="fileInput2" wire:model="image" class="form-control w-100 mt-3">
                 @error('image') <span class="error text-danger">{{ $message }}</span> <br>@enderror
                 <label class="mt-3">Link de la pagina</label>
                 <input type="text" wire:model="link" class="form-control w-100 mt-3" placeholder="Por favor escriba el link de la pagina">
                 @error('link') <span class="error text-danger">{{ $message }}</span> <br>@enderror
             </div>
             <div class="col-12 col-md-4 offset-md-6">
-                <button class="btn btn-primary mt-3 w-100" wire:click="savePublicity">Guardar</button>
+                <button class="btn btn-primary mt-3 w-100" id="limpiarInputs2" wire:click="savePublicity">Guardar</button>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+    $('#limpiarInputs1').click(function() {
+        // Limpia el valor de los inputs de tipo archivo
+        setTimeout(() => {
+            $('#fileInput1').val('');
+        }, 1500);
+    });
+
+    $('#limpiarInputs2').click(function() {
+        // Limpia el valor de los inputs de tipo archivo
+        setTimeout(() => {
+            $('#fileInput2').val('');
+        }, 1500);
+    });
+</script>
