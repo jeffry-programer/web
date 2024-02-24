@@ -159,7 +159,7 @@
 
                             @if(Auth::user()->store)
                               <x-dropdown-link href="/tienda/{{ str_replace(' ','-', $link_store) }}" style="text-decoration: none">
-                                <i class="fa-solid fa-house me-1"></i>{{ __('Mi tienda') }}
+                                <i class="fa-solid fa-house me-1"></i>Mi {{ strtolower(Auth::user()->store->typeStore->description) }}
                               </x-dropdown-link>
                             @endif
                     

@@ -115,7 +115,7 @@
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link me-2" id="promos" data-bs-toggle="tab" data-bs-target="#promo" type="button" role="tab" aria-controls="promo" aria-selected="true">Promociones</button>
+                        <button class="nav-link me-2" id="promos" data-bs-toggle="tab" data-bs-target="#promo" type="button" role="tab" aria-controls="promo" aria-selected="true">@if($condition2) Publicidad @else Promociones @endif</button>
                     </li>
                 @endif
             </ul>
@@ -353,7 +353,7 @@
                     </div>
                 </div>
                 <div class="tab-pane fade" id="promo" role="tabpanel" aria-labelledby="promo">
-                    @livewire('promotions', ['global_store' => $global_store])
+                    @livewire('promotions', ['global_store' => $global_store, 'condition2' => $condition2])
                 </div>
             </div>
         </div>

@@ -23,6 +23,7 @@ use App\Models\State;
 use App\Models\Store;
 use App\Models\SubCategory;
 use App\Models\Table;
+use App\Models\TypePublicity;
 use App\Models\User;
 use App\Notifications\NotifyUsers;
 use App\Notifications\RegisterStore;
@@ -217,7 +218,7 @@ class UserManagement extends Component
         $query = 'insert into '.$name_table. ' (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'email_verified_at'){
                 if($count == 0){
                     $query .= $field;
                 }else{
@@ -229,7 +230,7 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'email_verified_at'){
                 if($field == 'image' || $field == 'image2'){
                     $data[$field] = '';
                 } 
@@ -550,7 +551,7 @@ class UserManagement extends Component
                     $query .= "$field = '".$data[$field]."' ";
                 }else{
                     if($request->label == 'Plan contratado' && $field == 'date_end'){
-                        $days_plan = Plan::find($request->plans_id)->first()->days;
+                        $days_plan = Plan::find($request->plans_id)->days;
                         $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
                     }
                     if($field == 'password') $data[$field] = Hash::make($data[$field]);
@@ -605,6 +606,10 @@ class UserManagement extends Component
                 if($count == 0){
                     $query .= "$field = '".$data[$field]."' ";
                 }else{
+                    if($request->label == 'Publicidad' && $field == 'date_end'){
+                        $days_plan = TypePublicity::find($request->type_publicities_id)->amount_days;
+                        $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
+                    }
                     if($field !== 'image' && $field !== 'image2'){
                         if($field == 'password') $data[$field] = Hash::make($data[$field]);
                         $query .= ", $field = '".$data[$field]."' ";
