@@ -583,6 +583,7 @@
                                     @elseif((str_contains($field, 'tipo')))
                                         <label>{{__($field)}}</label>
                                         <select class="form-select" name="tipo" id="tipo">
+                                            <option value="" selected>Por favor seleccione un tipo de plataforma</option>
                                             <option value="Plataforma plana">Plataforma plana</option>
                                             <option value="Grúas de gancho">Grúas de gancho</option>
                                             <option value="Grúas de arrastre">Grúas de arrastre</option>
@@ -759,7 +760,7 @@
         }
     
         function editUser(array){
-            console.log(array);
+            //console.log(array);
             fields = array[0].split("|");
             array.shift();
             var arrayImagenes = [];
@@ -912,11 +913,12 @@
 
         function validateDataUpdate(){
             var data = $("#form-edit").serialize().split('&');
+            //console.log(data);
             var boolean = true;
             data.forEach((key) => {
                 let value = key.split('=')[1];
                 let field = key.split('=')[0];
-                if(field != 'password'){
+                if(field != 'password' && field != 'capacidad' && field != 'tipo' && field != 'dimensiones'){
                     if(value == null || value == ''){
                         boolean = false;
                     }
