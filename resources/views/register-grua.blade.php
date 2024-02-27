@@ -8,12 +8,13 @@
     background-position: center;">
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
-                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Bienvenido a tulobuscas, puedes dar a conocer el servicio que brindas</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible. Pero, ¿sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> por los primeros 30 días.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los usuarios podrán comunicarse directamente y acceder a los servicios que brinda con la grúa.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tendras un link de pagina web dentro de la red tulobuscas y los clientes podran acceder desde cualquier navegador, para consultar las respuestas a sus servicios.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte. Pero necesitamos que te registres para poder ofrecerte este servicio</p>
+                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Bienvenido a <b style="color: #6495ed;font-size: 2.0rem;">Tulobuscas</b>, puedes dar a conocer el servicio que brindas</h1>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> por los primeros 30 días</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los usuarios podrán comunicarse directamente y acceder a los servicios de grúa</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">En nuestro sitio tendrás tu perfil y los clientes podran visitarlo desde cualquier dispositivo</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o inconveniente, nuestro equipo de soporte al cliente estará listo para ayudarte.</p> 
+                    <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Registrate y forma parte de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b></p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
@@ -97,7 +98,7 @@
                 color: white;
                 text-align: left;height: 19.5rem;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta el trafico de clientes a tu servicio desde tulobuscas</h6>
+                    font-weight: bolder;">Aumenta el tráfico de clientes a tu servicio desde tulobuscas</h6>
                     <p> Logra aumentar el número de clientes gracias a la gran red
                         de usuarios de tulobuscas</p>
                 </div>

@@ -9,16 +9,15 @@
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
                 <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Posiciona tu Tienda y aumenta el tráfico de clientes</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Aquí, nos esforzamos por brindarte la mejor experiencia posible. 
-                 ¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de mucho más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b>   los primeros 30 días</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los productos de tu tienda pueden ser consultados por los usuarios
-                    de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b>.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tendrás un link de página web y los clientes podrán ingresar desde cualquier
-                    dispositivo.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, podemos garantizar una experiencia segura y protegida.</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte.
-                    Es importante que te registres para poder ofrecerte este servicio</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000"> ¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de mucho más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Los primeros 30 dias son gratis en la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b></p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px hsl(0, 0%, 0%), -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los productos de tu tienda pueden ser consultados por los usuarios
+                    de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b></p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">En nuestro sitio tendrás tu perfil y los clientes podrán visitarlo desde cualquier dispositivo
+                    </p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, te garantizamos una experiencia segura y protegida</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte</p>
+                    <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Es importante que te registres para poder ofrecerte este servicio</p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
@@ -39,22 +38,22 @@
             
                             <div>
                                 <x-label for="name" value="{{ __('Nombre del titular o responsable') }}" />
-                                <x-input id="name" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+                                <x-input id="name" placeholder="Por favor ingresa tu nombre" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
                             </div>
             
                             <div class="mt-4">
                                 <x-label for="email" value="{{ __('Correo del titular o responsable') }}" />
-                                <x-input id="email" placeholder="Por favor ingrese un correo" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                                <x-input id="email" placeholder="Por favor ingresa tu correo" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
                             </div>
             
                             <div class="mt-4">
                                 <x-label for="password" value="{{ __('Contraseña') }}" />
-                                <x-input id="password" placeholder="Por favor ingrese una contraseña" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
+                                <x-input id="password" placeholder="Por favor ingresa una contraseña" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
                             </div>
             
                             <div class="mt-4">
                                 <x-label for="password_confirmation" value="{{ __('Confirmar contraseña') }}" />
-                                <x-input id="password_confirmation" placeholder="Por favor confirme la contraseña" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+                                <x-input id="password_confirmation" placeholder="Por favor confirma la contraseña" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
                             </div>
             
                             @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())

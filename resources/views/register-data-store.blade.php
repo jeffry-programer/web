@@ -98,23 +98,23 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Descripcion de la tienda') }}</label>
-                                <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="description" required/>
+                                <input class="form-control" placeholder="Describe brevemente los servicios de tu tienda" class="block mt-1 w-full" type="text" name="description" required/>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Correo de la tienda') }}</label>
-                                <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="email" name="email" required/>
+                                <input class="form-control" placeholder="Por favor ingrese el correo de tu tienda" class="block mt-1 w-full" type="email" name="email" required/>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Dirección') }}</label>
-                                <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="address" required/>
+                                <input class="form-control" placeholder="Por favor ingrese la dirección exacta de tu tienda" class="block mt-1 w-full" type="text" name="address" required/>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('RIF') }}</label>
-                                <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="RIF" required/>
+                                <input class="form-control" placeholder="Por favor ingrese tu rif" class="block mt-1 w-full" type="text" name="RIF" required/>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Telefono') }}</label>
-                                <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="phone" required/>
+                                <input class="form-control" placeholder="Por favor ingrese el telefono de contacto " class="block mt-1 w-full" type="text" name="phone" required/>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Imagen') }}</label>
