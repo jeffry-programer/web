@@ -40,12 +40,11 @@ class UpdateStore extends Component
     }
 
     public function render(){
-        $this->name = $this->store->name;
-        $this->email = $this->store->email;
-        $this->address = $this->store->address;
-        $this->description = $this->store->description;
-        $this->phone = $this->store->phone;
-        return view('livewire.update-store');
+        $data = [
+            'store' => $this->store
+        ];
+
+        return view('livewire.update-store', $data);
     }
 
     public function updateStore(){

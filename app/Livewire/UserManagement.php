@@ -643,6 +643,25 @@ class UserManagement extends Component
         return json_encode($name_table.'-'.$request->id);
     }
 
+    public function updateStore(Request $request){
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'address' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/']
+        ]);
+
+        $store = Store::find($request->stores_id);
+        $store->name = $request->name;
+        $store->address = $request->address;
+        $store->description = $request->description;
+        $store->email = $request->email;
+        $store->phone = $request->phone;
+
+        $store->save();
+        return json_encode('stores'.'-'.$request->stores_id);
+    }
+
     public function sendEmails($store_id, $link){
         $store = Store::find($store_id);
         $users = $store->users;

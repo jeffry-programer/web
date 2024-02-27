@@ -148,7 +148,9 @@ class MainController extends Controller{
     public function productStoreMasive(){
         $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
         $tables2 = Table::where('type', 2)->get();
-        $stores = Store::where('type_stores_id', 1)->get();
+        $stores = Store::where('status', true)->whereHas('typeStore', function ($query) {
+            $query->where('description', env('TIPO_TIENDA'));
+        })->get();
         $products = Product::all();
 
         $data = [

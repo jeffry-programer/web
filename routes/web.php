@@ -52,6 +52,7 @@ Route::middleware([
     Route::post('table-store-imgs-2', [UserManagement::class, 'registerStore'])->name('table-store-imgs-2');
     Route::post('table-store-imgs', [UserManagement::class, 'store2'])->name('table-store-imgs');
     Route::post('update-store-imgs', [UserManagement::class, 'update2'])->name('update-store-imgs');
+    Route::post('update-store-imgs-2', [UserManagement::class, 'updateStore'])->name('update-store-imgs-2');
     Route::post('imgs-update', [UserManagement::class, 'saveImgs'])->name('imgs-update');
     Route::post('delete-img', [UserManagement::class, 'deleteImg'])->name('delete-img');
     Route::post('search-data', [UserManagement::class, 'searchData'])->name('search-data');
