@@ -62,7 +62,7 @@ class CustomVerificationEmail extends Notification
     protected function buildMailMessage($url)
     {
         $user = User::orderBy('id', 'DESC')->first();
-        return (new MailMessage)->subject('Tulobuscas')->view('emails.verify-email', ['verificationUrl' => $url, 'user' => $user]);
+        return (new MailMessage)->subject('Tulobuscas: Confirma tu correo electrónico')->view('emails.verify-email', ['verificationUrl' => $url, 'user' => $user]);
     }
 
     /**

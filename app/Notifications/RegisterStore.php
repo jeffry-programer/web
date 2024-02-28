@@ -34,7 +34,7 @@ class RegisterStore extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->subject('Tulobuscas')->view('emails.new-store');
+        return (new MailMessage)->subject('Bienvenido a Tulobuscas')->view('emails.new-store');
     }
 
     /**
