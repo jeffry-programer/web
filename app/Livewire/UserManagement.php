@@ -102,7 +102,7 @@ class UserManagement extends Component
             }
         }
         if(isset($request->description)){
-            if($name_table == 'products' || $name_table == 'stores'){
+            if($name_table == 'products' || $name_table == 'stores' || $name_table == 'publicities'){
                 if(strlen($request->description) > 255){
                     $error = true;
                 }
@@ -570,12 +570,14 @@ class UserManagement extends Component
         $name_table = Table::where('label', $request->label)->first()->name;
         $validate = $this->validateRequest($request, $name_table);
         if($validate){
+            dd(1);
             abort(404);
         }
         if(isset($request->name)){
             if(DB::table($name_table)->find($request->id)->name !== $request->name){
                 $validate = $this->validateExist($request, $name_table);
                 if($validate){
+                    dd(1);
                     abort(404);
                 }
             }
