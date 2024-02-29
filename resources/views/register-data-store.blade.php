@@ -13,7 +13,7 @@
     }
 
     .dropzone .dz-preview .dz-error-message {
-        top: 43px !important;
+        top: .3rem !important;
         opacity: 1 !important;
         pointer-events: auto !important;
     }
@@ -160,8 +160,8 @@ var myDropzone = new Dropzone("#myDropzone24", {
     dictInvalidFileType: "No puedes subir archivos de este tipo",
     dictRemoveFile: "Remover archivo",
     acceptedFiles: 'image/*',
-    maxFilesize : 5,
-    maxFiles: 2,
+    maxFilesize: 2.048,
+    dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido    maxFiles: 2,
     autoProcessQueue: false,
     addRemoveLinks: true,
     parallelUploads: 5,

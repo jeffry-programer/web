@@ -218,7 +218,7 @@ class UserManagement extends Component
         $query = 'insert into '.$name_table. ' (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'email_verified_at'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
                 if($count == 0){
                     $query .= $field;
                 }else{
@@ -230,17 +230,22 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'email_verified_at'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
                 if($field == 'image' || $field == 'image2'){
                     $data[$field] = '';
                 } 
+                if($field == 'email_verified_at'){
+                    $date = Carbon::now();
+                    $query .= ",'".$date."'";
+                    $count++;
+                    continue;
+                }
                 if($data[$field] != $request->label && $data[$field] != $request->_token){
                     if($count == 0){
                         if($field == 'product_stores_id') $data[$field] = ProductStore::where('products_id', $data['products_id'])->where('stores_id', $data['stores_id'])->first()->id;
                         $query .= "'".$data[$field]."'";
                     }else{
                         if($field == 'password') $data[$field] = Hash::make($data[$field]);
-                        if($field == 'email_verified_at') $data[$field] = Carbon::now();
                         if($field == 'link' && $name_table == 'publicities'){
                             $link_store = Store::find($data['stores_id'])->link;
                             $data[$field] = $link_store;
@@ -270,7 +275,7 @@ class UserManagement extends Component
             'email' => 'required|email|unique:stores',
             'address' => 'required|max:255',
             'RIF' => 'required|max:45',
-            'phone' => ['required', 'regex:/^\+?\d{8,15}$/'], // Agrega la validación del número de teléfono
+            'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/']
         ]);
 
         $data = $request->all();

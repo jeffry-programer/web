@@ -65,7 +65,7 @@
                     </select>   
                 </div>
                 <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
-                    <input class="input-search" name="product" placeholder="Busca y compara productos" type="text">
+                    <input class="input-search" name="product" placeholder="Busca el repuesto o accesorio" type="text">
                 </div>
                 <div class="col-2 d-flex align-items-center justify-content-center">
                     <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>
@@ -78,7 +78,7 @@
     <?php
         $link_whatssap = str_replace('04', '4', $store->phone);
     ?>
-    <button style="position: fixed;
+    <a style="position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 9999;
@@ -88,7 +88,7 @@
     padding: 5px 20px;
     cursor: pointer;
     font-size: 3rem;
-    border-radius: 100%;" onclick="window.open('https://api.whatsapp.com/send?phone={{$link_whatssap}}', '_blank');"><i class="fa-brands fa-whatsapp"></i></button>
+    border-radius: 100%;" href="https://wa.me/58{{$link_whatssap}}" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
     <div class="row mt-3">
         <h2>{{ $store->name }}</h2>
         <div class="col-12 col-lg-10">
@@ -155,17 +155,13 @@
                                             <p>{{$store->email}}</p>
                                             <p><b>Número de contacto:</b></p>
                                             <p>{{ $store->phone }}</p>
-                                            @if($store->capacidad != null)
-                                            <p><b>Capacidad de la grúa:</b></p>
-                                            <p>{{$store->capacidad}}</p>
-                                            @endif
-                                            @if($store->tipo != null)
-                                            <p><b>Tipo de grúa:</b></p>
-                                            <p>{{$store->tipo}}</p>
-                                            @endif
-                                            @if($store->dimensiones != null)
-                                            <p><b>Dimensiones de la grúa:</b></p>
-                                            <p>{{$store->dimensiones}}</p>
+                                            @if($store->typeStore->description == env('TIPO_GRUA'))
+                                                <p><b>Capacidad de la grúa:</b></p>
+                                                <p>{{$store->capacidad}}</p>
+                                                <p><b>Tipo de grúa:</b></p>
+                                                <p>{{$store->tipo}}</p>
+                                                <p><b>Dimensiones de la grúa:</b></p>
+                                                <p>{{$store->dimensiones}}</p>
                                             @endif
                                         </div>
                                     </div>

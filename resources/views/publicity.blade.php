@@ -31,9 +31,9 @@
             <div class="card mb-3">
                 <div class="row g-0">
                   <div class="col-md-6">
-                    <img style="object-fit: cover;
+                    <a href="{{ $publicity->link }}"><img style="object-fit: cover;
                     width: 100%;
-                    height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start" alt="...">
+                    height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start" alt="..."></a>
                   </div>
                   <div class="col-md-6">
                     <div class="card-body">

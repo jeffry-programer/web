@@ -113,7 +113,7 @@
                         </select>   
                     </div>
                     <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
-                        <input class="input-search" name="product" placeholder="Busca y compara productos" type="text">
+                        <input class="input-search" name="product" placeholder="Busca el repuesto o accesorio" type="text">
                     </div>
                     <div class="col-1 d-flex align-items-center justify-content-center">
                       <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>

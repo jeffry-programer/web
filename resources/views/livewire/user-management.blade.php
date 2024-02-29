@@ -405,7 +405,10 @@
                                     @endif
                                 @elseif((str_contains($field, 'statusplan')))
                                     <label for="">{{__($field)}}</label>
-                                    <input type="text" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                    <select name="statusplan" class="form-select">
+                                        <option value="Vigente">Vigente</option>
+                                        <option value="No vigente">No vigente</option>
+                                    </select>
                                 @elseif((str_contains($field, 'status')))
                                     <label for="">{{__($field)}}</label>
                                     <select name="{{$field}}" class="form-select">
@@ -555,7 +558,10 @@
                                         @endif
                                     @elseif((str_contains($field, 'statusplan')))
                                         <label for="">{{__($field)}}</label>
-                                        <input type="text" name="{{$field}}" id="{{$field}}" class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                        <select name="statusplan" id="statusplan" class="form-select">
+                                            <option value="Vigente">Vigente</option>
+                                            <option value="No vigente">No vigente</option>
+                                        </select>
                                     @elseif((str_contains($field, 'status')))
                                         <label for="">{{__($field)}}</label>
                                         <select name="{{$field}}" id="{{$field}}" class="form-select">
