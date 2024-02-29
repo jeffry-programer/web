@@ -25,10 +25,11 @@
                 <label for="name" class="py-3">{{ __('Ciudad') }}</label>
                 <input type="hidden" name="cities_id" wire:model="city_id" id="city_store_data_id">
                 <div class="autocomplete">
+                    <input type="hidden" id="city-search">
                     <input class="form-select" type="text" id="myInput6" placeholder="Busca y selecciona una ciudad...">
                     <ul id="myUL6">
                         @foreach ($dataCities as $city) 
-                            <li><a wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
+                            <li><a onclick="selectCity({{ $city->id }})" wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
                         @endforeach
                     </ul>
                 </div>

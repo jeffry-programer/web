@@ -149,7 +149,7 @@ function testQr(){
 
 //Guardar ubicación
 $("#btn-save-ubi").click(() => {
-    var cityId = $("#value4-city").val();
+    var cityId = $("#city-search").val();
     var nameCity = $("#myInput6").val();
     var stateId = $("#state").val();
     var countryId = $("#country").val();
@@ -168,6 +168,10 @@ $("#btn-save-ubi").click(() => {
     $("#btn-save-ubi").attr('disabled', true);
     $("#exampleModal").modal('hide');
 });
+
+function selectCity(id){
+  $("#city-search").val(id);
+}
 
 //metodo que se llama al seleccionar una ciudad
 function seleccionar(nameCity, id){
