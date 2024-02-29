@@ -68,6 +68,7 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
+                                <h2 class="card-title">{{ $publicity->store->name }}</h2>
                                 <h5 class="card-title">{{ $publicity->title }}</h5>
                                 <p class="card-text">
                                     {{ $publicity->description }}                                
