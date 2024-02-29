@@ -263,6 +263,11 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($products as $product)
+                                                    @php
+                                                        if($product->store == null){
+                                                            continue;
+                                                        }
+                                                    @endphp
                                                     <tr>
                                                         <th><input style="margin-top: .75rem;" type="checkbox" class="myCheckbox" data-id="{{$product->id}}"></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
