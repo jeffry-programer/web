@@ -321,12 +321,12 @@ class UserManagement extends Component
         if($request->products_id == null){
             // Validación de los datos
             $request->validate([
-                'name' => 'required|string|max:100|unique:products',
-                'description' => 'required|string|max:255',
-                'code' => 'required|string|max:45',
-                'reference' => 'required|string|max:45',
                 'detail' => 'required|string',
+                'reference' => 'required|string|max:45',
+                'code' => 'required|string|max:45',
+                'description' => 'required|string|max:255',
                 'sub_categories_id' => 'required',
+                'name' => 'required|string|max:100|unique:products',
             ]);
             // Crear producto
             $product = Product::create($data);

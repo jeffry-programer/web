@@ -92,6 +92,12 @@
         #myUL li a:hover {
         background-color: #f4f4f4;
         }
+
+        .dropzone .dz-preview .dz-error-message {
+            top: .3rem !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
     </style>
 </head>
 
@@ -764,7 +770,7 @@
 
         function hideAlertTime() {
             setTimeout(() => {
-                //window.location.reload();
+                window.location.reload();
             }, 3000);
 
             Swal.fire({

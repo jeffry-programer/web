@@ -233,5 +233,7 @@ return [
         'username'                 => 'usuario',
         'year'                     => 'año',
         'sub_categories_id'        => 'sub categoria',
+        'detail'                   => 'detalle',
+        'reference'                => 'referencia',
     ],
 ];
