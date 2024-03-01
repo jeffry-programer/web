@@ -147,16 +147,25 @@
                             </a>
                         </li>
                 
+                        <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                            <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                                href="/admin/products" id="menu">
+                                <span class="nav-link-text ms-1">Productos</span>
+                            </a>
+                        </li>
+                
                         @foreach ($tables2 as $table)
                             <?php 
                                 $link = str_replace(" ", "_", $table->label);
                             ?>
-                            <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
-                                <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
-                                    href="/admin/table-management/{{$link}}" id="menu">
-                                    <span class="nav-link-text ms-1">{{$table->label}}</span>
-                                </a>
-                            </li>
+                            @if($table->label != 'Productos')
+                                <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                                        href="/admin/table-management/{{$link}}" id="menu">
+                                        <span class="nav-link-text ms-1">{{$table->label}}</span>
+                                    </a>
+                                </li>
+                            @endif
                         @endforeach
                         <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
                             <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
@@ -255,7 +264,7 @@
                                         <table class="table align-items-center mb-0" id="myTable">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
+                                                    <th><input style="margin-top: .75rem;" type="checkbox" id="selectAllCheckbox"></th>
                                                     <th>Producto</th>
                                                     <th>Tienda</th>
                                                     <th>Marca</th>
@@ -325,6 +334,7 @@
                 "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
                 "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
             },
+            ordering: false // Deshabilitar la ordenación de las columnas
         });
 
         $("#menu").click(() => {
@@ -414,28 +424,31 @@
     }
 
     $(document).ready(function() {
-        // Agregar un event listener para el cambio de estado de todos los checkboxes con la clase 'myCheckbox' usando jQuery
+        // Controlador de eventos para checkboxes individuales
         $('.myCheckbox').change(function() {
-            // Obtener el ID del checkbox seleccionado
             var checkboxId = $(this).data('id');
-            
-            // Obtener el valor actual del input oculto
             var selectedIds = $('#selectedIds').val().split(',');
-            
-            // Verificar si el checkbox está seleccionado
+
             if ($(this).is(':checked')) {
-            // Agregar el ID al arreglo de IDs seleccionados
-            selectedIds.push(checkboxId);
+                selectedIds.push(checkboxId);
             } else {
-                // Quitar el ID del arreglo de IDs seleccionados
                 var index = selectedIds.indexOf(checkboxId.toString());
                 if (index !== -1) {
                     selectedIds.splice(index, 1);
                 }
             }
-        
-            // Actualizar el valor del input oculto
+
             $('#selectedIds').val(selectedIds.join(','));
+        });
+
+        // Controlador de eventos para el checkbox "select all"
+        $('#selectAllCheckbox').change(function() {
+            var isChecked = $(this).is(':checked');
+            // Si se seleccionan todos, vaciar el array de IDs seleccionados
+            if (isChecked) {
+                $('#selectedIds').val('');
+            }
+            $('.myCheckbox').prop('checked', isChecked).change();
         });
     });
 

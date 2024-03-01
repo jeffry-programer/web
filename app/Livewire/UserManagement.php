@@ -305,10 +305,13 @@ class UserManagement extends Component
 
 
     public function registerProductStore(Request $request){
-        $request->validate([
-            'amount' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-        ]);
+        if($request->typeRequest == 'asociate'){
+            $request->validate([
+                'amount' => 'required|integer|min:1',
+                'price' => 'required|numeric|min:0',
+            ]);
+        }
+
 
         //Agrupar data
         $data = $request->all();
@@ -323,6 +326,7 @@ class UserManagement extends Component
                 'code' => 'required|string|max:45',
                 'reference' => 'required|string|max:45',
                 'detail' => 'required|string',
+                'sub_categories_id' => 'required',
             ]);
             // Crear producto
             $product = Product::create($data);
@@ -331,20 +335,21 @@ class UserManagement extends Component
             $products_id = $request->products_id;
         }
 
-        $data2 = [
-            'products_id' => $products_id,
-            'stores_id' => $request->stores_id,
-            'amount' => $request->amount,
-            'price' => $request->price,
-        ];
-
-        $product_store_exist = ProductStore::where('stores_id', $request->stores_id)->where('products_id', $request->products_id)->first();
-        if($product_store_exist != null){
-            return json_encode('exist');
+        if($request->typeRequest == 'asociate'){
+            $data2 = [
+                'products_id' => $products_id,
+                'stores_id' => $request->stores_id,
+                'amount' => $request->amount,
+                'price' => $request->price,
+            ];
+    
+            $product_store_exist = ProductStore::where('stores_id', $request->stores_id)->where('products_id', $request->products_id)->first();
+            if($product_store_exist != null){
+                return json_encode('exist');
+            }
+            //Crear producto tienda
+            ProductStore::create($data2);
         }
-
-        //Crear producto tienda
-        ProductStore::create($data2);
 
         //Puedes devolver una respuesta JSON si lo prefieres
         if($request->products_id == null){
@@ -518,7 +523,11 @@ class UserManagement extends Component
             Storage::deleteDirectory($pathDirectory);
         }
         session()->flash('message', 'Registro eliminado exitosamente!!');
-        return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+        if($name_table == 'products'){
+            return redirect('/admin/products');
+        }else{
+            return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+        }
     }
 
     public function update(Request $request){
@@ -575,14 +584,12 @@ class UserManagement extends Component
         $name_table = Table::where('label', $request->label)->first()->name;
         $validate = $this->validateRequest($request, $name_table);
         if($validate){
-            dd(1);
             abort(404);
         }
         if(isset($request->name)){
             if(DB::table($name_table)->find($request->id)->name !== $request->name){
                 $validate = $this->validateExist($request, $name_table);
                 if($validate){
-                    dd(1);
                     abort(404);
                 }
             }
@@ -679,7 +686,7 @@ class UserManagement extends Component
         }
     }
 
-    public function saveImgs(Request $request){
+    public function saveImgs(Request $request){        
         $request->validate([
             'file' => 'required|image|max:2048'
         ]);

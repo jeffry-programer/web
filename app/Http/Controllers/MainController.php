@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AditionalPicturesProduct;
+use App\Models\Box;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\City;
+use App\Models\cylinderCapacity;
 use App\Models\Product;
 use App\Models\ProductStore;
 use App\Models\Promotion;
@@ -11,13 +16,13 @@ use App\Models\Store;
 use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypeStore;
-use App\Models\User;
+use App\Models\Modell;
+use App\Models\SubCategory;
+use App\Models\TypeProduct;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Laravel\Jetstream\Jetstream;
+use Illuminate\Support\Facades\Storage;
 
 class MainController extends Controller{ 
     public function searchStores(){
@@ -55,7 +60,7 @@ class MainController extends Controller{
 
         $publicity = Publicity::find($id);
         $store = Store::find($publicity->stores_id);
-        $publicities = Publicity::where('date_end', '>', $date)->where('status', true)->take(6)->get();
+        $publicities = Publicity::where('date_end', '>', $date)->where('status', true)->inRandomOrder()->take(6)->get();
 
         $subscribed = false;
 
@@ -110,7 +115,6 @@ class MainController extends Controller{
     }
 
     public function registerStorePost(Request $request){
-        dd($request->all());
     }
 
     public function registerDataStore(){
@@ -239,6 +243,10 @@ class MainController extends Controller{
                 continue; // Salta a la siguiente iteración
             }
 
+            AditionalPicturesProduct::where('products_id', $key)->delete();
+            $pathDirectory = "public/images-prod/$key";
+            Storage::deleteDirectory($pathDirectory);
+
             Product::destroy($key);
         }
 
@@ -278,6 +286,34 @@ class MainController extends Controller{
 
         session()->flash('message', 'Registros eliminados exitosamente!!');
         return redirect('/admin/product_store_delete_masive');
+    }
+
+    public function products(){
+        $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
+        $tables2 = Table::where('type', 2)->get();
+        $products = Product::all();
+        $categories = Category::all(); 
+        $subCategories = SubCategory::all(); 
+        $cylinder_capacities = cylinderCapacity::all();
+        $models = Modell::all();
+        $boxes = Box::all();
+        $type_products = TypeProduct::all();
+        $brands = Brand::all();
+        $data = [
+            "tables" => $tables,
+            "tables2" => $tables2,
+            "products" => $products,
+            "categories" => $categories,
+            "categories" => $categories,
+            "subCategories" => $subCategories,
+            "cylinder_capacities" => $cylinder_capacities,
+            "models" => $models,
+            "boxes" => $boxes,
+            "type_products" => $type_products,
+            "brands" => $brands
+        ];
+
+        return view('products', $data);
     }
 
 }

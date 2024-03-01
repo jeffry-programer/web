@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class ProfilePhotoController extends Controller
 {
     public function update(Request $request)
-    {
-        dd('enter here!!');
-        
+    {        
         $request->validate([
             'profile_photo' => 'required|image|max:2048', // Ajusta la validación según tus necesidades
         ]);

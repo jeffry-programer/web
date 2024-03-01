@@ -69,6 +69,7 @@ Route::middleware([
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {
     Route::get('/admin/product_store_masive', [MainController::class, 'productStoreMasive']);
     Route::get('/admin/product_delete_masive', [MainController::class, 'productDeleteMasive']);
+    Route::get('/admin/products', [MainController::class, 'products']);
     Route::get('/admin/product_store_delete_masive', [MainController::class, 'productStoreDeleteMasive']);
     Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');

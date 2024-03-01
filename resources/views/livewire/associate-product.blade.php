@@ -7,6 +7,7 @@
             <input type="hidden" name="image" value="">
             <input type="hidden" name="count" value="0">
             <input type="hidden" name="link" value="0">
+            <input type="hidden" name="type_request" value="associate">
             <div class="row">
                 <div class="col-12 form-group products">
                     <label>Nombre del producto</label>
@@ -58,7 +59,7 @@
                     <label>Tipo producto</label>
                     <select class="form-select my-3" name="type_products_id">
                         @foreach ($type_products as $type_product)
-                            <option value="{{ $type_product->id }}">{{ $box->description }}</option>
+                            <option value="{{ $type_product->id }}">{{ $type_product->description }}</option>
                         @endforeach
                     </select>
                 </div>

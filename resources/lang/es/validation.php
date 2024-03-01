@@ -232,5 +232,6 @@ return [
         'user'                     => 'usuario',
         'username'                 => 'usuario',
         'year'                     => 'año',
+        'sub_categories_id'        => 'sub categoria',
     ],
 ];
