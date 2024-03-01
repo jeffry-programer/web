@@ -305,14 +305,6 @@ class UserManagement extends Component
 
 
     public function registerProductStore(Request $request){
-        if($request->typeRequest == 'asociate'){
-            $request->validate([
-                'amount' => 'required|integer|min:1',
-                'price' => 'required|numeric|min:0',
-            ]);
-        }
-
-
         //Agrupar data
         $data = $request->all();
 
@@ -328,14 +320,28 @@ class UserManagement extends Component
                 'sub_categories_id' => 'required',
                 'name' => 'required|string|max:100|unique:products',
             ]);
+
+            if($request->type_request == 'asociate'){
+                $request->validate([
+                    'price' => 'required|numeric|min:0',
+                    'amount' => 'required|integer|min:1'
+                ]);
+            }
             // Crear producto
             $product = Product::create($data);
             $products_id = $product->id;
         }else{
+            if($request->type_request == 'asociate'){
+                $request->validate([
+                    'price' => 'required|numeric|min:0',
+                    'amount' => 'required|integer|min:1'
+                ]);
+            }
+
             $products_id = $request->products_id;
         }
 
-        if($request->typeRequest == 'asociate'){
+        if($request->type_request == 'asociate'){
             $data2 = [
                 'products_id' => $products_id,
                 'stores_id' => $request->stores_id,

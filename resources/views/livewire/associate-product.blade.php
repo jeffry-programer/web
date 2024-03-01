@@ -7,7 +7,7 @@
             <input type="hidden" name="image" value="">
             <input type="hidden" name="count" value="0">
             <input type="hidden" name="link" value="0">
-            <input type="hidden" name="type_request" value="associate">
+            <input type="hidden" name="type_request" value="asociate">
             <div class="row">
                 <div class="col-12 form-group products">
                     <label>Nombre del producto</label>

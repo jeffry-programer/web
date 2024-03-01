@@ -462,7 +462,6 @@
                     <input type="hidden" name="image" id="image" value="">
                     <input type="hidden" name="count" id="count" value="0">
                     <input type="hidden" name="link" id="link" value="0">
-                    <input type="hidden" name="type_request" value="create">
                     <input type="hidden" name="products_id">
                     <input type="hidden" name="label" value="Productos">
                     <input type="hidden" name="id" id="id">
