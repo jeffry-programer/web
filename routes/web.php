@@ -4,6 +4,7 @@ use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Livewire\AssociateProduct;
+use App\Livewire\DetailStore;
 use App\Livewire\UserManagement;
 
 Route::put('/user/profile-photo', [ProfilePhotoController::class, 'update'])->name('profile-photo.update');
@@ -64,6 +65,7 @@ Route::middleware([
     Route::post('/asociate-products', [MainController::class, 'associteProducts'])->name('asociate-products');
     Route::post('/delete-products', [MainController::class, 'deleteProducts'])->name('delete-products');
     Route::post('/delete-products-store', [MainController::class, 'deleteProductStore'])->name('delete-products-store');
+    Route::get('/get-random-ads', [DetailStore::class, 'getRandomAds'])->name('get-random-ads');
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {

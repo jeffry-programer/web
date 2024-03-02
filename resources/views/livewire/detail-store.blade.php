@@ -412,7 +412,7 @@
             </div>
         </div>
         <div class="col-12 col-lg-2">
-            <div class="row">
+            <div class="row" id="publicities">
                 @foreach ($publicities as $key)
                     <li class="slide" style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
                         <div class="card">
@@ -479,14 +479,43 @@
 @livewireScripts
 
 <script>
-    document.addEventListener('livewire:load', function () {
-        alert('enter here!!');
-        Livewire.on('uptatePublicitesReady', publicities => {
-            @this.set('publicities', publicities);
-        });
+$(document).ready(function() {
+    function updateAds() {
+        $.ajax({
+            url: '/get-random-ads',
+            type: 'GET',
+            success: function(response) {
+                //Ocultar las publicidades actuales
+                $('#publicities').fadeOut('slow', function() {
+                    //Limpiar las publicidades actuales
+                    $('#publicities').empty();
 
-        setInterval(function () {
-            Livewire.emit('updatePublicites');
-        }, 5000); // Actualizar cada 5 segundos
-    });
+                    //Mostrar las nuevas publicidades
+                    $.each(response, function(index, ad) {
+                        $('#publicities').append(`<li class="slide" style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
+                            <div class="card">
+                                <div class="card-body" style="padding: 0rem;">
+                                    <div class="contenedor-imagen" onclick="goPagePublicity(${ad.id})">
+                                        <img src="{{ asset('${ad.image}') }}" class="img-fluid imagen-zoom"
+                                            alt="Imagen 1">
+                                        <div class="texto-encima">${ad.title}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>`);
+                    });
+
+                    //Mostrar las nuevas publicidades
+                    $('#publicities').fadeIn('slow');
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+
+    // Llamar a la función updateAds cada 5 segundos
+    setInterval(updateAds, 5000);
+});
 </script>

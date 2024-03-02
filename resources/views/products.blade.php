@@ -927,7 +927,8 @@
             dictInvalidFileType: "No puedes subir archivos de este tipo",
             dictRemoveFile: "Remover archivo",
             acceptedFiles: 'image/*',
-            maxFilesize : 5,
+            maxFilesize: 2.048,
+            dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
             maxFiles: $("#maxFiles").val(),
             autoProcessQueue: false,
             addRemoveLinks: true,
