@@ -328,6 +328,7 @@ class UserManagement extends Component
                 ]);
             }
             // Crear producto
+            $data['link'] = str_replace(' ','-', $data['name']);
             $product = Product::create($data);
             $products_id = $product->id;
         }else{

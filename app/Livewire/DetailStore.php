@@ -123,7 +123,7 @@ class DetailStore extends Component
             $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->paginate($this->paginate);
         }
 
-        $publicities = Publicity::inRandomOrder()->limit(6)->get();
+        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
 
 
         $array_data = [
@@ -138,7 +138,7 @@ class DetailStore extends Component
 
     public function getRandomAds()
     {
-        $ads = Publicity::inRandomOrder()->limit(6)->get();
+        $ads = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
         return response()->json($ads);
     }
 

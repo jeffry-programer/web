@@ -29,7 +29,7 @@
     <div id="carouselExampleIndicators" class="carousel slide">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset($store->image) }}" class="d-block w-100 img-carrusel" alt="...">
+                <img src="{{ asset($store->image) }}" class="d-block w-100 img-carrusel">
             </div>
         </div>
     </div>
@@ -153,7 +153,7 @@
                         <div class="row">
                             <div class="col-12 col-lg-8 d-flex justify-content-center">
                                 <a href="#">
-                                    <img src="{{ asset($store->image) }}" class="img-fluid" alt="Imagen Principal">
+                                    <img src="{{ asset($store->image) }}" class="img-fluid">
                                 </a>
                             </div>
                             <div class="col-12 col-lg-4">
@@ -218,8 +218,7 @@
                                     <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
                                         <div class="card card-store">
                                             <div class="zoom-container">
-                                                <img class="zoomed-image" src="{{ asset($product->image) }}"
-                                                    alt="Descripción de la imagen">
+                                                <img class="zoomed-image" src="{{ asset($product->image) }}">
                                             </div>
                                             <div class="card-body" style="padding-bottom: 4rem;">
                                                 <h5 class="card-title">{{ $product->name }}</h5>
@@ -261,7 +260,7 @@
                                                         width: 100%;
                                                       "
                                                                     src="{{ asset($product_detail->image) }}"
-                                                                    alt="Imagen 1" style="height: 100%;">
+                                                                     style="height: 100%;">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -275,7 +274,7 @@
                                                                 width: 100%;
                                                               "
                                                                             src="{{ asset($key->image) }}"
-                                                                            alt="Imagen 1"
+                                                                            
                                                                             style="object-fit: cover;width: 7rem;height: 4rem;">
                                                                     </div>
                                                                 </div>
@@ -292,7 +291,7 @@
                                                             <img id="imagenPrincipal" class="img-fluid"
                                                                 src="{{ asset($product_detail->image) }}"
                                                                 style="height: 24rem;cursor:zoom-in;width: 100%;"
-                                                                alt="Imagen Principal">
+                                                                >
                                                         </div>
                                                     </div>
                                                 </div>
@@ -391,7 +390,7 @@
                                         <a href="{{ $link }}">
                                             <li class="list-group-item d-flex"
                                                 style="justify-content: start;align-items: center;border: none;">
-                                                <img src="{{ $ruta_imagen }}" alt="img"
+                                                <img src="{{ $ruta_imagen }}"
                                                     style="width: 3rem;
                                                     height: 3rem;
                                                     border-radius: 100%;
@@ -418,8 +417,7 @@
                         <div class="card">
                             <div class="card-body" style="padding: 0rem;">
                                 <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})">
-                                    <img src="{{ asset($key->image) }}" class="img-fluid imagen-zoom"
-                                        alt="Imagen 1">
+                                    <img src="{{ asset($key->image) }}" class="img-fluid imagen-zoom">
                                     <div class="texto-encima">{{ $key->title }}</div>
                                 </div>
                             </div>
@@ -516,6 +514,6 @@ $(document).ready(function() {
     }
 
     // Llamar a la función updateAds cada 5 segundos
-    setInterval(updateAds, 5000);
+    setInterval(updateAds, 10000);
 });
 </script>

@@ -37,13 +37,13 @@
               <p class="ms-5 mt-5">Únete a la red de Tulobuscas y aprovecha todas las ventajas! Regístrate en nuestra página principal o contáctanos llamando al siguiente número: 0424-55555-555.</p>
           </div>
           <div class="col-12 col-md-6">
-              <img src="{{ asset('images/celular.png') }}" class="img-fluid" alt="">
+              <img src="{{ asset('images/celular.png') }}" class="img-fluid">
           </div>
       </div>
 
     <div class="row">
           <div class="col-12 col-md-6">
-            <img src="{{ asset('images/trabajador-sin fondo.png') }}" class="img-fluid" alt="">
+            <img src="{{ asset('images/trabajador-sin fondo.png') }}" class="img-fluid">
         </div>
           <div class="col-12 col-md-6">
               <h2 class="ms-5 mt-5">Contacta con el área técnica</h2>

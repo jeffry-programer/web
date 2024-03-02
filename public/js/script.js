@@ -170,6 +170,8 @@ $("#btn-save-ubi").click(() => {
 });
 
 function selectCity(id){
+  $("#btn-save-ubi").removeAttr('disabled');
+  alert(id);
   $("#city-search").val(id);
 }
 

@@ -896,7 +896,7 @@
                     if(key != '' && key.includes('images')){
                         key = key.replaceAll('/storage','storage');
                         nameImg = key;
-                        plantilla += `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1rem;left: 9.25rem;"></a></div>`;
+                        plantilla += `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;"><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" style="position: absolute;width: 1rem;left: 9.25rem;"></a></div>`;
                     }
                 });
                 $("#row-img-update").html(plantilla);
