@@ -26,6 +26,10 @@ class Counter extends Component{
 
     public $states = [];
 
+    public function mount(){
+        $this->states = State::all();
+    }
+
     public function render(){
         $countries = Country::all();
         return view('livewire.counter', ['countries' => $countries]);

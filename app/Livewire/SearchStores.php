@@ -33,9 +33,7 @@ class SearchStores extends Component
 
         $search_found = "";
 
-
         if($cities_id != ''){
-            dd('enter here 1');
             $stores = $this->queryDataCity($categories_id, $product_search, $cities_id);
             $search_found = "cities";
             if(count($stores) == 0){
@@ -92,9 +90,7 @@ class SearchStores extends Component
 
     public function queryDataCity($categories_id, $product_search, $city_id){        
         $query = Store::join('product_stores', 'stores.id' , '=' , 'product_stores.stores_id')->join('products', 'products.id' , '=' , 'product_stores.products_id');
-        $query = $query->whereRaw("MATCH (name) AGAINST (? IN BOOLEAN MODE)", [$product_search])->where('product_stores.amount', '>', 0)->where('status', true)->where('cities_id', $city_id)->where('stores.status', 1);
-
-        dd($query->get());
+        $query = $query->whereFullText('products.name', $product_search)->where('product_stores.amount', '>', 0)->where('status', true)->where('cities_id', $city_id)->where('stores.status', 1);
 
         if($categories_id != 'Categoria'){
             $category = Category::find($categories_id);

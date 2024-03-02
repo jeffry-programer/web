@@ -22,6 +22,7 @@ use App\Models\Publicy;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\SubCategory;
+use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypePublicity;
 use App\Models\User;
@@ -263,6 +264,17 @@ class UserManagement extends Component
         $query .= ",'".$date."')";
         DB::insert($query);
         $id = DB::table($name_table)->latest('id')->first()->id;
+        if($name_table == 'stores'){
+            $type_plan = Plan::where('description', 'Basico')->first();
+            $plan = new PlanContracting();
+            $plan->plans_id = $type_plan->id;
+            $plan->stores_id = $id;
+            $plan->date_init = Carbon::now();
+            $plan->date_end = Carbon::now()->addDay(intval($type_plan->days));
+            $plan->status = true;
+            $plan->created_at = Carbon::now();
+            $plan->save();
+        }
         return json_encode($name_table.'-'.$id);
     }
 
@@ -368,7 +380,24 @@ class UserManagement extends Component
 
     public function delete(Request $request){
         $name_table = Table::where('label', $request->label)->first()->name;
-        return $this->validateTablesDelete($request, $name_table);
+        if($name_table == 'stores'){
+            $store = Store::find($request->id);
+
+            // Eliminar registros asociados
+            $store->publicities()->delete(); // Si existe una relación llamada "publicities"
+            $store->subscriptions()->delete(); // Si existe una relación llamada "subscription"
+            $store->products()->detach(); // Si existe una relación de muchos a muchos llamada "productos"
+            $store->promotions()->delete(); // Si existe una relación llamada "promotions"
+            $store->planContrating()->delete(); // Si existe una relación llamada "promotions"
+
+            // Eliminar la store
+            $store->delete();
+
+            session()->flash('message', 'Registro eliminado exitosamente!!');
+            return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+        }else{
+            return $this->validateTablesDelete($request, $name_table);
+        }
     }
 
     public function validateTablesDelete(Request $request, $name_table){

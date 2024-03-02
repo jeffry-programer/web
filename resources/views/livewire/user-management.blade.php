@@ -908,6 +908,9 @@
                 let field = key.split('=')[0];
                 if(field.includes('link')) return false;
                 if(field.includes('product_stores_id')) return false;
+                if(field.includes('capacidad')) return false;
+                if(field.includes('dimensiones')) return false;
+                if(field.includes('tipo')) return false;
                 if(value == null || value == ''){
                     boolean = false;
                 }
