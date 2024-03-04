@@ -207,7 +207,7 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="row">
+                        <div class="row" id="productos-container">
                             @if ($showMessageNotFoundProducts)
                                 <div class="alert alert-info">
                                     No hemos encontrado productos que coincidieran con tu busqueda
@@ -216,7 +216,7 @@
                             @foreach ($products as $product)
                                 <div class="col-12 col-md-4 mt-3">
                                     <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
-                                        <div class="card card-store">
+                                        <div class="card card-store" style="height: 100%;">
                                             <div class="zoom-container">
                                                 <img class="zoomed-image" src="{{ asset($product->image) }}">
                                             </div>
@@ -231,7 +231,11 @@
                                     </a>
                                 </div>
                             @endforeach
-                            {{ $products->links('custom-pagination-links-view') }}
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
+                                <button class="btn btn btn-warning" id="load-products">Cargas más..</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -260,7 +264,7 @@
                                                         width: 100%;
                                                       "
                                                                     src="{{ asset($product_detail->image) }}"
-                                                                     style="height: 100%;">
+                                                                    style="height: 100%;">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -274,7 +278,6 @@
                                                                 width: 100%;
                                                               "
                                                                             src="{{ asset($key->image) }}"
-                                                                            
                                                                             style="object-fit: cover;width: 7rem;height: 4rem;">
                                                                     </div>
                                                                 </div>
@@ -290,8 +293,7 @@
                                                         <div id="imagenPrincipalContainer">
                                                             <img id="imagenPrincipal" class="img-fluid"
                                                                 src="{{ asset($product_detail->image) }}"
-                                                                style="height: 24rem;cursor:zoom-in;width: 100%;"
-                                                                >
+                                                                style="height: 24rem;cursor:zoom-in;width: 100%;">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -413,7 +415,8 @@
         <div class="col-12 col-lg-2">
             <div class="row" id="publicities">
                 @foreach ($publicities as $key)
-                    <li class="slide" style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
+                    <li class="slide"
+                        style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
                         <div class="card">
                             <div class="card-body" style="padding: 0rem;">
                                 <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})">
@@ -477,20 +480,23 @@
 @livewireScripts
 
 <script>
-$(document).ready(function() {
-    function updateAds() {
-        $.ajax({
-            url: '/get-random-ads',
-            type: 'GET',
-            success: function(response) {
-                //Ocultar las publicidades actuales
-                $('#publicities').fadeOut('slow', function() {
-                    //Limpiar las publicidades actuales
-                    $('#publicities').empty();
+    $(document).ready(function() {
+        var page = 2;
+        var loading = false;
 
-                    //Mostrar las nuevas publicidades
-                    $.each(response, function(index, ad) {
-                        $('#publicities').append(`<li class="slide" style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
+        function updateAds() {
+            $.ajax({
+                url: '/get-random-ads',
+                type: 'GET',
+                success: function(response) {
+                    //Ocultar las publicidades actuales
+                    $('#publicities').fadeOut('slow', function() {
+                        //Limpiar las publicidades actuales
+                        $('#publicities').empty();
+
+                        //Mostrar las nuevas publicidades
+                        $.each(response, function(index, ad) {
+                            $('#publicities').append(`<li class="slide" style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
                             <div class="card">
                                 <div class="card-body" style="padding: 0rem;">
                                     <div class="contenedor-imagen" onclick="goPagePublicity(${ad.id})">
@@ -501,19 +507,95 @@ $(document).ready(function() {
                                 </div>
                             </div>
                         </li>`);
+                        });
+
+                        //Mostrar las nuevas publicidades
+                        $('#publicities').fadeIn('slow');
                     });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
 
-                    //Mostrar las nuevas publicidades
-                    $('#publicities').fadeIn('slow');
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
+        $("#load-products").click((e) => {
+            loadProducts();
         });
-    }
 
-    // Llamar a la función updateAds cada 5 segundos
-    setInterval(updateAds, 10000);
-});
+        function showAlertTime() {
+            Swal.fire({
+                toast: true,
+                position: 'center',
+                title: "Cargando por favor espere...",
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+        }
+
+        function queryExistMoreProdsInBd(){
+            $.ajax({
+                    url: '/products',
+                    data: {
+                        'page': (page + 1),
+                        'store_id': '{{ $store->id }}'
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    },
+                    method: 'POST',
+                    success: function(response) {
+                        Swal.close(); // O Swal.closeModal(); si estás utilizando una versión anterior a SweetAlert 2.1.0
+                        var productos = response.data;
+                        if (productos.length == 0) {
+                            $('#load-products').hide();
+                        }
+                    },error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+            });
+        }
+
+
+        function loadProducts() {
+            showAlertTime();
+            if (!loading) {
+                loading = true;
+                $.ajax({
+                    url: '/products',
+                    data: {
+                        'page': page,
+                        'store_id': '{{ $store->id }}'
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    },
+                    method: 'POST',
+                    success: function(response) {
+                        queryExistMoreProdsInBd();
+                        var productos = response.data;
+                        if (productos.length > 0) {
+                            productos.forEach(function(producto) {
+                                $('#productos-container').append(
+                                    `<div class="col-12 col-md-4 mt-3"><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}"><div class="card card-store" style="height: 100%;"><div class="zoom-container"><img class="zoomed-image" src="{{ asset('${producto.image}') }}"></div><div class="card-body" style="padding-bottom: 4rem;"><h5 class="card-title">${producto.name}</h5><p class="card-text">${producto.description}</p><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}" class="btn btn-warning position-absolute bottom-0 end-0" style="margin: .5rem;cursor: pointer;">Ver</a></div></div></a></div>`
+                                    );
+                            });
+                            page++;
+                        }
+                        loading = false;
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                        // Manejar errores si es necesario
+                        Swal.close(); // Asegúrate de cerrar el spinner incluso si hay un error
+                    }
+                });
+            }
+        }
+
+        // Llamar a la función updateAds cada 5 segundos
+        setInterval(updateAds, 10000);
+    });
 </script>

@@ -13,7 +13,7 @@
                     <label>Nombre del producto</label>
                     <input type="hidden" name="cities_id" id="city_store_data_id">
                     <div class="autocomplete">
-                        <input class="form-select mt-3" type="text" id="myInput30" name="name" placeholder="Busca y selecciona un producto...">
+                        <input class="form-select mt-3" type="text" id="myInput30" name="name" placeholder="Busca y selecciona un producto..." autocomplete="off">
                         <ul id="myUL30">
                             @foreach ($products as $product) 
                                 <li><a onclick="selectCity30({{ $product->id }})">{{$product->name}}</a></li>

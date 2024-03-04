@@ -316,4 +316,9 @@ class MainController extends Controller{
         return view('products', $data);
     }
 
+    public function getMoreProducts(Request $request){
+        $products = Store::find($request->store_id)->products()->paginate(6, ['*'], 'page', $request->page);
+        return response()->json($products);
+    }
+
 }
