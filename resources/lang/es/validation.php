@@ -242,6 +242,7 @@ return [
         'date_end'                 => 'fecha fin',
         'image_promotion'          => 'imagen promoción',
         'description_promotion'    => 'descripción promoción',
-        'percent_promotion'        => 'porcentaje promoción'
+        'percent_promotion'        => 'porcentaje promoción',
+        'type_publicity'           => 'tipo publicidad'
     ],
 ];

@@ -49,7 +49,9 @@
                     <li><a class="dropdown-item" wire:click="nullSubscribe">Anular</a></li>
                 </ul>
             @else
-                <button class="btn btn-subs" wire:click="subscribe">Suscribete</button>
+                @if(!$condition)
+                    <button class="btn btn-subs" wire:click="subscribe">Suscribete</button>
+                @endif
             @endif
         </div>
         @if (!$condition2)

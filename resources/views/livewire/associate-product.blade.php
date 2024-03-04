@@ -96,12 +96,12 @@
                 <input type="hidden" name="products_id" id="product_id">
                 <div class="col-md-6 form-group">
                     <label>Cantidad</label>
-                    <input type="number" name="amount" wire:model="amount" placeholder="Ingrese la cantidad"
+                    <input type="number" name="amount" wire:model="amount" placeholder="Ingrese la cantidad" min="1"
                         class="form-control w-100 mt-3">
                 </div>
                 <div class="col-md-6 form-group">
                     <label>Precio</label>
-                    <input type="number" name="price" wire:model="price" placeholder="Ingrese el precio"
+                    <input type="number" name="price" wire:model="price" placeholder="Ingrese el precio" min="1"
                         class="form-control w-100 mt-3">
                 </div>
             </div>

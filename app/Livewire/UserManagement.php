@@ -123,6 +123,9 @@ class UserManagement extends Component
                 if(count(DB::table($name_table)->where('name',$request->name)->where('categories_id',$request->categories_id)->get()) > 0){
                     $error = true;
                 }
+            }else if($name_table == 'users'){
+                $users = User::where('email', $request->email)->get();
+                $error = count($users) > 0;
             }else if(count(DB::table($name_table)->where('name',$request->name)->get()) > 0){
                 $error = true;
             }

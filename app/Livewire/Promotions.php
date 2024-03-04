@@ -113,7 +113,6 @@ class Promotions extends Component
             'type_publicity' => 'required',
             'description_ofer' => 'required',
             'image' => 'required',
-            'link' => 'required',
             'title' => 'required'
         ]);
 
@@ -123,7 +122,7 @@ class Promotions extends Component
         $publicities->title = $this->title;
         $publicities->image = '';
         $publicities->description = $this->description_ofer;
-        $publicities->link =  $this->link;
+        $publicities->link =  str_replace(' ', '-', $this->global_store['name']);
         $publicities->status =  false;
         $publicities->date_init = Carbon::now();
         $publicities->date_end = Carbon::now()->addDay(TypePublicity::find($this->type_publicity)->amount_days);
@@ -138,9 +137,9 @@ class Promotions extends Component
         $publicities->save();
 
         $this->title = null;
-        $this->image = null;
         $this->description_ofer = null;
-        $this->link = null;
+        $this->type_publicity = null;
+        $this->image = null;
 
         session()->flash('message2', 'Publicidad creada exitosamente.');
     }

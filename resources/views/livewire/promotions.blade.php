@@ -82,26 +82,24 @@
         <div class="row mt-3">
             <div class="col-md-4 form-group">
                 <label for="">Tipo de publicidad</label>
-                <select class="form-select mt-3" wire:model="type_publicity">
+                <select class="form-select mt-3" wire:model="type_publicity" id="type_publicity">
                     <option value="">Seleccione un tipo de publicidad</option>
                     @foreach ($type_publicities as $key)
                         <option value="{{$key->id}}">{{$key->description}}</option>
                     @endforeach
                 </select>
+                @error('type_publicity') <span class="error text-danger">{{ $message }}</span> <br>@enderror
                 <label for="" class="mt-3">Descripción oferta</label>
-                <input type="text" wire:model="description_ofer" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción">
+                <input type="text" wire:model="description_ofer" id="description_ofer" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción">
                 @error('description_ofer') <span class="error text-danger">{{ $message }}</span> <br>@enderror
-                <label class="mt-3">Titulo de la publicidad</label>
-                <input type="text" wire:model="title" class="form-control w-100 mt-3" placeholder="Por favor escriba un titulo">
-                @error('title') <span class="error text-danger">{{ $message }}</span> <br>@enderror
             </div>
             <div class="col-md-4 offset-md-2 form-group">
-                <label for="">Adjuntar imagen</label>
+                <label>Titulo de la publicidad</label>
+                <input type="text" wire:model="title" id="title" class="form-control w-100 mt-3" placeholder="Por favor escriba un titulo">
+                @error('title') <span class="error text-danger">{{ $message }}</span> <br>@enderror
+                <label for="" class="mt-3">Adjuntar imagen</label>
                 <input type="file" id="fileInput2" wire:model="image" class="form-control w-100 mt-3">
                 @error('image') <span class="error text-danger">{{ $message }}</span> <br>@enderror
-                <label class="mt-3">Link de la pagina</label>
-                <input type="text" wire:model="link" class="form-control w-100 mt-3" placeholder="Por favor escriba el link de la pagina">
-                @error('link') <span class="error text-danger">{{ $message }}</span> <br>@enderror
             </div>
             <div class="col-12 col-md-4 offset-md-6">
                 <button class="btn btn-primary mt-3 w-100" id="limpiarInputs2" wire:click="savePublicity">Guardar</button>
@@ -123,6 +121,9 @@
         // Limpia el valor de los inputs de tipo archivo
         setTimeout(() => {
             $('#fileInput2').val('');
+            /*$("#title").val('');
+            $("#description_ofer").val('');
+            $("#type_publicity").val('');*/
         }, 1500);
     });
 </script>
