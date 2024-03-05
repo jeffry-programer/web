@@ -210,7 +210,7 @@
                             @endif
                         </div>
                         <div class="row" id="productos-container">
-                            @if ($showMessageNotFoundProducts)
+                            @if(count($products) == 0)
                                 <div class="alert alert-info">
                                     No hemos encontrado productos que coincidieran con tu busqueda
                                 </div>
@@ -234,11 +234,13 @@
                                 </div>
                             @endforeach
                         </div>
+                        @if($products_total > 6)
                         <div class="row mt-3">
-                            <div class="col-12 text-center">
-                                <button class="btn btn btn-warning" id="load-products">Cargas más..</button>
+                                <div class="col-12 text-center">
+                                    <button class="btn btn btn-warning" id="load-products">Cargas más..</button>
+                                </div>
                             </div>
-                        </div>
+                        @endif  
                     </div>
                 </div>
                 @if ($product_detail != null)

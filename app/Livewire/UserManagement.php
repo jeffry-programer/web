@@ -318,6 +318,30 @@ class UserManagement extends Component
         return json_encode('stores'.'-'.$store->id);
     }
 
+    public function registerPromotion(Request $request){
+        $request->validate([
+            'percent_promotion' => 'required',
+            'description' => 'required|min:3|max:100',
+            'date_end' => 'required|date',
+            'date_init' => 'required|date',
+        ]);
+
+        $product_store = ProductStore::find($request->product_stores_id);
+
+        $promotion = new Promotion();
+        $promotion->products_id = $product_store->products_id;
+        $promotion->stores_id = $product_store->stores_id;
+        $promotion->description = $request->description;
+        $promotion->date_init = $request->date_init;
+        $promotion->date_end = $request->date_end;
+        $promotion->price = $product_store->price - ($product_store->price * ($request->percent_promotion * 0.01));
+        $promotion->status = false;
+        $promotion->created_at = Carbon::now();
+        $promotion->save();
+
+        return json_encode('promotions'.'-'.$promotion->id);
+    }
+
 
     public function registerProductStore(Request $request){
         //Agrupar data
@@ -789,24 +813,57 @@ class UserManagement extends Component
             'file' => 'required|image|max:2048'
         ]);
 
-        $route_image = $request->file('file')->store('public/images-stores/'.$request->id);
+        if($request->table == 'products'){
+            $route_image = $request->file('file')->store('public/images-prod/'.$request->id);
+        }else if($request->table == 'stores'){
+            $route_image = $request->file('file')->store('public/images-stores/'.$request->id);
+        }else if($request->table == 'social_networks'){
+            $route_image = $request->file('file')->store('public/images-social/'.$request->id);
+        }else if($request->table == 'promotion'){
+            $route_image = $request->file('file')->store('public/images-promotion/'.$request->id);
+        }else if($request->table == 'publicities'){
+            $route_image = $request->file('file')->store('public/images-publicity/'.$request->id);
+        }else{
+            $route_image = $request->file('file')->store('public/images-user/'.$request->id);
+        }
 
         $url = Storage::url($route_image);
 
         $image = DB::table($request->table)->find($request->id);
 
-        $store = Store::find($request->id);
-        if($store->image == ''){
+        if($request->table == 'products'){
+            if($image->image == ''){
+                $query = "update $request->table set image = '$url' where id = $request->id";
+                DB::update($query);
+            }else{
+                $count = count(AditionalPicturesProduct::where('id', $request->id)->get());
+                if($count == 4){
+                    return false;
+                }
+                $image = new AditionalPicturesProduct();
+                $image->products_id = $request->id;
+                $image->image = $url;
+                $image->created_at = Carbon::now();
+                $image->save();
+            }
+        }else if($request->table == 'stores'){
+            $store = Store::find($request->id);
+            if($store->image == ''){
+                $query = "update $request->table set image = '$url' where id = $request->id";
+            }else if($store->image2 == ''){
+                $query = "update $request->table set image2 = '$url' where id = $request->id";
+            }else if($store->image != '' && $store->image2 != ''){
+                $image = str_replace('/storage', 'public', $store->image2);
+                Storage::delete($image);  
+                $query = "update $request->table set image = '$url', image2 = '$store->image' where id = $request->id";          
+            }
+            DB::update($query);
+        }else{
+            $image->nameImg = str_replace('/storage', 'public', $request->nameImg);
+            Storage::delete($image->nameImg);
             $query = "update $request->table set image = '$url' where id = $request->id";
-        }else if($store->image2 == ''){
-            $query = "update $request->table set image2 = '$url' where id = $request->id";
-        }else if($store->image != '' && $store->image2 != ''){
-            $image = str_replace('/storage', 'public', $store->image2);
-            Storage::delete($image);  
-            $query = "update $request->table set image = '$url', image2 = '$store->image' where id = $request->id";          
+            DB::update($query);
         }
-
-        DB::update($query);
     }
 
     public function deleteImg(Request $request){

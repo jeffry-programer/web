@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\ProductStore;
 use App\Models\Promotion;
 use App\Models\Publicity;
+use App\Models\Store;
 use App\Models\TypePublicity;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class Promotions extends Component
 
     use WithFileUploads;
  
-    public $global_store = [];
+    public $global_store;
     public $productPromotionInput;
     public $dataProductsPromotion = [];
     public $id_product_store = null;
@@ -48,8 +49,10 @@ class Promotions extends Component
 
     public function render(){
         $type_publicities = TypePublicity::all();
+        $products = ProductStore::join('products', 'product_stores.products_id', '=', 'products.id')->where('stores_id', $this->global_store['id'])->where('products.name','like',$this->productPromotionInput.'%')->select('product_stores.id','products.name')->distinct()->get();
         $data = [
-            'type_publicities' => $type_publicities
+            'type_publicities' => $type_publicities,
+            'products' => $products
         ];
         return view('livewire.promotions', $data);
     }

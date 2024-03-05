@@ -120,9 +120,10 @@ class DetailStore extends Component
             $this->search_products = true;
 
         }else{
-            $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->paginate($this->paginate);
+            $products = Store::find($this->global_store['id'])->products()->paginate($this->paginate);
         }
 
+        $products_total = count(Store::find($this->global_store['id'])->products()->get());
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
 
 
@@ -130,14 +131,15 @@ class DetailStore extends Component
             'store' => $store, 
             'categories' => $categories,
             'products' => $products,
-            'publicities' => $publicities
+            'publicities' => $publicities,
+            'products_total' => $products_total
         ];
         
         return view('livewire.detail-store', $array_data);
     }
 
     public function getMoreProducts(){
-        $products = Store::find($this->global_store['id'])->products()->paginate(6);
+        $products = Store::find($this->global_store['id'])->products()->paginate($this->paginate);
         return response()->json($products);
     }
 
