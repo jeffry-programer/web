@@ -342,6 +342,31 @@ class UserManagement extends Component
         return json_encode('promotions'.'-'.$promotion->id);
     }
 
+    public function registerPublicity(Request $request){
+        $request->validate([
+            'description' => 'required|min:3|max:100',
+            'title' => 'required|min:3|max:50',
+            'type_publicities_id' => 'required',
+        ]);
+
+        $store = Store::find($request->stores_id);
+
+        $publicity = new Publicity();
+        $publicity->stores_id = $store->id;
+        $publicity->type_publicities_id = $request->type_publicities_id;
+        $publicity->title = $request->title;
+        $publicity->image = '';
+        $publicity->description = $request->description;
+        $publicity->link = str_replace(' ', '-', $store->name);
+        $publicity->status = false;
+        $publicity->date_init = Carbon::now();
+        $publicity->date_end = Carbon::now()->addDay(TypePublicity::find($request->type_publicities_id)->amount_days);
+        $publicity->created_at = Carbon::now();
+        $publicity->save();
+
+        return json_encode('promotions'.'-'.$publicity->id);
+    }
+
 
     public function registerProductStore(Request $request){
         //Agrupar data

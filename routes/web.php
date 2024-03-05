@@ -49,6 +49,7 @@ Route::middleware([
     Route::post('delete-register', [UserManagement::class, 'delete'])->name('delete-register');
     Route::post('imgs-store', [UserManagement::class, 'saveImgs'])->name('imgs-store');
     Route::post('imgs-store-data', [UserManagement::class, 'saveImgs2'])->name('imgs-store-data');
+    Route::post('table-store-imgs-5', [UserManagement::class, 'registerPublicity'])->name('table-store-imgs-5');
     Route::post('table-store-imgs-4', [UserManagement::class, 'registerPromotion'])->name('table-store-imgs-4');
     Route::post('table-store-imgs-3', [UserManagement::class, 'registerProductStore'])->name('table-store-imgs-3');
     Route::post('table-store-imgs-2', [UserManagement::class, 'registerStore'])->name('table-store-imgs-2');

@@ -444,6 +444,103 @@
             });
         }
 
+        var isset_images4 = false;
+
+        var myDropzone4 = new Dropzone("#myDropzone92", { 
+            url: "{{route('imgs-store-data')}}",
+            headers: {
+                'X-CSRF-TOKEN' : "{{csrf_token()}}",
+            },
+            dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: 1)`,
+            dictMaxFilesExceeded: "No puedes subir más archivos",
+            dictCancelUpload: "Cancelar subida",
+            dictInvalidFileType: "No puedes subir archivos de este tipo",
+            dictRemoveFile: "Remover archivo",
+            acceptedFiles: 'image/*',
+            maxFilesize: 2.048,
+            dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido    maxFiles: 2,
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            parallelUploads: 5,
+            init: function(){
+                this.on("sending", function(file, xhr, formData){
+                    formData.append("id", $("#id_publicities_save").val());
+                    formData.append("table", `publicities`);
+                });
+
+                this.on("success", function(file, response) {
+                    if(file.status != 'success'){
+                        return false;
+                    }
+                    if(this.getUploadingFiles().length === 0){
+                        isset_images4 = true;
+                        hideAlertTime();
+                    }
+                });
+            }
+        });
+
+        function storePublicity(){
+            $.ajax({
+                url: "{{ route('table-store-imgs-5') }}",
+                data: $("#form-publicity").serialize(),
+                method: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                success(response) {
+                    var res = JSON.parse(response);
+                    if(res.includes('ok')){
+                        hideAlertTime();
+                        return false;
+                    }else if(res.includes('exist')){
+                        showExistAlert();
+                        return false;
+                    }
+                    $("#id_publicities_save").val(res.split('-')[1]);
+                    myDropzone4.processQueue();
+                    setTimeout(() => {
+                        if (isset_images4 == false) {
+                            hideAlertTime();
+                        }
+                    }, 3000);
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessage = '';
+                        $.each(errors, function(key, value) {
+                            Swal.fire({
+                                title: value[0],
+                                icon: "error",
+                                timer: 2000,
+                                timerProgressBar: true,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false
+                            });
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Hubo un problema al procesar la solicitud",
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+
+        $("#save-publicity").click(() => {
+            showAlertTime();
+            storePublicity();
+        });
+
+
         function validateDataUpdate(){
             showAlertTime2();
             updateData();

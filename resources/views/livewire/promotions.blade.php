@@ -70,23 +70,26 @@
         <form id="form-publicity">
             <div class="row mt-3">
                 <div class="col-md-4 form-group">
+                    <input type="hidden" name="stores_id" value="{{$global_store->id}}">
                     <label for="">Tipo de publicidad</label>
-                    <select class="form-select mt-3" id="type_publicity">
+                    <select class="form-select mt-3" name="type_publicities_id">
                         <option value="">Seleccione un tipo de publicidad</option>
                         @foreach ($type_publicities as $key)
                             <option value="{{$key->id}}">{{$key->description}}</option>
                         @endforeach
                     </select>
-                    <label for="" class="mt-3">Descripción oferta</label>
-                    <input type="text" id="description_ofer" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción">
+                    <label class="mt-3">Titulo de la publicidad</label>
+                    <input type="text" name="title" class="form-control w-100 mt-3" placeholder="Por favor escriba un titulo">
                 </div>
                 <div class="col-md-4 offset-md-2 form-group">
-                    <label>Titulo de la publicidad</label>
-                    <input type="text" id="title" class="form-control w-100 mt-3" placeholder="Por favor escriba un titulo">
-                    <label for="" class="mt-3">Adjuntar imagen</label>
+                    <label for="" class="mt-3">Descripción oferta</label>
+                    <input type="text" name="description" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción">
+                    <label class="py-3" for="name">{{ __('Imagen') }}</label>
+                    <div class="dropzone" id="myDropzone92"></div>
+                    <input type="hidden" id="id_publicities_save">
                 </div>
                 <div class="col-12 col-md-4 offset-md-6">
-                    <button class="btn btn-primary mt-3 w-100" id="limpiarInputs2" wire:click="savePublicity">Guardar</button>
+                    <button type="button" class="btn btn-primary mt-3 w-100" id="save-publicity">Guardar</button>
                 </div>
             </div>
         </form>
