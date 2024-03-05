@@ -30,6 +30,37 @@ class MainController extends Controller{
     }
 
     public function detailStore(){
+        $name_store = str_replace('-',' ', explode('?', explode('/', $_SERVER['REQUEST_URI'])[2]))[0];
+        // Array asociativo con las vocales acentuadas y sus codificaciones URL
+        $vocales = array(
+            '%C3%A1' => 'á',
+            '%C3%a1' => 'á',
+            '%C3%89' => 'É',
+            '%C3%89' => 'É',
+            '%C3%AD' => 'í',
+            '%C3%8D' => 'Í',
+            '%C3%B3' => 'ó',
+            '%C3%93' => 'Ó',
+            '%C3%BA' => 'ú',
+            '%C3%9A' => 'Ú',
+            '%C3%A1' => 'Á',
+            '%C3%81' => 'Á',
+            '%C3%89' => 'É',
+            '%C3%89' => 'É',
+            '%C3%8D' => 'Í',
+            '%C3%8D' => 'Í',
+            '%C3%93' => 'Ó',
+            '%C3%93' => 'Ó',
+            '%C3%9A' => 'Ú',
+            '%C3%9A' => 'Ú',
+        );
+
+        // Reemplazar cada vocal acentuada por su equivalente sin codificación URL
+        $name_store = str_replace(array_keys($vocales), array_values($vocales), $name_store);
+        $store = Store::where('name', $name_store)->first();
+        if($store == null){
+            return redirect('/');
+        }
         return view('detail-store');
     }
 
