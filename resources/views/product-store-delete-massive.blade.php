@@ -57,7 +57,7 @@
 
         #myInput {
         border: 1px solid #ccc;
-        /padding: 10px;/
+        /*padding: 10px;*/
         }
 
         #myUL {
@@ -330,9 +330,9 @@
                     "previous": "{{__('Previous')}}",
                     "next": "{{__('Next')}}"
                 },
-                "lengthMenu": "{{_('Showing')}} _MENU {{__('entries')}}",
-                "infoFiltered":   "({{_('filtered from')}} _TOTAL {{__('total entries')}})",
-                "info": "{{_('Showing')}} _START {{_('to')}} _END {{_('of')}} _TOTAL {{__('entries')}}",
+                "lengthMenu": "{{__('Showing')}} _MENU_ {{__('entries')}}",
+                "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
+                "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
             },
             ordering: false // Deshabilitar la ordenación de las columnas
         });
@@ -375,28 +375,28 @@
     arraySelects.forEach((element, index) => { 
         // Función para reiniciar el autocompletado
         reiniciarAutocompletado[index] = () => {
-          $(#myUL${element} li).show(); // Mostrar todas las opciones
+          $(`#myUL${element} li`).show(); // Mostrar todas las opciones
         }
       
         // Mostrar la lista al hacer clic en el input
-        $(#myInput${element}).click(function() {
-          $(#myUL${element}).show();
+        $(`#myInput${element}`).click(function() {
+          $(`#myUL${element}`).show();
           reiniciarAutocompletado[index](); // Reiniciar autocompletado al hacer clic en el input
         });
         
         // Seleccionar una opción de la lista
-        $(#myUL${element}).on("click", "li", function() {
+        $(`#myUL${element}`).on("click", "li", function() {
           var value = $(this).text();
-          $(#myInput${element}).val(value); // Colocar el valor seleccionado en el input
+          $(`#myInput${element}`).val(value); // Colocar el valor seleccionado en el input
           ultimoValorSeleccionado[index] = value; // Actualizar el último valor seleccionado
-          $(#myUL${element}).hide(); // Ocultar la lista después de seleccionar
+          $(`#myUL${element}`).hide(); // Ocultar la lista después de seleccionar
         });
         
         // Filtrar opciones según la entrada del usuario
-        $(#myInput${element}).on("input", function() {
+        $(`#myInput${element}`).on("input", function() {
           reiniciarAutocompletado[index](); // Reiniciar autocompletado al escribir en el input
           var value = $(this).val().toLowerCase();
-          $(#myUL${element} li).each(function() {
+          $(`#myUL${element} li`).each(function() {
             var text = $(this).text().toLowerCase();
             if (text.indexOf(value) > -1) {
               $(this).show();
@@ -409,12 +409,12 @@
         // Controlar clic fuera del área de autocompletado
         $(document).click(function(event) {
           var $target = $(event.target);
-          var inputValue = $(#myInput${element}).val();
+          var inputValue = $(`#myInput${element}`).val();
           if(!$target.closest('.autocomplete').length) {
             if (inputValue !== ultimoValorSeleccionado[index]) {
-              $(#myInput${element}).val(""); // Vaciar el input si no se seleccionó una opción recientemente
+              $(`#myInput${element}`).val(""); // Vaciar el input si no se seleccionó una opción recientemente
             }
-            $(#myUL${element}).hide(); // Ocultar la lista en cualquier caso
+            $(`#myUL${element}`).hide(); // Ocultar la lista en cualquier caso
           }
         });
     });
@@ -482,7 +482,7 @@
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Confirmar",
-            cancelButtonText: Cancelar,
+            cancelButtonText: `Cancelar`,
             confirmButtonColor: '#dc3545',        
         }).then((result) => {
             if (result.isConfirmed) {
