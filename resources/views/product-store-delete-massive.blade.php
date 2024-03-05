@@ -57,7 +57,7 @@
 
         #myInput {
         border: 1px solid #ccc;
-        /*padding: 10px;*/
+        /padding: 10px;/
         }
 
         #myUL {
@@ -147,16 +147,25 @@
                             </a>
                         </li>
                 
+                        <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                            <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                                href="/admin/products" id="menu">
+                                <span class="nav-link-text ms-1">Productos</span>
+                            </a>
+                        </li>
+                
                         @foreach ($tables2 as $table)
                             <?php 
                                 $link = str_replace(" ", "_", $table->label);
                             ?>
-                            <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
-                                <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
-                                    href="/admin/table-management/{{$link}}" id="menu">
-                                    <span class="nav-link-text ms-1">{{$table->label}}</span>
-                                </a>
-                            </li>
+                            @if($table->label != 'Productos')
+                                <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                                        href="/admin/table-management/{{$link}}" id="menu">
+                                        <span class="nav-link-text ms-1">{{$table->label}}</span>
+                                    </a>
+                                </li>
+                            @endif
                         @endforeach
                         <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
                             <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
@@ -255,7 +264,7 @@
                                         <table class="table align-items-center mb-0" id="myTable">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
+                                                    <th><input style="margin-top: .75rem;" type="checkbox" id="selectAllCheckbox"></th>
                                                     <th>Producto</th>
                                                     <th>Tienda</th>
                                                     <th>Marca</th>
@@ -321,10 +330,11 @@
                     "previous": "{{__('Previous')}}",
                     "next": "{{__('Next')}}"
                 },
-                "lengthMenu": "{{__('Showing')}} _MENU_ {{__('entries')}}",
-                "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
-                "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
+                "lengthMenu": "{{_('Showing')}} _MENU {{__('entries')}}",
+                "infoFiltered":   "({{_('filtered from')}} _TOTAL {{__('total entries')}})",
+                "info": "{{_('Showing')}} _START {{_('to')}} _END {{_('of')}} _TOTAL {{__('entries')}}",
             },
+            ordering: false // Deshabilitar la ordenación de las columnas
         });
 
         $("#menu").click(() => {
@@ -365,28 +375,28 @@
     arraySelects.forEach((element, index) => { 
         // Función para reiniciar el autocompletado
         reiniciarAutocompletado[index] = () => {
-          $(`#myUL${element} li`).show(); // Mostrar todas las opciones
+          $(#myUL${element} li).show(); // Mostrar todas las opciones
         }
       
         // Mostrar la lista al hacer clic en el input
-        $(`#myInput${element}`).click(function() {
-          $(`#myUL${element}`).show();
+        $(#myInput${element}).click(function() {
+          $(#myUL${element}).show();
           reiniciarAutocompletado[index](); // Reiniciar autocompletado al hacer clic en el input
         });
         
         // Seleccionar una opción de la lista
-        $(`#myUL${element}`).on("click", "li", function() {
+        $(#myUL${element}).on("click", "li", function() {
           var value = $(this).text();
-          $(`#myInput${element}`).val(value); // Colocar el valor seleccionado en el input
+          $(#myInput${element}).val(value); // Colocar el valor seleccionado en el input
           ultimoValorSeleccionado[index] = value; // Actualizar el último valor seleccionado
-          $(`#myUL${element}`).hide(); // Ocultar la lista después de seleccionar
+          $(#myUL${element}).hide(); // Ocultar la lista después de seleccionar
         });
         
         // Filtrar opciones según la entrada del usuario
-        $(`#myInput${element}`).on("input", function() {
+        $(#myInput${element}).on("input", function() {
           reiniciarAutocompletado[index](); // Reiniciar autocompletado al escribir en el input
           var value = $(this).val().toLowerCase();
-          $(`#myUL${element} li`).each(function() {
+          $(#myUL${element} li).each(function() {
             var text = $(this).text().toLowerCase();
             if (text.indexOf(value) > -1) {
               $(this).show();
@@ -399,12 +409,12 @@
         // Controlar clic fuera del área de autocompletado
         $(document).click(function(event) {
           var $target = $(event.target);
-          var inputValue = $(`#myInput${element}`).val();
+          var inputValue = $(#myInput${element}).val();
           if(!$target.closest('.autocomplete').length) {
             if (inputValue !== ultimoValorSeleccionado[index]) {
-              $(`#myInput${element}`).val(""); // Vaciar el input si no se seleccionó una opción recientemente
+              $(#myInput${element}).val(""); // Vaciar el input si no se seleccionó una opción recientemente
             }
-            $(`#myUL${element}`).hide(); // Ocultar la lista en cualquier caso
+            $(#myUL${element}).hide(); // Ocultar la lista en cualquier caso
           }
         });
     });
@@ -414,28 +424,31 @@
     }
 
     $(document).ready(function() {
-        // Agregar un event listener para el cambio de estado de todos los checkboxes con la clase 'myCheckbox' usando jQuery
+        // Controlador de eventos para checkboxes individuales
         $('.myCheckbox').change(function() {
-            // Obtener el ID del checkbox seleccionado
             var checkboxId = $(this).data('id');
-            
-            // Obtener el valor actual del input oculto
             var selectedIds = $('#selectedIds').val().split(',');
-            
-            // Verificar si el checkbox está seleccionado
+
             if ($(this).is(':checked')) {
-            // Agregar el ID al arreglo de IDs seleccionados
-            selectedIds.push(checkboxId);
+                selectedIds.push(checkboxId);
             } else {
-                // Quitar el ID del arreglo de IDs seleccionados
                 var index = selectedIds.indexOf(checkboxId.toString());
                 if (index !== -1) {
                     selectedIds.splice(index, 1);
                 }
             }
-        
-            // Actualizar el valor del input oculto
+
             $('#selectedIds').val(selectedIds.join(','));
+        });
+
+        // Controlador de eventos para el checkbox "select all"
+        $('#selectAllCheckbox').change(function() {
+            var isChecked = $(this).is(':checked');
+            // Si se seleccionan todos, vaciar el array de IDs seleccionados
+            if (isChecked) {
+                $('#selectedIds').val('');
+            }
+            $('.myCheckbox').prop('checked', isChecked).change();
         });
     });
 
@@ -469,7 +482,7 @@
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Confirmar",
-            cancelButtonText: `Cancelar`,
+            cancelButtonText: Cancelar,
             confirmButtonColor: '#dc3545',        
         }).then((result) => {
             if (result.isConfirmed) {
