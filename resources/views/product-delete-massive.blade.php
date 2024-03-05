@@ -254,7 +254,7 @@
                                         </div>
                                         <input type="hidden" name="products_id[]" id="selectedIds">
                                         <div class="col-md-2 text-center">
-                                            <button class="btn btn-danger w-100" type="button" id="associate">{{__('Eliminar')}}</button>
+                                            <button class="btn btn-danger w-100 associate" type="button">{{__('Eliminar')}}</button>
                                         </div>
                                         </form>
                                     </div>
@@ -281,6 +281,11 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div class="row py-3">
+                                        <div class="col-md-2 offset-md-10 text-center">
+                                            <button class="btn btn-danger associate w-100" type="button">{{__('Eliminar')}}</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -445,7 +450,7 @@
         });
     });
 
-    $("#associate").click(() => {
+    $(".associate").click(() => {
         validateData();
     });
 
