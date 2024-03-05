@@ -17,7 +17,7 @@
     }
 
     .dropzone .dz-preview .dz-error-message {
-        top: 43px !important;
+        top: .3rem !important;
         opacity: 1 !important;
         pointer-events: auto !important;
     }
@@ -89,17 +89,26 @@
                         <span class="nav-link-text ms-1"><i class="fa-solid fa-bars"></i>{{__('Productos')}}</span>
                     </a>
                 </li>
+
+                <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                    <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                        href="/admin/products" id="menu">
+                        <span class="nav-link-text ms-1">Productos</span>
+                    </a>
+                </li>
         
                 @foreach ($tables2 as $table)
                     <?php 
                         $link = str_replace(" ", "_", $table->label);
                     ?>
-                    <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
-                        <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
-                            href="/admin/table-management/{{$link}}" id="menu">
-                            <span class="nav-link-text ms-1">{{$table->label}}</span>
-                        </a>
-                    </li>
+                    @if($table->label != 'Productos')
+                        <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
+                            <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
+                                href="/admin/table-management/{{$link}}" id="menu">
+                                <span class="nav-link-text ms-1">{{$table->label}}</span>
+                            </a>
+                        </li>
+                    @endif
                 @endforeach
                 <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
                     <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
@@ -819,7 +828,8 @@
             dictInvalidFileType: "No puedes subir archivos de este tipo",
             dictRemoveFile: "Remover archivo",
             acceptedFiles: 'image/*',
-            maxFilesize : 5,
+            maxFilesize: 2.048,
+            dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
             maxFiles: $("#maxFiles").val(),
             autoProcessQueue: false,
             addRemoveLinks: true,
@@ -853,7 +863,8 @@
             dictInvalidFileType: "No puedes subir archivos de este tipo",
             dictRemoveFile: "Remover archivo",
             acceptedFiles: 'image/*',
-            maxFilesize : 5,
+            maxFilesize: 2.048,
+            dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
             maxFiles: $("#maxFiles").val(),
             autoProcessQueue: false,
             addRemoveLinks: true,
@@ -897,6 +908,9 @@
                 let field = key.split('=')[0];
                 if(field.includes('link')) return false;
                 if(field.includes('product_stores_id')) return false;
+                if(field.includes('capacidad')) return false;
+                if(field.includes('dimensiones')) return false;
+                if(field.includes('tipo')) return false;
                 if(value == null || value == ''){
                     boolean = false;
                 }

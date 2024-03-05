@@ -6,7 +6,7 @@
         <div class="col-12 col-md-3 mt-3">
             <div class="card card-store mb-5" style="height: 25.4rem;">
                   <div class="zoom-container" style="cursor: pointer" onclick="window.location.replace('register')">
-                    <img class="zoomed-image" src="{{ asset('images/user.jpg') }}" alt="Descripción de la imagen">
+                    <img class="zoomed-image" src="{{ asset('images/user.jpg') }}">
                   </div>
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
                     <h5 class="card-title text-center fw-bolder">Registra tu usuario</h5>
@@ -24,7 +24,7 @@
         <div class="col-12 col-md-3 mt-3">
             <div class="card card-store mb-5" style="height: 25.4rem;">
                   <div class="zoom-container" style="cursor: pointer" onclick="window.location.replace('register-store')">
-                    <img class="zoomed-image" src="{{ asset('images/tienda.jfif') }}" alt="Descripción de la imagen">
+                    <img class="zoomed-image" src="{{ asset('images/tienda.jfif') }}">
                   </div>
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
                     <h5 class="card-title text-center fw-bolder">Registra tu tienda</h5>
@@ -42,7 +42,7 @@
         <div class="col-12 col-md-3 mt-3">
             <div class="card card-store mb-5" style="height: 25.4rem;">
                   <div class="zoom-container" style="cursor: pointer" onclick="window.location.replace('register-taller')">
-                    <img class="zoomed-image" src="{{ asset('images/taller.jpg') }}" alt="Descripción de la imagen">
+                    <img class="zoomed-image" src="{{ asset('images/taller.jpg') }}">
                   </div>
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
                     <h5 class="card-title text-center fw-bolder">Registra tu taller</h5>
@@ -60,7 +60,7 @@
         <div class="col-12 col-md-3 mt-3">
             <div class="card card-store mb-5" style="height: 25.4rem;">
                   <div class="zoom-container" style="cursor: pointer" onclick="window.location.replace('register-grua')">
-                    <img class="zoomed-image" src="{{ asset('images/gruaSinfondo.png') }}" alt="Descripción de la imagen">
+                    <img class="zoomed-image" src="{{ asset('images/gruaSinfondo.png') }}">
                   </div>
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
                     <h5 class="card-title text-center fw-bolder">Registra tu grúa</h5>

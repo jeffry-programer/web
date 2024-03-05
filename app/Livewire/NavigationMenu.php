@@ -52,6 +52,5 @@ class NavigationMenu extends Component
     }
 
     public function search(){
-        dd('enter here!!');
     }
 }

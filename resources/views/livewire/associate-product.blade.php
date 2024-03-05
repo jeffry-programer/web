@@ -7,12 +7,13 @@
             <input type="hidden" name="image" value="">
             <input type="hidden" name="count" value="0">
             <input type="hidden" name="link" value="0">
+            <input type="hidden" name="type_request" value="asociate">
             <div class="row">
                 <div class="col-12 form-group products">
                     <label>Nombre del producto</label>
                     <input type="hidden" name="cities_id" id="city_store_data_id">
                     <div class="autocomplete">
-                        <input class="form-select mt-3" type="text" id="myInput30" name="name" placeholder="Busca y selecciona un producto...">
+                        <input class="form-select mt-3" type="text" id="myInput30" name="name" placeholder="Busca y selecciona un producto..." autocomplete="off">
                         <ul id="myUL30">
                             @foreach ($products as $product) 
                                 <li><a onclick="selectCity30({{ $product->id }})">{{$product->name}}</a></li>
@@ -58,7 +59,7 @@
                     <label>Tipo producto</label>
                     <select class="form-select my-3" name="type_products_id">
                         @foreach ($type_products as $type_product)
-                            <option value="{{ $type_product->id }}">{{ $box->description }}</option>
+                            <option value="{{ $type_product->id }}">{{ $type_product->description }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -95,12 +96,12 @@
                 <input type="hidden" name="products_id" id="product_id">
                 <div class="col-md-6 form-group">
                     <label>Cantidad</label>
-                    <input type="number" name="amount" wire:model="amount" placeholder="Ingrese la cantidad"
+                    <input type="number" name="amount" wire:model="amount" placeholder="Ingrese la cantidad" min="1"
                         class="form-control w-100 mt-3">
                 </div>
                 <div class="col-md-6 form-group">
                     <label>Precio</label>
-                    <input type="number" name="price" wire:model="price" placeholder="Ingrese el precio"
+                    <input type="number" name="price" wire:model="price" placeholder="Ingrese el precio" min="1"
                         class="form-control w-100 mt-3">
                 </div>
             </div>

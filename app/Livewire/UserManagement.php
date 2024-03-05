@@ -22,6 +22,7 @@ use App\Models\Publicy;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\SubCategory;
+use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypePublicity;
 use App\Models\User;
@@ -122,6 +123,9 @@ class UserManagement extends Component
                 if(count(DB::table($name_table)->where('name',$request->name)->where('categories_id',$request->categories_id)->get()) > 0){
                     $error = true;
                 }
+            }else if($name_table == 'users'){
+                $users = User::where('email', $request->email)->get();
+                $error = count($users) > 0;
             }else if(count(DB::table($name_table)->where('name',$request->name)->get()) > 0){
                 $error = true;
             }
@@ -263,6 +267,17 @@ class UserManagement extends Component
         $query .= ",'".$date."')";
         DB::insert($query);
         $id = DB::table($name_table)->latest('id')->first()->id;
+        if($name_table == 'stores'){
+            $type_plan = Plan::where('description', 'Basico')->first();
+            $plan = new PlanContracting();
+            $plan->plans_id = $type_plan->id;
+            $plan->stores_id = $id;
+            $plan->date_init = Carbon::now();
+            $plan->date_end = Carbon::now()->addDay(intval($type_plan->days));
+            $plan->status = true;
+            $plan->created_at = Carbon::now();
+            $plan->save();
+        }
         return json_encode($name_table.'-'.$id);
     }
 
@@ -305,11 +320,6 @@ class UserManagement extends Component
 
 
     public function registerProductStore(Request $request){
-        $request->validate([
-            'amount' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-        ]);
-
         //Agrupar data
         $data = $request->all();
 
@@ -318,33 +328,50 @@ class UserManagement extends Component
         if($request->products_id == null){
             // Validación de los datos
             $request->validate([
-                'name' => 'required|string|max:100|unique:products',
-                'description' => 'required|string|max:255',
-                'code' => 'required|string|max:45',
-                'reference' => 'required|string|max:45',
                 'detail' => 'required|string',
+                'reference' => 'required|string|max:45',
+                'code' => 'required|string|max:45',
+                'description' => 'required|string|max:255',
+                'sub_categories_id' => 'required',
+                'name' => 'required|string|max:100|unique:products',
             ]);
+
+            if($request->type_request == 'asociate'){
+                $request->validate([
+                    'price' => 'required|numeric|min:0',
+                    'amount' => 'required|integer|min:1'
+                ]);
+            }
             // Crear producto
+            $data['link'] = str_replace(' ','-', $data['name']);
             $product = Product::create($data);
             $products_id = $product->id;
         }else{
+            if($request->type_request == 'asociate'){
+                $request->validate([
+                    'price' => 'required|numeric|min:0',
+                    'amount' => 'required|integer|min:1'
+                ]);
+            }
+
             $products_id = $request->products_id;
         }
 
-        $data2 = [
-            'products_id' => $products_id,
-            'stores_id' => $request->stores_id,
-            'amount' => $request->amount,
-            'price' => $request->price,
-        ];
-
-        $product_store_exist = ProductStore::where('stores_id', $request->stores_id)->where('products_id', $request->products_id)->first();
-        if($product_store_exist != null){
-            return json_encode('exist');
+        if($request->type_request == 'asociate'){
+            $data2 = [
+                'products_id' => $products_id,
+                'stores_id' => $request->stores_id,
+                'amount' => $request->amount,
+                'price' => $request->price,
+            ];
+    
+            $product_store_exist = ProductStore::where('stores_id', $request->stores_id)->where('products_id', $request->products_id)->first();
+            if($product_store_exist != null){
+                return json_encode('exist');
+            }
+            //Crear producto tienda
+            ProductStore::create($data2);
         }
-
-        //Crear producto tienda
-        ProductStore::create($data2);
 
         //Puedes devolver una respuesta JSON si lo prefieres
         if($request->products_id == null){
@@ -356,7 +383,24 @@ class UserManagement extends Component
 
     public function delete(Request $request){
         $name_table = Table::where('label', $request->label)->first()->name;
-        return $this->validateTablesDelete($request, $name_table);
+        if($name_table == 'stores'){
+            $store = Store::find($request->id);
+
+            // Eliminar registros asociados
+            $store->publicities()->delete(); // Si existe una relación llamada "publicities"
+            $store->subscriptions()->delete(); // Si existe una relación llamada "subscription"
+            $store->products()->detach(); // Si existe una relación de muchos a muchos llamada "productos"
+            $store->promotions()->delete(); // Si existe una relación llamada "promotions"
+            $store->planContrating()->delete(); // Si existe una relación llamada "promotions"
+
+            // Eliminar la store
+            $store->delete();
+
+            session()->flash('message', 'Registro eliminado exitosamente!!');
+            return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+        }else{
+            return $this->validateTablesDelete($request, $name_table);
+        }
     }
 
     public function validateTablesDelete(Request $request, $name_table){
@@ -518,7 +562,11 @@ class UserManagement extends Component
             Storage::deleteDirectory($pathDirectory);
         }
         session()->flash('message', 'Registro eliminado exitosamente!!');
-        return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+        if($name_table == 'products'){
+            return redirect('/admin/products');
+        }else{
+            return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+        }
     }
 
     public function update(Request $request){
@@ -575,14 +623,12 @@ class UserManagement extends Component
         $name_table = Table::where('label', $request->label)->first()->name;
         $validate = $this->validateRequest($request, $name_table);
         if($validate){
-            dd(1);
             abort(404);
         }
         if(isset($request->name)){
             if(DB::table($name_table)->find($request->id)->name !== $request->name){
                 $validate = $this->validateExist($request, $name_table);
                 if($validate){
-                    dd(1);
                     abort(404);
                 }
             }
@@ -679,7 +725,7 @@ class UserManagement extends Component
         }
     }
 
-    public function saveImgs(Request $request){
+    public function saveImgs(Request $request){        
         $request->validate([
             'file' => 'required|image|max:2048'
         ]);

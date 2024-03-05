@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\CustomResetPassword;
 use App\Notifications\CustomVerificationEmail;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Auth\Notifications\VerifyEmailNew;
@@ -89,6 +90,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new CustomVerificationEmail);
     } 
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
+    }
 
     public function profile(){
         return $this->belongsTo(Profile::class, 'profiles_id', 'id');

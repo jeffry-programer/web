@@ -33,7 +33,7 @@
                   <div class="col-md-6">
                     <a href="{{ $publicity->link }}"><img style="object-fit: cover;
                     width: 100%;
-                    height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start" alt="..."></a>
+                    height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start"></a>
                   </div>
                   <div class="col-md-6">
                     <div class="card-body">
@@ -94,7 +94,7 @@
                             <img src="{{ asset($key->image) }}" style="width: 100% !important;
                             height: 12rem !important;
                             object-fit: cover;
-                          " class="img-fluid imagen-zoom" alt="Imagen 1">
+                          " class="img-fluid imagen-zoom">
                             <div class="texto-encima">{{ $key->title }}</div>
                         </div>
                     </div>

@@ -232,5 +232,17 @@ return [
         'user'                     => 'usuario',
         'username'                 => 'usuario',
         'year'                     => 'año',
+        'sub_categories_id'        => 'sub categoria',
+        'detail'                   => 'detalle',
+        'reference'                => 'referencia',
+        'description_ofer'         => 'descripción oferta',
+        'product_promotion'        => 'producto promoción',
+        'price_promotion'          => 'precio promoción',
+        'date_init'                => 'fecha inicio',
+        'date_end'                 => 'fecha fin',
+        'image_promotion'          => 'imagen promoción',
+        'description_promotion'    => 'descripción promoción',
+        'percent_promotion'        => 'porcentaje promoción',
+        'type_publicity'           => 'tipo publicidad'
     ],
 ];

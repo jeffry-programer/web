@@ -25,19 +25,68 @@
                 <label for="name" class="py-3">{{ __('Ciudad') }}</label>
                 <input type="hidden" name="cities_id" wire:model="city_id" id="city_store_data_id">
                 <div class="autocomplete">
-                    <input type="hidden" id="city-search">
                     <input class="form-select" type="text" id="myInput6" placeholder="Busca y selecciona una ciudad...">
                     <ul id="myUL6">
                         @foreach ($dataCities as $city) 
-                            <li><a onclick="selectCity({{ $city->id }})" wire:click="selectCity({{ $city->id }})">{{$city->name}}</a></li>
+                            <li><a onclick="selectCity({{ $city->id }})">{{$city->name}}</a></li>
                         @endforeach
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+    <input type="hidden" id="city-search">
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       <button type="button" class="btn btn-primary" id="btn-save-ubi" @if($disabled) disabled @endif>Guardar</button>
     </div>
 </div>
+
+@section('js')
+    <script>
+        function selectCity(id){
+            $("#btn-save-ubi").removeAttr('disabled');
+            $("#city-search").val(id);
+        }
+
+        //Guardar ubicación
+        $("#btn-save-ubi").click(() => {
+            var cityId = $("#city-search").val();
+            var nameCity = $("#myInput6").val();
+            var stateId = $("#state").val();
+            var countryId = $("#country").val();
+            //guardamos en local storage la información
+            localStorage.setItem("id_city", cityId);
+            localStorage.setItem("name_city", nameCity);
+            localStorage.setItem("id_state", stateId);
+            localStorage.setItem("id_country", countryId);
+            
+            //guardamos la información en los inputs que seran enviados en el formulario de busqueda de tiendas
+            $("#value-country").val(countryId);
+            $("#value-state").val(stateId);
+            $("#value-city").val(cityId);
+
+            $("#btn-ubi").html(`${$("#myInput6").val()}`);
+            $("#btn-save-ubi").attr('disabled', true);
+            $("#exampleModal").modal('hide');
+        });
+
+        $(document).ready(() => {
+            var nameCity = localStorage.getItem('name_city');
+            if(nameCity !== null){
+                var stateId = localStorage.getItem('id_state');
+                var countryId = localStorage.getItem('id_country');
+
+                console.log(nameCity);
+
+                $("#btn-ubi").html(`${nameCity}`);
+                $("#country").val(countryId);
+            }
+            var category = localStorage.getItem('categories_id');
+            if(category !== null){
+                $("#select-search-categories").val(category);
+            }
+        });
+    </script>
+@endsection
+
