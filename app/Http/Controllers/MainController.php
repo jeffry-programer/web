@@ -61,6 +61,13 @@ class MainController extends Controller{
         if($store == null){
             return redirect('/');
         }
+        if(isset(explode('/', $_SERVER['REQUEST_URI'])[3])){
+            $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
+            $product = Product::where('link', $link_product)->first();
+            if($product == null){
+                return redirect('/tienda/'.str_replace(' ','-', $store->name));
+            }
+        }
         return view('detail-store');
     }
 
