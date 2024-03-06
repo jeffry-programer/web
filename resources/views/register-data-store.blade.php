@@ -160,6 +160,7 @@ var myDropzone = new Dropzone("#myDropzone24", {
     dictInvalidFileType: "No puedes subir archivos de este tipo",
     dictRemoveFile: "Remover archivo",
     acceptedFiles: 'image/*',
+    maxFiles: 2,
     maxFilesize: 2.048,
     dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido    maxFiles: 2,
     autoProcessQueue: false,

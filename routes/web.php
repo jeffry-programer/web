@@ -69,6 +69,7 @@ Route::middleware([
     Route::post('/delete-products-store', [MainController::class, 'deleteProductStore'])->name('delete-products-store');
     Route::get('/get-random-ads', [DetailStore::class, 'getRandomAds'])->name('get-random-ads');
     Route::post('/products', [MainController::class, 'getMoreProducts'])->name('products');
+    Route::post('/upload-image-store', [MainController::class, 'uploadImageStore'])->name('upload-image-store');
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {

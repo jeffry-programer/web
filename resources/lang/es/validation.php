@@ -244,6 +244,7 @@ return [
         'description_promotion'    => 'descripción promoción',
         'percent_promotion'        => 'porcentaje promoción',
         'type_publicity'           => 'tipo publicidad',
-        'type_publicities_id'      => 'tipo publicidad'
+        'type_publicities_id'      => 'tipo publicidad',
+        'file'                     => 'imagen'
     ],
 ];

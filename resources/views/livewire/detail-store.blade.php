@@ -1,3 +1,85 @@
+<style>
+    .contenedor-imagen {
+        position: relative;
+        display: inline-block;
+        height: 25rem;
+    }
+
+    .imagen {
+        max-width: 100%;
+        height: 25rem;
+        width: 100rem !important;
+        object-fit: cover;
+    }
+
+    .boton-flotante {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .boton-flotante:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .input-imagen {
+        display: none;
+    }
+
+    .contenedor-imagen-2 {
+        position: relative;
+        display: inline-block;
+        height: 25rem;
+    }
+
+    .imagen-2 {
+        max-width: 100%;
+        height: 25rem;
+        width: 100rem !important;
+    }
+
+    .boton-flotante-2 {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .boton-flotante-2:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .input-imagen-2 {
+        display: none;
+    }
+</style>
+
+
 <div>
     <?php
     $condition = Auth::user()->profiles_id == 1 || Auth::user()->profiles_id == 2 || Auth::user()->profiles_id == 4 || Auth::user()->profiles_id == 5;
@@ -29,7 +111,16 @@
     <div id="carouselExampleIndicators" class="carousel slide">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset($store->image) }}" class="d-block w-100 img-carrusel">
+                <div class="contenedor-imagen">
+                    <img src="{{ asset($store->image2) }}" class="imagen">
+                    @if($condition)
+                    <button id="boton-flotante" class="boton-flotante" onclick="mostrarInput()">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                    <input type="file" id="input-imagen" class="input-imagen" accept="image/*"
+                        onchange="mostrarImagen(event)">
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -49,7 +140,7 @@
                     <li><a class="dropdown-item" wire:click="nullSubscribe">Anular</a></li>
                 </ul>
             @else
-                @if(!$condition)
+                @if (!$condition)
                     <button class="btn btn-subs" wire:click="subscribe">Suscribete</button>
                 @endif
             @endif
@@ -153,10 +244,17 @@
                             @endif
                         </div>
                         <div class="row">
-                            <div class="col-12 col-lg-8 d-flex justify-content-center">
-                                <a href="#">
-                                    <img src="{{ asset($store->image) }}" class="img-fluid">
-                                </a>
+                            <div class="col-12 col-lg-8 d-flex justify-content-center" style="position: relative;">
+                                <div class="contenedor-imagen-2">
+                                    <img src="{{ asset($store->image) }}" alt="Imagen" class="imagen">
+                                    @if($condition)
+                                    <button id="boton-flotante-2" class="boton-flotante-2" onclick="mostrarInput2()">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </button>
+                                    <input type="file" id="input-imagen-2" class="input-imagen-2"
+                                        accept="image/*" onchange="mostrarImagen(event)">
+                                    @endif
+                                </div>
                             </div>
                             <div class="col-12 col-lg-4">
                                 <div class="container" style="margin-top: 5rem;">
@@ -210,7 +308,7 @@
                             @endif
                         </div>
                         <div class="row" id="productos-container">
-                            @if(count($products) == 0)
+                            @if (count($products) == 0)
                                 <div class="alert alert-info">
                                     No hemos encontrado productos que coincidieran con tu busqueda
                                 </div>
@@ -234,13 +332,13 @@
                                 </div>
                             @endforeach
                         </div>
-                        @if($products_total > 6)
-                        <div class="row mt-3">
+                        @if ($products_total > 6)
+                            <div class="row mt-3">
                                 <div class="col-12 text-center">
                                     <button class="btn btn btn-warning" id="load-products">Cargas más..</button>
                                 </div>
                             </div>
-                        @endif  
+                        @endif
                     </div>
                 </div>
                 @if ($product_detail != null)
@@ -539,26 +637,28 @@
             });
         }
 
-        function queryExistMoreProdsInBd(){
+        function queryExistMoreProdsInBd() {
             $.ajax({
-                    url: '/products',
-                    data: {
-                        'page': (page + 1),
-                        'store_id': '{{ $store->id }}'
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                    },
-                    method: 'POST',
-                    success: function(response) {
-                        Swal.close(); // O Swal.closeModal(); si estás utilizando una versión anterior a SweetAlert 2.1.0
-                        var productos = response.data;
-                        if (productos.length == 0) {
-                            $('#load-products').hide();
-                        }
-                    },error: function(xhr, status, error) {
-                        console.log(error);
+                url: '/products',
+                data: {
+                    'page': (page + 1),
+                    'store_id': '{{ $store->id }}'
+                },
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                method: 'POST',
+                success: function(response) {
+                    Swal
+                .close(); // O Swal.closeModal(); si estás utilizando una versión anterior a SweetAlert 2.1.0
+                    var productos = response.data;
+                    if (productos.length == 0) {
+                        $('#load-products').hide();
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
             });
         }
 
@@ -584,7 +684,7 @@
                             productos.forEach(function(producto) {
                                 $('#productos-container').append(
                                     `<div class="col-12 col-md-4 mt-3"><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}"><div class="card card-store" style="height: 100%;"><div class="zoom-container"><img class="zoomed-image" src="{{ asset('${producto.image}') }}"></div><div class="card-body" style="padding-bottom: 4rem;"><h5 class="card-title">${producto.name}</h5><p class="card-text">${producto.description}</p><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}" class="btn btn-warning position-absolute bottom-0 end-0" style="margin: .5rem;cursor: pointer;">Ver</a></div></div></a></div>`
-                                    );
+                                );
                             });
                             page++;
                         }
@@ -602,4 +702,81 @@
         // Llamar a la función updateAds cada 5 segundos
         setInterval(updateAds, 10000);
     });
+
+    $('#boton-flotante').click(function() {
+        $('#input-imagen').click();
+    });
+
+    $('#input-imagen').change(function(event) {
+        showAlertTime();
+        subirImagen(event, 'banner');
+    });
+
+    $('#boton-flotante-2').click(function() {
+        $('#input-imagen-2').click();
+    });
+
+    $('#input-imagen-2').change(function(event) {
+        showAlertTime();
+        subirImagen(event, 'main');
+    });
+
+    function subirImagen(event, type) {
+        const image = event.target.files[0];
+        if (image) {
+            const formData = new FormData();
+            formData.append('file', image);
+            formData.append('type', type);
+            formData.append('stores_id', '{{$store->id}}');
+            $.ajax({
+                url: "{{route('upload-image-store')}}", // Reemplaza 'tu/controlador/ruta' con la ruta adecuada a tu controlador Laravel
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'center',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        title: "Imagen agregada exitosamente",
+                        timer: 2000
+                    });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                },error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessage = '';
+                        $.each(errors, function(key, value) {
+                            Swal.fire({
+                                title: value[0],
+                                icon: "error",
+                                timer: 2000,
+                                timerProgressBar: true,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false
+                            });
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Hubo un problema al procesar la solicitud",
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+    }
 </script>

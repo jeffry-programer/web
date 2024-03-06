@@ -359,4 +359,42 @@ class MainController extends Controller{
         return response()->json($products);
     }
 
+    public function uploadImageStore(Request $request){
+        if ($request->hasFile('file')) {
+            $request->validate([
+                'file' => 'required|image|max:2048'
+            ]);
+
+            $store = Store::find($request->stores_id);
+
+            $rutaImagenEliminar = "";
+
+            if($request->type == 'banner'){
+                $rutaImagenEliminar = 'public/images-stores/'.$request->stores_id.'/'.$store->image2;
+            }else{
+                $rutaImagenEliminar = 'public/images-stores/'.$request->stores_id.'/'.$store->image;
+            }
+
+            if(Storage::exists($rutaImagenEliminar)){
+                Storage::delete($rutaImagenEliminar);
+            }
+
+            $route_image = $request->file('file')->store('public/images-stores/'.$request->stores_id);
+            $url = Storage::url($route_image);
+
+            if($request->type == 'banner'){
+                $store->image2 = $url;
+            }else{
+                $store->image = $url;
+            }
+
+            
+            $store->save();
+
+            return response()->json(['url' => $url]);
+        }
+
+        return response()->json(['error' => 'No se proporcionó ninguna imagen'], 422);
+    }
+
 }
