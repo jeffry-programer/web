@@ -322,8 +322,10 @@ class UserManagement extends Component
         $request->validate([
             'percent_promotion' => 'required',
             'description' => 'required|min:3|max:100',
-            'date_end' => 'required|date',
+            'date_end' => 'required|date|after:date_init|before_or_equal:' . Carbon::now()->addDays(30)->format('Y-m-d'),
             'date_init' => 'required|date',
+        ],[
+            'date_end.before_or_equal' => 'El sistema le permite máximo 30 dias de promoción.'
         ]);
 
         $product_store = ProductStore::find($request->product_stores_id);

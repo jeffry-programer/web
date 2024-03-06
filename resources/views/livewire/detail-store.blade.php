@@ -126,7 +126,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link me-2" id="subs1" data-bs-toggle="tab" data-bs-target="#subs"
                             type="button" role="tab" aria-controls="subs"
-                            aria-selected="true">Suscripciones</button>
+                            aria-selected="true">Suscriptores</button>
                     </li>
 
                     <li class="nav-item" role="presentation">
@@ -366,7 +366,7 @@
                 @endif
                 <div class="tab-pane fade" id="subs" role="tabpanel" aria-labelledby="subs">
                     <div class="container">
-                        <h4>Suscripciones</h4>
+                        <h4>Suscriptores</h4>
                         <div class="row">
                             <div class="col-md-6 offset-md-3" style="border-top: solid 2px #606060;">
                                 <ul class="list-group">
