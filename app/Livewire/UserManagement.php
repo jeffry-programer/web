@@ -222,7 +222,7 @@ class UserManagement extends Component
         $query = 'insert into '.$name_table. ' (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'){
                 if($count == 0){
                     $query .= $field;
                 }else{
@@ -706,7 +706,7 @@ class UserManagement extends Component
         $query = 'update '.$name_table. ' set ';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token'){
+            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'){
                 if($count == 0){
                     $query .= "$field = '".$data[$field]."' ";
                 }else{

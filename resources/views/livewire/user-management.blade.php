@@ -189,7 +189,7 @@
                                     <thead>
                                         <tr>
                                             @foreach ($atributes as $field)
-                                                @if($field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token')
+                                                @if($field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                         {{__($field)}}
                                                     </th>
@@ -204,7 +204,7 @@
                                         @foreach ($data as $key)
                                             <tr>
                                                 @foreach ($atributes as $field)
-                                                    @if($field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token')
+                                                    @if($field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                                         @if(str_contains($field, '_id'))
                                                             @foreach ($extra_data[$field]['values'] as $value)
                                                                 @foreach ($extra_data[$field]['fields'] as $field2)
@@ -366,7 +366,7 @@
                             </select>
                         @endif
                         @foreach ($atributes as $field)
-                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'about')
+                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                 @if(str_contains($field, '_id'))
                                     @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
                                         <label for="">{{__($field)}}</label>
@@ -538,7 +538,7 @@
                 <div class="card" style="width: 74%;left: 16%;">
                     <div class="card-body">
                         @foreach ($atributes as $field)
-                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'about')
+                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                 @if(str_contains($field, '_id'))
                                         @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
                                         <label for="">{{__($field)}}</label>

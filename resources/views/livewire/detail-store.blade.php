@@ -113,7 +113,7 @@
             <div class="carousel-item active">
                 <div class="contenedor-imagen">
                     <?php
-                        if (file_exists(public_path($store->image2))){
+                        if($store->image2 != null){
                             $imagen_banner = $store->image2;
                         }else{
                             $imagen_banner = 'images/1.jpg';
