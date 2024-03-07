@@ -46,6 +46,12 @@ class SearchStores extends Component
             }
         }else{
             $stores = $this->queryData($categories_id, $product_search);
+            if(count($stores) == 0){
+                $product_anter = $product_search;
+                $product_search = '"'.explode('"', $product_search)[1].'s"';
+                $stores = $this->queryData($categories_id, $product_search);
+                $product_search = $product_anter;
+            }
         }
 
         foreach($stores as $index => $store){
@@ -85,7 +91,7 @@ class SearchStores extends Component
                 $query = $query->where('products.sub_categories_id', $id_sub_category);
             }
         }
-        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
+        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->orderBy('stores.id')->paginate($this->paginate);
     }
 
     public function queryDataCity($categories_id, $product_search, $city_id){        

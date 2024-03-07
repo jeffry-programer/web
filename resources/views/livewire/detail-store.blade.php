@@ -112,7 +112,14 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <div class="contenedor-imagen">
-                    <img src="{{ asset($store->image2) }}" class="imagen">
+                    <?php
+                        if (file_exists(public_path($store->image2))){
+                            $imagen_banner = $store->image2;
+                        }else{
+                            $imagen_banner = 'images/1.jpg';
+                        }                        
+                    ?>
+                    <img src="{{ asset($imagen_banner) }}" class="imagen">
                     @if($condition)
                     <button id="boton-flotante" class="boton-flotante" onclick="mostrarInput()">
                         <i class="fa-solid fa-camera"></i>
