@@ -308,9 +308,14 @@
                             @endif
                         </div>
                         <div class="row" id="productos-container">
+                            @if ($showMessageNotFoundProducts)
+                                <div class="alert alert-info">
+                                    No hemos encontrado productos que coincidieran con tu busqueda, aqui puedes ver otras opciones.
+                                </div>
+                            @endif
                             @if (count($products) == 0)
                                 <div class="alert alert-info">
-                                    No hemos encontrado productos que coincidieran con tu busqueda
+                                    Esta tienda aun no tiene productos asociados.
                                 </div>
                             @endif
                             @foreach ($products as $product)
