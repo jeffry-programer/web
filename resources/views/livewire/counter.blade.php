@@ -42,10 +42,10 @@
     </div>
 </div>
 
-@section('js')
-    <script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
         function selectCity(id){
-            $("#btn-save-ubi").removeAttr('disabled');
+            $("#btn-save-ubi").prop('disabled', false);
             $("#city-search").val(id);
         }
 
@@ -86,7 +86,6 @@
             if(category !== null){
                 $("#select-search-categories").val(category);
             }
-        });
-    </script>
-@endsection
+    });
+</script>
 

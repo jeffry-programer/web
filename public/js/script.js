@@ -68,13 +68,16 @@ $(document).ready(() => {
 });
 
 function loadDataSession(){
+  var nameCity = localStorage.getItem('name_city');
   var city = localStorage.getItem('id_city');
   var state = localStorage.getItem('id_state');
   var country = localStorage.getItem('id_country');
   $("#value-city").val(city);
   $("#value-state").val(state);
   $("#value-country").val(country);
+  $("#btn-ubi").text(nameCity);
 }
+
 
 function seleccionarCiudad(id){
     $("#cities_id").val(id);

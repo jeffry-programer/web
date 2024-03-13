@@ -3,12 +3,19 @@
         $search = str_replace(['+','"'], [' ',''], $product_search);
     @endphp
     @if(!$empty_stores)
-        <div class="alert alert-info p-3 text-center alert-info-search-stores">
-            Las siguientes tiendas tienen el repuesto "{{ $search }}", entra a la que desees y contacta al vendedor
-        </div>
-        @if($search_found != 'cities' && $search_found != '')
+        @if(!$search_empty)
+            <div class="alert alert-info p-3 text-center alert-info-search-stores">
+                Las siguientes tiendas tienen el repuesto "{{ $search }}", entra a la que desees y contacta al vendedor
+            </div>
+        @endif
+        @if($search_found != 'cities' && $search_found != '' && !$search_empty)
             <div class="alert alert-warning p-3 text-center alert-info-search-stores">
                 No hemos encontrado productos para esta ciudad, aqui que te mostramos resultados para el {{ $search_found }}
+            </div>
+        @endif
+        @if($search_empty)
+            <div class="alert alert-warning p-3 text-center alert-info-search-stores">
+                No hemos encontrado productos que coincidan con tu busqueda, aqui que te mostramos otros resultados
             </div>
         @endif
         <h2 class="ms-5 mt-5">Tiendas que tienen el producto</h2>
