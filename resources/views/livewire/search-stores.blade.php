@@ -33,7 +33,6 @@
                     </a>
                     </div>
                 @endforeach
-                {{ $stores->links('custom-pagination-links-view') }}
             </div>
         </div>
     @endif

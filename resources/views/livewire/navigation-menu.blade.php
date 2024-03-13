@@ -1,3 +1,41 @@
+<style>
+  /*----------------------------------------------------------------------------------*/
+#myInput98 {
+  border: none;
+}
+
+#myUL98 {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  width: 100%;
+  z-index: 1000;
+  max-height: 150px; /* Altura máxima para el scroll */
+  overflow-y: auto; /* Habilitar el scroll vertical */
+  display: none; /* Ocultar la lista inicialmente */
+}
+
+#myUL98 li {
+  cursor: pointer;
+}
+
+#myUL98 li a {
+  padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: #000;
+}
+
+#myUL98 li a:hover {
+  background-color: #f4f4f4;
+}
+
+</style>
+
 <div>
     @php
         if(isset(Auth::user()->id)){
@@ -113,7 +151,14 @@
                         </select>   
                     </div>
                     <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
-                        <input class="input-search" name="product" placeholder="Busca el repuesto o accesorio" type="text">
+                      <div class="autocomplete">
+                        <input class="input-search" name="product" id="myInput98" placeholder="Busca el repuesto o accesorio" type="text">
+                        <ul id="myUL98">
+                            @foreach ($products as $product) 
+                                <li><a>{{$product->name}}</a></li>
+                            @endforeach
+                        </ul>
+                      </div>
                     </div>
                     <div class="col-1 d-flex align-items-center justify-content-center">
                       <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>
@@ -271,4 +316,50 @@
   </div>
 </div>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  <script>
+        function reiniciarAutocompletado98(){
+          $(`#myUL98 li`).show(); // Mostrar todas las opciones
+        }
+      
+        // Mostrar la lista al hacer clic en el input
+        $(`#myInput98`).click(function() {
+          $(`#myUL98`).show();
+          reiniciarAutocompletado98(); // Reiniciar autocompletado al hacer clic en el input
+        });
+        
+        // Seleccionar una opción de la lista
+        $(`#myUL98`).on("click", "li", function() {
+          var value = $(this).text();
+          $(`#myInput98`).val(value); // Colocar el valor seleccionado en el input
+          ultimoValorSeleccionado = value; // Actualizar el último valor seleccionado
+          $(`#myUL98`).hide(); // Ocultar la lista después de seleccionar
+        });
+        
+        // Filtrar opciones según la entrada del usuario
+        $(`#myInput98`).on("input", function() {
+        reiniciarAutocompletado98(); // Reiniciar autocompletado al escribir en el input
+          var value = $(this).val().toLowerCase();
+          $(`#myUL98 li`).each(function() {
+            var text = $(this).text().toLowerCase();
+            if (text.indexOf(value) > -1) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
+        });
+        
+        // Controlar clic fuera del área de autocompletado
+        $(document).click(function(event) {
+          var $target = $(event.target);
+          var inputValue = $(`#myInput98`).val();
+          if(!$target.closest('.autocomplete').length) {
+            $(`#myUL98`).hide(); // Ocultar la lista en cualquier caso
+          }
+        });
+
+  </script>
 

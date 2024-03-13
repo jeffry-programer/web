@@ -157,7 +157,7 @@
                 <?php
                 $link_store = str_replace(' ', '-', $store->name);
                 ?>
-                <form action="/tienda/{{ $link_store }}" class="row mt-3" id="form-search" autocomplete="off">
+                <form action="/tienda/{{ $link_store }}" class="row mt-3" autocomplete="off">
                     <div class="col-4 d-none d-md-flex align-items-center justify-content-center">
                         <select id="select-search-categories" name="tBGZall1t5CCeUqrQOkM" class="select-search">
                             <option selected>Categoria</option>

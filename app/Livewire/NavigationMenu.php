@@ -3,12 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Category;
-use App\Models\City;
 use App\Models\Country;
+use App\Models\Product;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\Subscription;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -47,10 +46,9 @@ class NavigationMenu extends Component
             $subscribeds = Subscription::where('users_id', Auth::user()->id)->get();
         }
 
-        $data = ['categories' => $categories, 'countries' => $countries, 'link_store' => $link_store, 'subscribeds' => $subscribeds];
-        return view('livewire.navigation-menu', $data);
-    }
+        $products = Product::all();
 
-    public function search(){
+        $data = ['categories' => $categories, 'countries' => $countries, 'link_store' => $link_store, 'subscribeds' => $subscribeds, 'products' => $products];
+        return view('livewire.navigation-menu', $data);
     }
 }

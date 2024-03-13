@@ -35,12 +35,30 @@ class SearchStores extends Component
 
         if($cities_id != ''){
             $stores = $this->queryDataCity($categories_id, $product_search, $cities_id);
+            if(count($stores) == 0){
+                $product_anter = $product_search;
+                $product_search = '"'.explode('"', $product_search)[1].'s"';
+                $stores = $this->queryData($categories_id, $product_search);
+                $product_search = $product_anter;
+            }
             $search_found = "cities";
             if(count($stores) == 0){
                 $stores = $this->queryDataState($categories_id, $product_search, $state_id);
+                if(count($stores) == 0){
+                    $product_anter = $product_search;
+                    $product_search = '"'.explode('"', $product_search)[1].'s"';
+                    $stores = $this->queryData($categories_id, $product_search);
+                    $product_search = $product_anter;
+                }
                 $search_found = "estado";
                 if(count($stores) == 0){
                     $stores = $this->queryDataCountry($categories_id, $product_search, $country_id);
+                    if(count($stores) == 0){
+                        $product_anter = $product_search;
+                        $product_search = '"'.explode('"', $product_search)[1].'s"';
+                        $stores = $this->queryData($categories_id, $product_search);
+                        $product_search = $product_anter;
+                    }
                     $search_found = "país";
                 }
             }
@@ -53,6 +71,12 @@ class SearchStores extends Component
                 $product_search = $product_anter;
             }
         }
+
+        if(count($stores) == 0 && $categories_id != 'Categorias' && $cities_id != ''){
+            $stores = $this->queryDataSpecial($categories_id, $product_search);
+        }
+
+        $stores = $stores->unique('id');
 
         foreach($stores as $index => $store){
             $stores[$index]['city'] = Store::find($store->id)->city->name;
@@ -91,7 +115,8 @@ class SearchStores extends Component
                 $query = $query->where('products.sub_categories_id', $id_sub_category);
             }
         }
-        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->orderBy('stores.id')->paginate($this->paginate);
+
+        return $query->select('stores.id','stores.name','stores.address','stores.image','stores.description','products.link')->paginate($this->paginate);
     }
 
     public function queryDataCity($categories_id, $product_search, $city_id){        

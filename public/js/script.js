@@ -63,7 +63,18 @@ $(document).ready(() => {
           }
         });
     });
+
+    loadDataSession();
 });
+
+function loadDataSession(){
+  var city = localStorage.getItem('id_city');
+  var state = localStorage.getItem('id_state');
+  var country = localStorage.getItem('id_country');
+  $("#value-city").val(city);
+  $("#value-state").val(state);
+  $("#value-country").val(country);
+}
 
 function seleccionarCiudad(id){
     $("#cities_id").val(id);
