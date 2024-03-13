@@ -132,52 +132,7 @@
         </div>
     </div>
     <div class="scan" id="qrcode" wire:ignore></div>
-    <div class="row">
-        <div class="col-md-1 offset-md-6 d-flex align-items-center mt-3">
-            @if ($subscribed)
-                <button type="button" class="btn btn-subs" style="display: flex;align-items: center;"
-                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    Suscrito
-                    <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
-                    </svg>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="cursor: pointer">
-                    <li><a class="dropdown-item" wire:click="nullSubscribe">Anular</a></li>
-                </ul>
-            @else
-                @if (!$condition)
-                    <button class="btn btn-subs" wire:click="subscribe">Suscribete</button>
-                @endif
-            @endif
-        </div>
-        @if (!$condition2)
-            <div class="col-12 col-md-5">
-                <?php
-                $link_store = str_replace(' ', '-', $store->name);
-                ?>
-                <form action="/tienda/{{ $link_store }}" class="row mt-3" autocomplete="off">
-                    <div class="col-4 d-none d-md-flex align-items-center justify-content-center">
-                        <select id="select-search-categories" name="tBGZall1t5CCeUqrQOkM" class="select-search">
-                            <option selected>Categoria</option>
-                            @foreach ($categories as $key)
-                                <option value="{{ $key->id }}">{{ $key->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
-                        <input class="input-search" name="product" placeholder="Busca el repuesto o accesorio"
-                            type="text">
-                    </div>
-                    <div class="col-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>
-                        <i class="fa-solid fa-microphone icons-search pointer"></i>
-                    </div>
-                </form>
-            </div>
-        @endif
-    </div>
+    @livewire('subscribe', ['subscribed' => $subscribed, 'store' => $store, 'condition' => $condition, 'condition2' => $condition2, 'categories' => $categories])
     <?php
     $link_whatssap = str_replace('04', '4', $store->phone);
     ?>
@@ -589,10 +544,6 @@
 </div>
 </div>
 
-
-
-@livewireScripts
-
 <script>
     $(document).ready(function() {
         var page = 2;
@@ -732,6 +683,10 @@
         showAlertTime();
         subirImagen(event, 'main');
     });
+
+    function searchDataStore(){
+        $("search-data-store").submit();
+    }
 
     function subirImagen(event, type) {
         const image = event.target.files[0];
