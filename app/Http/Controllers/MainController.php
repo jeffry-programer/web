@@ -402,4 +402,13 @@ class MainController extends Controller{
         $products = Product::where('name', 'LIKE', '%'.$search.'%')->take(5)->get();
         return response()->json($products);
     }
+
+    public function autocompleteProductStore(Request $request){
+        $search = $request->get('term');
+        $store = $request->get('store');
+        $products = Product::whereHas('stores', function($query) use ($store) {
+            $query->where('stores.id', $store);
+        })->where('name', 'LIKE', '%'.$search.'%')->take(5)->get();
+        return response()->json($products);
+    }
 }

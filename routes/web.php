@@ -33,6 +33,8 @@ Route::get('/imgs-store', [AssociateProduct::class, 'store'])->name('imgs-store'
 Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('table-store-imgs');
 Route::get('/publicities/{id}', [MainController::class, 'publicity']);
 Route::get('/autocomplete-products', [MainController::class, 'autocompleteProducts'])->name('autocomplete-products');
+Route::get('/autocomplete-products-store', [MainController::class, 'autocompleteProductStore'])->name('autocomplete-products-store');
+
 
 
 Route::middleware([

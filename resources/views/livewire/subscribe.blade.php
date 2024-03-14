@@ -1,3 +1,41 @@
+<style>
+/*----------------------------------------------------------------------------------*/
+  #myInput97 {
+    border: none;
+  }
+  
+  #myUL97 {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    width: 100%;
+    z-index: 1000;
+    max-height: 150px; /* Altura máxima para el scroll */
+    overflow-y: auto; /* Habilitar el scroll vertical */
+    display: block; /* Ocultar la lista inicialmente */
+  }
+  
+  #myUL97 li {
+    cursor: pointer;
+  }
+  
+  #myUL97 li a {
+    padding: 10px;
+    display: block;
+    text-decoration: none;
+    color: #000;
+  }
+  
+  #myUL97 li a:hover {
+    background-color: #f4f4f4;
+  }  
+</style>
+  
+
 <div>
     <div class="row">
         <div class="col-md-1 offset-md-6 d-flex align-items-center mt-3">
@@ -38,8 +76,11 @@
                         </select>
                     </div>
                     <div class="col-10 col-md-7 d-flex align-items-center justify-content-center">
-                        <input class="input-search" name="product" placeholder="Busca el repuesto o accesorio"
-                            type="text">
+                        <div class="autocomplete">
+                            <input class="input-search" name="product" id="myInput97" placeholder="Busca en esta tienda" type="text">
+                            <ul id="myUL97">
+                            </ul>
+                          </div>
                     </div>
                     <div class="col-2 d-flex align-items-center justify-content-center">
                         <button type="submit"><i class="fa-solid fa-magnifying-glass icons-search pointer"></i></button>
@@ -50,3 +91,41 @@
         @endif
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  <script>
+        $(document).ready(function() {
+            $('#myInput97').keyup(function() {
+                var query = $(this).val();
+                if (query != '') {
+                    $.ajax({
+                        url: "{{ route('autocomplete-products-store') }}",
+                        method: "GET",
+                        data: {
+                            term: query,
+                            store: '{{$store->id}}'
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#myUL97').empty();
+                            $.each(data, function(key, value) {
+                              $('#myUL97').append('<li class="list-item" data-name="'+value.name+'"><a>'+value.name+'</a></li>');
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.list-item', function(){
+            var name = $(this).data('name');
+            $('#myInput97').val(name);
+            $('#myUL97').empty();
+        });
+
+        $(document).on('click', function(e){
+            if(!$(e.target).closest('#myUL97').length && !$(e.target).is('#myUL97')) {
+                $('#myUL97').empty();
+            }
+        });
+  </script>

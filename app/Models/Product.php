@@ -30,4 +30,8 @@ class Product extends Model
     public function typeProduct(){
         return $this->belongsTo(TypeProduct::class, 'type_products_id');
     }
+
+    public function stores(){
+        return $this->belongsToMany(Store::class, 'product_stores', 'products_id', 'stores_id');
+    }
 }
