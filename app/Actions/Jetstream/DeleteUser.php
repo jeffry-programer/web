@@ -22,6 +22,7 @@ class DeleteUser implements DeletesUsers
 
             $user->store->delete();
         }
+        $user->subscriptions->detach();
         $user->deleteProfilePhoto();
         $user->tokens->each->delete();
         $user->delete();

@@ -663,7 +663,7 @@
         }
 
         // Llamar a la función updateAds cada 5 segundos
-        setInterval(updateAds, 10000);
+        //setInterval(updateAds, 10000);
     });
 
     $('#boton-flotante').click(function() {
