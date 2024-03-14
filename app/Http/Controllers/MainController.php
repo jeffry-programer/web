@@ -397,4 +397,9 @@ class MainController extends Controller{
         return response()->json(['error' => 'No se proporcionó ninguna imagen'], 422);
     }
 
+    public function autocompleteProducts(Request $request){
+        $search = $request->get('term');
+        $products = Product::where('name', 'LIKE', '%'.$search.'%')->take(5)->get();
+        return response()->json($products);
+    }
 }

@@ -46,9 +46,7 @@ class NavigationMenu extends Component
             $subscribeds = Subscription::where('users_id', Auth::user()->id)->get();
         }
 
-        $products = Product::all();
-
-        $data = ['categories' => $categories, 'countries' => $countries, 'link_store' => $link_store, 'subscribeds' => $subscribeds, 'products' => $products];
+        $data = ['categories' => $categories, 'countries' => $countries, 'link_store' => $link_store, 'subscribeds' => $subscribeds];
         return view('livewire.navigation-menu', $data);
     }
 }

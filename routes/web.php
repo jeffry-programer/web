@@ -32,6 +32,8 @@ Route::get('/search-stores', [MainController::class, 'searchStores'])->name('sea
 Route::get('/imgs-store', [AssociateProduct::class, 'store'])->name('imgs-store');
 Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('table-store-imgs');
 Route::get('/publicities/{id}', [MainController::class, 'publicity']);
+Route::get('/autocomplete-products', [MainController::class, 'autocompleteProducts'])->name('autocomplete-products');
+
 
 Route::middleware([
     'auth:sanctum',
