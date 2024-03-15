@@ -450,10 +450,10 @@
                                     <input type="text" name="{{$field}}" class="d-none" value="">
                                 @elseif($field == 'phone' || $field == 'amount' || $field == 'price')
                                     <label>{{__($field)}}</label>
-                                    <input type="number" min="1" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                    <input type="number" step="0.01" min="1" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                 @elseif($field == 'count')
                                     <label class="d-none">{{__($field)}}</label>
-                                    <input type="number" name="{{$field}}" required class="form-control d-none" value="0">
+                                    <input type="number" step="0.01" name="{{$field}}" required class="form-control d-none" value="0">
                                 @elseif((str_contains($field, 'hour')))
                                     <label>{{__($field)}}</label>
                                     <input type="time" name="{{$field}}" class="form-control">
@@ -591,7 +591,7 @@
                                         <input type="text" name="{{$field}}" id="{{$field}}" class="d-none">
                                     @elseif($field == 'phone')
                                         <label>{{__($field)}}</label>
-                                        <input type="number" name="{{$field}}" id="{{$field}}" required class="form-control">
+                                        <input type="number" step="0.01" name="{{$field}}" id="{{$field}}" required class="form-control">
                                     @elseif((str_contains($field, 'hour')))
                                         <label>{{__($field)}}</label>
                                         <input type="time" name="{{$field}}" id="{{$field}}" class="form-control">
