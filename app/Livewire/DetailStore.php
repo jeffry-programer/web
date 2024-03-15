@@ -32,7 +32,7 @@ class DetailStore extends Component
 
     public $search_products = false;
 
-    public function render(){
+    public function render(){        
         if(str_contains($_SERVER['REQUEST_URI'], 'update')){
             $this->search_products = true;
         }
@@ -93,6 +93,7 @@ class DetailStore extends Component
             $this->product_detail = Product::where('link', $link_product)->first();
             $this->brand = Brand::find($this->product_detail->brands_id)->first()->description;
             $this->product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $this->product_detail->id)->first();
+            if($this->product_store == null) return redirect('/tienda/'.str_replace(' ','-', $store->name));
         }
 
         if(str_contains($_SERVER['REQUEST_URI'], '?page')){
@@ -110,6 +111,15 @@ class DetailStore extends Component
                 $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
             }else{
                 $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->paginate($this->paginate);
+            }
+
+            if(count($products) == 0){
+                if($category != 'Categoria'){
+                    $id_sub_category = SubCategory::where('categories_id', $category)->select('id')->first()->id;
+                    $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product.'s')->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
+                }else{
+                    $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product.'s')->paginate($this->paginate);
+                }
             }
 
             if(count($products) == 0){
