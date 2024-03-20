@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('/publicities', [MainController::class, 'getPublicitiesApi']);
+Route::get('/stores', [MainController::class, 'getStoresApi']);
+Route::post('login',  [MainController::class, 'login']);

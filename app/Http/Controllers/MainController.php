@@ -418,4 +418,30 @@ class MainController extends Controller{
         })->where('name', 'LIKE', '%'.$search.'%')->take(5)->get();
         return response()->json($products);
     }
+
+    public function getPublicitiesApi(){
+        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
+        return response()->json($publicities);
+    }
+
+    public function getStoresApi(){
+        $stores = Store::where('status', true)->whereHas('promotions', function ($query){
+            $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
+        })->take(8)->get();
+        return response()->json($stores);
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Autenticación exitosa
+            return response()->json(['message' => 'Login successful'], 200);
+        } else {
+            // Autenticación fallida
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+    }
 }
+
