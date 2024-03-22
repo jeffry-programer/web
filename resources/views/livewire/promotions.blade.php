@@ -40,7 +40,7 @@
                     <label for="">Fecha fin</label>
                     <input type="date" name="date_end" class="form-control w-100 mt-3">
                     <label for="" class="mt-3">Descripción oferta</label>
-                    <textarea class="form-control mt-3 w-100" name="description" rows="5" placeholder="Escribe aquí..."></textarea>
+                    <textarea class="form-control mt-3 w-100" name="description" rows="5" placeholder="Por favor ingrese una descripción"></textarea>
                 </div>
                 <div class="col-md-4 offset-md-2 form-group">
                     <label >Porcentaje promoción</label>
@@ -82,8 +82,10 @@
                     <input type="text" name="title" class="form-control w-100 mt-3" placeholder="Por favor escriba un titulo">
                 </div>
                 <div class="col-md-4 offset-md-2 form-group">
-                    <label for="" class="mt-3">Descripción oferta</label>
-                    <input type="text" name="description" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción">
+                    <label for="" class="mt-3">Descripción de la publicidad</label>
+                    
+                    <textarea class="form-control" name="description" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción" rows="3"></textarea>
+
                     <label class="py-3" for="name">{{ __('Imagen') }}</label>
                     <div class="dropzone" id="myDropzone92"></div>
                     <input type="hidden" id="id_publicities_save">
