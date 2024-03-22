@@ -225,7 +225,7 @@
                                             @if ($condition)
                                                 <button class="btn btn-outline-primary w-100 mb-3"
                                                     data-bs-toggle="modal" data-bs-target="#exampleModal2">Editar
-                                                    datos de la tienda</button>
+                                                    datos</button>
                                             @endif
                                             <h3>{{ $store->name }}</h3>
                                         </div>
@@ -506,7 +506,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de la tienda</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de la empresa</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 @livewire('update-store', ['store' => $global_store]);
