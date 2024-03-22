@@ -833,6 +833,9 @@ class UserManagement extends Component
             $query = "update $request->table set image = '$url' where id = $request->id";
             DB::update($query);
         }
+
+        $rutaStorage = storage_path();
+        chmod($rutaStorage, 0777);
     }
 
     public function saveImgs2(Request $request){        

@@ -377,16 +377,16 @@ class MainController extends Controller{
             $rutaImagenEliminar = "";
 
             if($request->type == 'banner'){
-                $rutaImagenEliminar = 'public/images-stores/'.$request->stores_id.'/'.$store->image2;
+                $rutaImagenEliminar = 'public/images-stores/'.$store->image2;
             }else{
-                $rutaImagenEliminar = 'public/images-stores/'.$request->stores_id.'/'.$store->image;
+                $rutaImagenEliminar = 'public/images-stores/'.$store->image;
             }
 
             if(Storage::exists($rutaImagenEliminar)){
                 Storage::delete($rutaImagenEliminar);
             }
 
-            $route_image = $request->file('file')->store('public/images-stores/'.$request->stores_id);
+            $route_image = $request->file('file')->store('public/images-stores');
             $url = Storage::url($route_image);
 
             if($request->type == 'banner'){
@@ -396,8 +396,6 @@ class MainController extends Controller{
             }
             
             $store->save();
-
-            chmod('storage/app/public', 0777);
 
             return response()->json(['url' => $url]);
         }
