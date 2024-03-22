@@ -394,9 +394,10 @@ class MainController extends Controller{
             }else{
                 $store->image = $url;
             }
-
             
             $store->save();
+
+            chmod('storage/app/public', 0777);
 
             return response()->json(['url' => $url]);
         }

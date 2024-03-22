@@ -833,6 +833,8 @@ class UserManagement extends Component
             $query = "update $request->table set image = '$url' where id = $request->id";
             DB::update($query);
         }
+
+        chmod('storage/app/public', 0777);
     }
 
     public function saveImgs2(Request $request){        
@@ -891,6 +893,8 @@ class UserManagement extends Component
             $query = "update $request->table set image = '$url' where id = $request->id";
             DB::update($query);
         }
+
+        chmod('storage/app/public', 0777);
     }
 
     public function deleteImg(Request $request){
