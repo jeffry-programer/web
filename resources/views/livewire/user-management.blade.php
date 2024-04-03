@@ -918,7 +918,7 @@
 
             if(!boolean){
                 Swal.fire({
-                    title: "Campos ingresados no válidos",
+                    title: "Error: Valores inválidos o campos incompletos.",
                     icon: "error",
                     toast: true,
                     position: 'top-end',
