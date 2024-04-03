@@ -16,4 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/publicities', [MainController::class, 'getPublicitiesApi']);
 Route::get('/stores', [MainController::class, 'getStoresApi']);
-Route::post('login',  [MainController::class, 'login']);
+Route::post('register',  [MainController::class, 'registerApi']);
+Route::post('login', [MainController::class, 'loginApi']);
+Route::middleware('auth:api')->group(function () {
+    Route::get('user', [MainController::class, 'current']);
+    Route::post('logout', [MainController::class, 'logoutApi']);
+});

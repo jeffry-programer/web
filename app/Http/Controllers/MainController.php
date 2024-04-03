@@ -19,10 +19,14 @@ use App\Models\TypeStore;
 use App\Models\Modell;
 use App\Models\SubCategory;
 use App\Models\TypeProduct;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class MainController extends Controller{ 
     public function searchStores(){
@@ -430,17 +434,48 @@ class MainController extends Controller{
         return response()->json($stores);
     }
 
-    public function login(Request $request)
+    public function registerApi(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'email_verified_at' => Carbon::now(),
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['message' => 'Usuario registrado exitosamente'], 201);
+    }
+
+    public function loginApi(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
         if (Auth::attempt($credentials)) {
-            // Autenticación exitosa
-            return response()->json(['message' => 'Login successful'], 200);
+            $user = Auth::user();
+            return response()->json(['user' => $user], 200);
         } else {
-            // Autenticación fallida
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['error' => 'Credenciales invalidas'], 422);
         }
+    }
+
+    public function logoutApi(Request $request)
+    {
+        $request->user()->token()->revoke();
+        return response()->json(['message' => 'Successfully logged out'], 200);
+    }
+
+    public function current(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json($user, 200);
     }
 }
 
