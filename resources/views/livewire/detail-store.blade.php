@@ -486,9 +486,13 @@
                 @foreach ($publicities as $key)
                     <li class="slide"
                         style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
-                        <div class="card">
+                        <div class="card" style="max-height: 5rem;">
                             <div class="card-body" style="padding: 0rem;">
-                                <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})">
+                                <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})" style="position: relative;
+                                    display: inline-block;
+                                    overflow: hidden;
+                                    width: 100%;
+                                    height: 100%;">
                                     <img src="{{ asset($key->image) }}" class="img-fluid imagen-zoom">
                                     <div class="texto-encima">{{ $key->title }}</div>
                                 </div>

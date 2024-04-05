@@ -65,6 +65,10 @@ class MainController extends Controller{
         if($store == null){
             return redirect('/');
         }
+        $user = User::find($store->users_id);
+        if($user == null){
+            return redirect('/');
+        }
         if(isset(explode('/', $_SERVER['REQUEST_URI'])[3])){
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
             $product = Product::where('link', $link_product)->first();
