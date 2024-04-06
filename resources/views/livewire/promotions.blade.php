@@ -50,7 +50,7 @@
                     <input type="hidden" id="id_promotion_save">
                 </div>
                 <div class="col-12 col-md-4 offset-md-6">
-                    <button type="button" class="btn btn-primary mt-3 w-100" disabled id="save-promotion">Guardar</button>
+                    <button type="button" class="btn btn-primary mt-3 w-100" id="save-promotion">Guardar</button>
                 </div>
             </div>
         </form>
@@ -82,7 +82,7 @@
                     <input type="text" name="title" class="form-control w-100 mt-3" placeholder="Por favor escriba un titulo">
                 </div>
                 <div class="col-md-4 offset-md-2 form-group">
-                    <label for="" class="mt-3">Descripción de la publicidad</label>
+                    <label for="" class="mb-3">Descripción de la publicidad</label>
                     
                     <textarea class="form-control" name="description" class="form-control w-100 mt-3" placeholder="Por favor ingrese una descripción" rows="3"></textarea>
 

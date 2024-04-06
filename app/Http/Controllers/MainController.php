@@ -80,7 +80,7 @@ class MainController extends Controller{
         if(isset(explode('/', $_SERVER['REQUEST_URI'])[3])){
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
             $product_detail = Product::where('link', $link_product)->first();
-            $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $product_detail)->first();
+            $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $product_detail->id)->first();
             if($product_store == null) return redirect('/tienda/'.str_replace(' ','-', $store->name));
         }
         return view('detail-store');

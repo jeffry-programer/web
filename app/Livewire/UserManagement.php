@@ -26,6 +26,7 @@ use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypePublicity;
 use App\Models\User;
+use App\Notifications\NotifyAdmin;
 use App\Notifications\NotifyUsers;
 use App\Notifications\RegisterStore;
 use Carbon\Carbon;
@@ -324,8 +325,10 @@ class UserManagement extends Component
             'description' => 'required|min:3|max:100',
             'date_end' => 'required|date|after:date_init|before_or_equal:' . Carbon::now()->addDays(30)->format('Y-m-d'),
             'date_init' => 'required|date',
+            'product_stores_id' => 'required'
         ],[
-            'date_end.before_or_equal' => 'El sistema le permite máximo 30 dias de promoción.'
+            'date_end.before_or_equal' => 'El sistema le permite máximo 30 dias de promoción.',
+            'product_stores_id.required' => 'Por favor seleccione un producto de su tienda'
         ]);
 
         $product_store = ProductStore::find($request->product_stores_id);
@@ -340,6 +343,8 @@ class UserManagement extends Component
         $promotion->status = false;
         $promotion->created_at = Carbon::now();
         $promotion->save();
+
+        $this->sendEmailsAdministrators('promoción', $product_store->stores_id);
 
         return json_encode('promotions'.'-'.$promotion->id);
     }
@@ -366,7 +371,21 @@ class UserManagement extends Component
         $publicity->created_at = Carbon::now();
         $publicity->save();
 
+        $this->sendEmailsAdministrators('publicidad', $store->id);
+
         return json_encode('promotions'.'-'.$publicity->id);
+    }
+
+    public function sendEmailsAdministrators($type, $store_id){
+        $store = Store::find($store_id);
+        $users = User::whereHas('profile', function ($query) {
+            $query->where('description', 'Administrador');
+        })->get();
+        if(!$users->isEmpty()) {
+            foreach ($users as $user) {
+                $user->notify(new NotifyAdmin($user, $store, $type));
+            }
+        }
     }
 
 
