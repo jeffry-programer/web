@@ -288,14 +288,14 @@
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}",
             },
-            dictDefaultMessage: `Arrastre o haga click para agregar imágenes`,
+            dictDefaultMessage: `Arrastre o haga click para agregar imágenes (Máximo 2 imágenes)`,
             dictMaxFilesExceeded: "No puedes subir más archivos",
             dictCancelUpload: "Cancelar subida",
             dictInvalidFileType: "No puedes subir archivos de este tipo",
             dictRemoveFile: "Remover archivo",
             acceptedFiles: 'image/*',
             maxFilesize: 2.048,
-            maxFiles: 5,
+            maxFiles: 2,
             autoProcessQueue: false,
             dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
             addRemoveLinks: true,
