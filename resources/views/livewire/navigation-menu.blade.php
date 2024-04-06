@@ -152,8 +152,8 @@
                     </div>
                     <div class="col-8 col-md-6 d-flex align-items-center justify-content-center">
                       <div class="autocomplete">
-                        <input class="input-search" name="product" id="myInput98" placeholder="Busca el repuesto o accesorio" type="text">
-                        <ul id="myUL98">
+                        <input class="input-search" name="product" id="myInput98" placeholder="Busca el repuesto" type="text">
+                        <ul id="myUL98" style="overflow-y: hidden;">
                         </ul>
                       </div>
                     </div>

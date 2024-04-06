@@ -112,6 +112,9 @@ class MainController extends Controller{
         $date = Carbon::now();
 
         $publicity = Publicity::find($id);
+        if($publicity == null){
+            return redirect('/');
+        }
         $store = Store::find($publicity->stores_id);
         $publicities = Publicity::where('date_end', '>', $date)->where('status', true)->inRandomOrder()->get();
 
