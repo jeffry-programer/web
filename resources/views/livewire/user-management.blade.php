@@ -428,7 +428,7 @@
                                     <input type="text" name="{{$field}}" class="d-none" value="">
                                 @elseif(str_contains($field, 'date'))
                                     <label for="">{{__($field)}}</label>
-                                    <input type="date" name="{{$field}}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                    <input type="date" name="{{$field}}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" max="{{ \Carbon\Carbon::now()->addDays(365)->format('Y-m-d') }}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                 @elseif($field == 'password')
                                     <label>{{__($field)}}</label>
                                     <input type="password" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
@@ -581,7 +581,7 @@
                                         <input type="hidden" name="{{$field}}" id="{{$field}}">
                                     @elseif(str_contains($field, 'date'))
                                         <label for="">{{__($field)}}</label>
-                                        <input type="date" name="{{$field}}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                        <input type="date" name="{{$field}}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" max="{{ \Carbon\Carbon::now()->addDays(365)->format('Y-m-d') }}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                     @elseif($field == 'password')
                                         <label>{{__($field)}}</label>
                                         <input type="password" id="{{$field}}" name="{{$field}}" class="form-control" placeholder="Ingrese solo si desea cambiarla">

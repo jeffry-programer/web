@@ -113,7 +113,7 @@ class MainController extends Controller{
 
         $publicity = Publicity::find($id);
         $store = Store::find($publicity->stores_id);
-        $publicities = Publicity::where('date_end', '>', $date)->where('status', true)->inRandomOrder()->limit(8)->get();
+        $publicities = Publicity::where('date_end', '>', $date)->where('status', true)->inRandomOrder()->get();
 
         $subscribed = false;
 
