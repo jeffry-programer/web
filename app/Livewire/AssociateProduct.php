@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Box;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\cylinderCapacity;
 use App\Models\Product;
 use App\Models\ProductStore;
@@ -24,6 +25,7 @@ class AssociateProduct extends Component{
     public $nextSteep = false;
 
     public function render(){
+        $categories = Category::all();
         $sub_categories = SubCategory::all();
         $cylinder_capacities = cylinderCapacity::all();
         $models = DB::table('models')->get();
@@ -31,7 +33,7 @@ class AssociateProduct extends Component{
         $type_products = TypeProduct::all();
         $brands = Brand::all();
         $products = Product::all();
-        return view('livewire.associate-product', ['sub_categories' => $sub_categories, 'cylinder_capacities' => $cylinder_capacities, 'models' => $models, 'boxes' => $boxes, 'type_products' => $type_products, 'brands' => $brands, 'products' => $products]);
+        return view('livewire.associate-product', ['categories' => $categories, 'sub_categories' => $sub_categories, 'cylinder_capacities' => $cylinder_capacities, 'models' => $models, 'boxes' => $boxes, 'type_products' => $type_products, 'brands' => $brands, 'products' => $products]);
     }
 
     public function select($name, $id_product_store){

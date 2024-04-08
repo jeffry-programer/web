@@ -133,6 +133,12 @@ class DetailStore extends Component
             $products = Store::find($this->global_store['id'])->products()->paginate($this->paginate);
         }
 
+        $products_promotion = $store->products()->whereHas('promotions', function ($query) {
+            $today = Carbon::now()->toDateString();
+            $query->whereDate('date_init', '<=', $today)
+                  ->whereDate('date_end', '>=', $today);
+        })->get();
+
         $products_total = count(Store::find($this->global_store['id'])->products()->get());
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
 
@@ -142,7 +148,8 @@ class DetailStore extends Component
             'categories' => $categories,
             'products' => $products,
             'publicities' => $publicities,
-            'products_total' => $products_total
+            'products_total' => $products_total,
+            'products_promotion' => $products_promotion
         ];
         
         return view('livewire.detail-store', $array_data);

@@ -113,19 +113,19 @@
             <div class="carousel-item active">
                 <div class="contenedor-imagen">
                     <?php
-                        if($store->image2 != null){
-                            $imagen_banner = $store->image2;
-                        }else{
-                            $imagen_banner = 'images/1.jpg';
-                        }                        
+                    if ($store->image2 != null) {
+                        $imagen_banner = $store->image2;
+                    } else {
+                        $imagen_banner = 'images/1.jpg';
+                    }
                     ?>
                     <img src="{{ asset($imagen_banner) }}" class="imagen">
-                    @if($condition)
-                    <button id="boton-flotante" class="boton-flotante" onclick="mostrarInput()">
-                        <i class="fa-solid fa-camera"></i>
-                    </button>
-                    <input type="file" id="input-imagen" class="input-imagen" accept="image/*"
-                        onchange="mostrarImagen(event)">
+                    @if ($condition)
+                        <button id="boton-flotante" class="boton-flotante" onclick="mostrarInput()">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+                        <input type="file" id="input-imagen" class="input-imagen" accept="image/*"
+                            onchange="mostrarImagen(event)">
                     @endif
                 </div>
             </div>
@@ -167,6 +167,11 @@
                     </li>
                 @endif
 
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#promotions" type="button"
+                        role="tab" aria-controls="promotions" aria-selected="false">Promociones</button>
+                </li>
+
                 @if ($product_detail != null)
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="productDescription2" data-bs-toggle="tab"
@@ -188,7 +193,7 @@
                             @if ($condition2)
                                 Publicidad
                             @else
-                                Promociones
+                                Promocionar
                             @endif
                         </button>
                     </li>
@@ -209,12 +214,13 @@
                             <div class="col-12 col-lg-8 d-flex justify-content-center" style="position: relative;">
                                 <div class="contenedor-imagen-2">
                                     <img src="{{ asset($store->image) }}" alt="Imagen" class="imagen">
-                                    @if($condition)
-                                    <button id="boton-flotante-2" class="boton-flotante-2" onclick="mostrarInput2()">
-                                        <i class="fa-solid fa-camera"></i>
-                                    </button>
-                                    <input type="file" id="input-imagen-2" class="input-imagen-2"
-                                        accept="image/*" onchange="mostrarImagen(event)">
+                                    @if ($condition)
+                                        <button id="boton-flotante-2" class="boton-flotante-2"
+                                            onclick="mostrarInput2()">
+                                            <i class="fa-solid fa-camera"></i>
+                                        </button>
+                                        <input type="file" id="input-imagen-2" class="input-imagen-2"
+                                            accept="image/*" onchange="mostrarImagen(event)">
                                     @endif
                                 </div>
                             </div>
@@ -272,7 +278,8 @@
                         <div class="row" id="productos-container">
                             @if ($showMessageNotFoundProducts)
                                 <div class="alert alert-info">
-                                    No hemos encontrado productos que coincidieran con tu busqueda, aqui puedes ver otras opciones.
+                                    No hemos encontrado productos que coincidieran con tu busqueda, aqui puedes ver
+                                    otras opciones.
                                 </div>
                             @endif
                             @if (count($products) == 0)
@@ -479,6 +486,31 @@
                 <div class="tab-pane fade" id="promo" role="tabpanel" aria-labelledby="promo">
                     @livewire('promotions', ['global_store' => $global_store, 'condition2' => $condition2])
                 </div>
+                <div class="tab-pane fade" id="promotions" role="tabpanel" aria-labelledby="promo">
+                    <div class="row" style="border-bottom: solid 0.15rem #dee2e6;padding: 1rem;">
+                        <h4 class="ms-3">Productos de la tienda que se encuentran en promoción</h4>
+                    </div>
+                    <div class="row">
+                        @foreach ($products_promotion as $product)
+                            <div class="col-12 col-md-4 mt-3">
+                                <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
+                                    <div class="card card-store" style="height: 100%;">
+                                        <div class="zoom-container">
+                                            <img class="zoomed-image" src="{{ asset($product->image) }}">
+                                        </div>
+                                        <div class="card-body" style="padding-bottom: 4rem;">
+                                            <h5 class="card-title">{{ $product->name }}</h5>
+                                            <p class="card-text">{{ $product->description }}</p>
+                                            <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}"
+                                                class="btn btn-warning position-absolute bottom-0 end-0"
+                                                style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-12 col-lg-2">
@@ -488,7 +520,8 @@
                         style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
                         <div class="card" style="max-height: 5rem;">
                             <div class="card-body" style="padding: 0rem;">
-                                <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})" style="position: relative;
+                                <div class="contenedor-imagen" onclick="goPagePublicity({{ $key->id }})"
+                                    style="position: relative;
                                     display: inline-block;
                                     overflow: hidden;
                                     width: 100%;
@@ -617,7 +650,7 @@
                 method: 'POST',
                 success: function(response) {
                     Swal
-                .close(); // O Swal.closeModal(); si estás utilizando una versión anterior a SweetAlert 2.1.0
+                        .close(); // O Swal.closeModal(); si estás utilizando una versión anterior a SweetAlert 2.1.0
                     var productos = response.data;
                     if (productos.length == 0) {
                         $('#load-products').hide();
@@ -688,7 +721,7 @@
         subirImagen(event, 'main');
     });
 
-    function searchDataStore(){
+    function searchDataStore() {
         $("search-data-store").submit();
     }
 
@@ -698,9 +731,9 @@
             const formData = new FormData();
             formData.append('file', image);
             formData.append('type', type);
-            formData.append('stores_id', '{{$store->id}}');
+            formData.append('stores_id', '{{ $store->id }}');
             $.ajax({
-                url: "{{route('upload-image-store')}}", // Reemplaza 'tu/controlador/ruta' con la ruta adecuada a tu controlador Laravel
+                url: "{{ route('upload-image-store') }}", // Reemplaza 'tu/controlador/ruta' con la ruta adecuada a tu controlador Laravel
                 type: 'POST',
                 data: formData,
                 headers: {
@@ -720,7 +753,8 @@
                     setTimeout(() => {
                         window.location.reload();
                     }, 2000);
-                },error: function(xhr) {
+                },
+                error: function(xhr) {
                     if (xhr.status === 422) {
                         var errors = xhr.responseJSON.errors;
                         var errorMessage = '';

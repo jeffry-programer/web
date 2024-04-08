@@ -69,4 +69,4 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-primary" id="btn-search-store" @if($disabled) disabled @endif wire:click="searchStore">Buscar</button>
     </div>
-</div>
+</div>z

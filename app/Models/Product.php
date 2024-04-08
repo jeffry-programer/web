@@ -11,11 +11,16 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sub_categories_id','cylinder_capacities_id','models_id','boxes_id','type_products_id','brands_id','name','description','code','image','count','link','reference','detail','created_at'];
+    protected $fillable = ['sub_categories_id', 'cylinder_capacities_id', 'models_id', 'boxes_id', 'type_products_id', 'brands_id', 'name', 'description', 'code', 'image', 'count', 'link', 'reference', 'detail', 'created_at'];
 
     public function aditionalPictures(): HasMany
     {
         return $this->hasMany(AditionalPicturesProduct::class, 'products_id');
+    }
+
+    public function promotions()
+    {
+        return $this->hasMany(Promotion::class, 'products_id');
     }
 
     public function brand(): BelongsTo
@@ -23,15 +28,18 @@ class Product extends Model
         return $this->belongsTo(Brand::class, 'brands_id', 'id');
     }
 
-    public function subcategory(){
+    public function subcategory()
+    {
         return $this->belongsTo(SubCategory::class, 'sub_categories_id');
     }
 
-    public function typeProduct(){
+    public function typeProduct()
+    {
         return $this->belongsTo(TypeProduct::class, 'type_products_id');
     }
 
-    public function stores(){
+    public function stores()
+    {
         return $this->belongsToMany(Store::class, 'product_stores', 'products_id', 'stores_id');
     }
 }

@@ -13,10 +13,11 @@
                     <label>Nombre del producto</label>
                     <input type="hidden" name="cities_id" id="city_store_data_id">
                     <div class="autocomplete">
-                        <input class="form-select mt-3" type="text" id="myInput30" name="name" placeholder="Busca y selecciona un producto..." autocomplete="off">
+                        <input class="form-select mt-3" type="text" id="myInput30" name="name"
+                            placeholder="Busca y selecciona un producto..." autocomplete="off">
                         <ul id="myUL30">
-                            @foreach ($products as $product) 
-                                <li><a onclick="selectCity30({{ $product->id }})">{{$product->name}}</a></li>
+                            @foreach ($products as $product)
+                                <li><a onclick="selectCity30({{ $product->id }})">{{ $product->name }}</a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -24,11 +25,18 @@
             </div>
             <div class="row d-none nextSteep">
                 <div class="col-md-6 form-group">
-                    <label>Sub categoria</label>
-                    <select class="form-select my-3" name="sub_categories_id">
-                        @foreach ($sub_categories as $sub_category)
-                            <option value="{{ $sub_category->id }}">{{ $sub_category->name }}</option>
+                    <label for="">Categorias</label>
+                    <select class="form-select my-3" id="select1" data-type="category">
+                        <option value="" selected>Seleccione una categoria</option>
+                        @foreach ($categories as $key)
+                            <option value="{{ $key->id }}">{{ $key->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="">Sub Categoria</label>
+                    <select class="form-select my-3" id="select2" name="sub_categories_id">
+                        <option value="" selected>Seleccione una subcategoria</option>
                     </select>
                 </div>
                 <div class="col-md-6 form-group">
@@ -85,7 +93,7 @@
                     <input type="form-control" name="reference" class="form-control my-3"
                         placeholder="Ingrese una referencia">
                 </div>
-                <div class="col-md-6 form-group">
+                <div class="col-md-12 form-group">
                     <label>Detalle</label>
                     <input type="form-control" name="detail" class="form-control my-3"
                         placeholder="Ingrese un detalle">
@@ -96,13 +104,13 @@
                 <input type="hidden" name="products_id" id="product_id">
                 <div class="col-md-6 form-group">
                     <label>Cantidad</label>
-                    <input type="number" name="amount" wire:model="amount" placeholder="Ingrese la cantidad" min="1"
-                        class="form-control w-100 mt-3">
+                    <input type="number" name="amount" wire:model="amount" placeholder="Ingrese la cantidad"
+                        min="1" class="form-control w-100 mt-3">
                 </div>
                 <div class="col-md-6 form-group">
                     <label>Precio</label>
-                    <input type="number" name="price" wire:model="price" placeholder="Ingrese el precio" min="1"
-                        class="form-control w-100 mt-3">
+                    <input type="number" name="price" wire:model="price" placeholder="Ingrese el precio"
+                        min="1" class="form-control w-100 mt-3">
                 </div>
             </div>
             <div class="row nextSteep d-none">
@@ -122,3 +130,42 @@
         <button type="button" class="btn btn-primary d-none" id="store">Asociar</button>
     </div>
 </div>
+
+<script>
+    $('#select1').change(function() {
+            var select1Value = $(this).val();
+            var typeSubCategory = $(this).data('type');
+            $('#select2').empty();
+            if(select1Value !== '') {
+                $.ajax({
+                    url: "{{ route('obtener-sucategorias') }}",
+                    data: {'id' : select1Value, 'type' : typeSubCategory},
+                    headers: {
+                        'X-CSRF-TOKEN' : "{{csrf_token()}}",
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(data);
+                        $('#select2').append($('<option>', { 
+                            value: '',
+                            text : 'Selecciona una opción'
+                        }));
+                        $.each(data, function(key, value) {
+                            if(typeSubCategory == 'module'){
+                                $('#select2').append($('<option>', { 
+                                    value: value.id,
+                                    text : value.description
+                                }));
+                            }else{
+                                $('#select2').append($('<option>', { 
+                                    value: value.id,
+                                    text : value.name
+                                }));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+</script>
