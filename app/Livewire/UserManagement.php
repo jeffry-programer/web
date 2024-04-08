@@ -235,7 +235,7 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'){
                 if($field == 'image' || $field == 'image2'){
                     $data[$field] = '';
                 } 
