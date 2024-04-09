@@ -201,7 +201,7 @@
                 position: 'center',
                 icon: 'success',
                 showConfirmButton: false,
-                title: "Registro agregado exitosamente",
+                title: "Datos actualizados exitosamente",
                 timer: 3000
             });
         }

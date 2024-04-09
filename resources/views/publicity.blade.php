@@ -31,7 +31,7 @@
             <div class="card mb-3">
                 <div class="row g-0">
                   <div class="col-md-6">
-                    <a href="{{ $publicity->link }}"><img style="object-fit: cover;
+                    <a href="/tienda/{{ $publicity->link }}"><img style="object-fit: cover;
                     width: 100%;
                     height: 20rem;" src=" {{ asset($publicity->image) }} " class="img-fluid rounded-start"></a>
                   </div>
@@ -39,7 +39,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8 col-md-9">
-                                <a href="{{ $publicity->link }}" target="_blank"><p style="font-size: .74rem;text-decoration: underline;color: #666;">{{ $publicity->link }}</p></a>
+                                <a href="/tienda/{{ $publicity->link }}" target="_blank"><p style="font-size: .74rem;text-decoration: underline;color: #666;">{{ $publicity->link }}</p></a>
                             </div>
                             <form action=" {{ route('subscribe') }} " method="POST" id="subscribe-form" class="d-none">
                                 @csrf
