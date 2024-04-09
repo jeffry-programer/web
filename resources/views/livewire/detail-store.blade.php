@@ -167,10 +167,12 @@
                     </li>
                 @endif
 
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#promotions" type="button"
-                        role="tab" aria-controls="promotions" aria-selected="false">Promociones</button>
-                </li>
+                @if (!$condition2)
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#promotions" type="button"
+                            role="tab" aria-controls="promotions" aria-selected="false">Promociones</button>
+                    </li>
+                @endif
 
                 @if ($product_detail != null)
                     <li class="nav-item" role="presentation">
@@ -486,31 +488,33 @@
                 <div class="tab-pane fade" id="promo" role="tabpanel" aria-labelledby="promo">
                     @livewire('promotions', ['global_store' => $global_store, 'condition2' => $condition2])
                 </div>
-                <div class="tab-pane fade" id="promotions" role="tabpanel" aria-labelledby="promo">
-                    <div class="row" style="border-bottom: solid 0.15rem #dee2e6;padding: 1rem;">
-                        <h4 class="ms-3">Productos de la tienda que se encuentran en promoción</h4>
-                    </div>
-                    <div class="row">
-                        @foreach ($products_promotion as $product)
-                            <div class="col-12 col-md-4 mt-3">
-                                <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
-                                    <div class="card card-store" style="height: 100%;">
-                                        <div class="zoom-container">
-                                            <img class="zoomed-image" src="{{ asset($product->image) }}">
+                @if (!$condition2)
+                    <div class="tab-pane fade" id="promotions" role="tabpanel" aria-labelledby="promo">
+                        <div class="row" style="border-bottom: solid 0.15rem #dee2e6;padding: 1rem;">
+                            <h4 class="ms-3">Productos de la tienda que se encuentran en promoción</h4>
+                        </div>
+                        <div class="row">
+                            @foreach ($products_promotion as $product)
+                                <div class="col-12 col-md-4 mt-3">
+                                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
+                                        <div class="card card-store" style="height: 100%;">
+                                            <div class="zoom-container">
+                                                <img class="zoomed-image" src="{{ asset($product->image) }}">
+                                            </div>
+                                            <div class="card-body" style="padding-bottom: 4rem;">
+                                                <h5 class="card-title">{{ $product->name }}</h5>
+                                                <p class="card-text">{{ $product->description }}</p>
+                                                <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}"
+                                                    class="btn btn-warning position-absolute bottom-0 end-0"
+                                                    style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
+                                            </div>
                                         </div>
-                                        <div class="card-body" style="padding-bottom: 4rem;">
-                                            <h5 class="card-title">{{ $product->name }}</h5>
-                                            <p class="card-text">{{ $product->description }}</p>
-                                            <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}"
-                                                class="btn btn-warning position-absolute bottom-0 end-0"
-                                                style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        @endforeach
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
         <div class="col-12 col-lg-2">
@@ -580,19 +584,38 @@
     </div>
     @if (session('welcome_modal_shown'))
         <!-- Modal de bienvenida -->
-        <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+        <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="welcomeModalLabel">Estimad@ {{ Auth::user()->name }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Es un placer darte la Bienvenida a Tulobuscas. Nos complace informarte que tu empresa ha completado con éxito todo el proceso de registro en nuestro sistema.</p>
-                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">A partir de ahora, comenzarás a disfrutar de los numerosos beneficios que Tulobuscas te ofrece. Nuestro objetivo es proporcionarte las herramientas y recursos necesarios para impulsar tu empresa.</p>
-                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Además, nos complace ofrecerte 30 días de servicio gratuito como parte de nuestro recibimiento. Tendrás acceso completo a todas nuestras características y servicios. Esperamos que explores y descubras todo lo que Tulobuscas tiene para ofrecer.</p>
-                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Si tienes alguna pregunta o necesitas asistencia no dudes en ponerte en contacto con nosotros. Estamos aquí para ayudarte.</p>
-                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Reiteramos nuestra calurosa bienvenida a Tulobuscas. Estamos entusiasmados y esperamos con interés la oportunidad de colaborarte y crecer juntos.</p>
+                        <p
+                            style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+                            Es un placer darte la Bienvenida a Tulobuscas. Nos complace informarte que tu empresa ha
+                            completado con éxito todo el proceso de registro en nuestro sistema.</p>
+                        <p
+                            style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+                            A partir de ahora, comenzarás a disfrutar de los numerosos beneficios que Tulobuscas te
+                            ofrece. Nuestro objetivo es proporcionarte las herramientas y recursos necesarios para
+                            impulsar tu empresa.</p>
+                        <p
+                            style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+                            Además, nos complace ofrecerte 30 días de servicio gratuito como parte de nuestro
+                            recibimiento. Tendrás acceso completo a todas nuestras características y servicios.
+                            Esperamos que explores y descubras todo lo que Tulobuscas tiene para ofrecer.</p>
+                        <p
+                            style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+                            Si tienes alguna pregunta o necesitas asistencia no dudes en ponerte en contacto con
+                            nosotros. Estamos aquí para ayudarte.</p>
+                        <p
+                            style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+                            Reiteramos nuestra calurosa bienvenida a Tulobuscas. Estamos entusiasmados y esperamos con
+                            interés la oportunidad de colaborarte y crecer juntos.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
