@@ -136,7 +136,8 @@ class DetailStore extends Component
         $products_promotion = $store->products()->whereHas('promotions', function ($query) {
             $today = Carbon::now()->toDateString();
             $query->whereDate('date_init', '<=', $today)
-                  ->whereDate('date_end', '>=', $today);
+                  ->whereDate('date_end', '>=', $today)
+                  ->where('status', true);
         })->get();
 
         $products_total = count(Store::find($this->global_store['id'])->products()->get());
