@@ -7,7 +7,7 @@ use Livewire\Component;
 
 class UpdateStore extends Component
 {
-
+    public $condition2;
     public $store;
     public $name;
     public $email;

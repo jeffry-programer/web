@@ -550,7 +550,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de la empresa</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                @livewire('update-store', ['store' => $global_store]);
+                @livewire('update-store', ['store' => $global_store, 'condition2' => $condition2]);
             </div>
         </div>
     </div>

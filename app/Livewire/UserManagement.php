@@ -778,6 +778,18 @@ class UserManagement extends Component
         $store->email = $request->email;
         $store->phone = $request->phone;
 
+        if(isset($request->tipo)){
+            $store->tipo = $request->tipo;
+        }
+
+        if(isset($request->capacidad)){
+            $store->capacidad = $request->capacidad;
+        }
+
+        if(isset($request->dimensiones)){
+            $store->dimensiones = $request->dimensiones;
+        }
+
         $store->save();
         return json_encode('stores'.'-'.$request->stores_id);
     }
