@@ -61,33 +61,99 @@
             </div>
         </div>
     </div>
-    <div class="alert alert-secondary mx-3" role="alert">
-        <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas con promociones</h6>
-    </div>
-    <div class="container">
-        <div class="row">
-            @foreach ($stores as $store)
-                <div class="col-12 col-md-4 mt-3">
-                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}">
-                        <div class="card card-store">
-                            <div class="zoom-container">
-                                <img class="zoomed-image" src="{{ asset($store->image) }}"
-                                    alt="Descripción de la imagen">
-                            </div>
-                            <div class="card-body" style="padding-bottom: 4rem;">
-                                <h5 class="card-title">{{ $store->name }}</h5>
-                                <p class="card-text">{{ $store->description }}</p>
-                                <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 18rem;"><i
-                                        class="fa-solid fa-location-dot me-1"></i>{{ $store->city->name }} -
-                                    {{ $store->address }}</p>
-                                <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}"
-                                    class="btn btn-warning position-absolute bottom-0 end-0"
-                                    style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            @endforeach
+    @if (!$stores->isEmpty())
+        <div class="alert alert-secondary mx-3" role="alert">
+            <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas con promociones</h6>
         </div>
-    </div>
+        <div class="container">
+            <div class="row">
+                @foreach ($stores as $store)
+                    <div class="col-12 col-md-4 mt-3">
+                        <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}">
+                            <div class="card card-store">
+                                <div class="zoom-container">
+                                    <img class="zoomed-image" src="{{ asset($store->image) }}"
+                                        alt="Descripción de la imagen">
+                                </div>
+                                <div class="card-body" style="padding-bottom: 4rem;">
+                                    <h5 class="card-title">{{ $store->name }}</h5>
+                                    <p class="card-text">{{ $store->description }}</p>
+                                    <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 18rem;"><i
+                                            class="fa-solid fa-location-dot me-1"></i>{{ $store->city->name }} -
+                                        {{ $store->address }}</p>
+                                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}"
+                                        class="btn btn-warning position-absolute bottom-0 end-0"
+                                        style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+    @if (!$stores2->isEmpty())
+        <div class="alert alert-secondary mx-3" role="alert">
+            <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas más buscadas</h6>
+        </div>
+        <div class="container">
+            <div class="row">
+                @foreach ($stores2 as $store)
+                    <div class="col-12 col-md-4 mt-3">
+                        <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}">
+                            <div class="card card-store">
+                                <div class="zoom-container">
+                                    <img class="zoomed-image" src="{{ asset($store->image) }}"
+                                        alt="Descripción de la imagen">
+                                </div>
+                                <div class="card-body" style="padding-bottom: 4rem;">
+                                    <h5 class="card-title">{{ $store->name }}</h5>
+                                    <p class="card-text">{{ $store->description }}</p>
+                                    <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 18rem;">
+                                        <i class="fa-solid fa-location-dot me-1"></i>{{ $store->city->name }} -
+                                        {{ $store->address }}
+                                    </p>
+                                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}"
+                                        class="btn btn-warning position-absolute bottom-0 end-0"
+                                        style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+    @if (!$stores3->isEmpty())
+        <div class="alert alert-secondary mx-3" role="alert">
+            <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Busquedas recientes</h6>
+        </div>
+        <div class="container">
+            <div class="row">
+                @foreach ($stores3 as $store)
+                    <div class="col-12 col-md-4 mt-3">
+                        <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}">
+                            <div class="card card-store">
+                                <div class="zoom-container">
+                                    <img class="zoomed-image" src="{{ asset($store->image) }}"
+                                        alt="Descripción de la imagen">
+                                </div>
+                                <div class="card-body" style="padding-bottom: 4rem;">
+                                    <h5 class="card-title">{{ $store->name }}</h5>
+                                    <p class="card-text">{{ $store->description }}</p>
+                                    <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 18rem;">
+                                        <i class="fa-solid fa-location-dot me-1"></i>{{ $store->city->name }} -
+                                        {{ $store->address }}
+                                    </p>
+                                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}"
+                                        class="btn btn-warning position-absolute bottom-0 end-0"
+                                        style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 </div>

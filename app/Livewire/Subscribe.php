@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Subscription;
 use Carbon\Carbon;
+use DragonCode\Contracts\Cashier\Http\Request;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -20,24 +22,22 @@ class Subscribe extends Component
         return view('livewire.subscribe');
     }
 
-    public function subscribe(){
+    public function subscribe(HttpRequest $request){
         if(!isset(Auth::user()->id)){
             return redirect('/login');
         }
         $subscription = new Subscription();
         $subscription->users_id = Auth::user()->id;
-        $subscription->stores_id = $this->store->id;
+        $subscription->stores_id = $request->stores_id;
         $subscription->created_at = Carbon::now();
         $subscription->save();
 
-        //session()->flash('message', 'Suscrito exitosamente!!');
-        return redirect('/tienda/'.str_replace(' ', '-', $this->store->name));
+        return json_encode('ok');
     }
 
-    public function nullSubscribe(){
-        $subscribed = Subscription::where('users_id', Auth::user()->id)->where('stores_id', $this->store->id)->first();
+    public function nullSubscribe(HttpRequest $request){
+        $subscribed = Subscription::where('users_id', Auth::user()->id)->where('stores_id', $request->stores_id)->first();
         $subscribed->delete();
-        //session()->flash('message', 'Suscripción anulada exitosamente!!');
-        return redirect('/tienda/'.str_replace(' ', '-', $this->store->name));
+        return json_encode('ok');
     }
 }
