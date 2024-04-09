@@ -348,7 +348,7 @@ class UserManagement extends Component
 
     public function registerPublicity(Request $request){
         $request->validate([
-            'description' => 'required|min:3|max:100',
+            'description' => 'required|min:3|max:255',
             'title' => 'required|min:3|max:50',
             'type_publicities_id' => 'required',
         ]);
