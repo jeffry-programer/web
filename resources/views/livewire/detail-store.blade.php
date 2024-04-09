@@ -659,17 +659,22 @@
 
                         //Mostrar las nuevas publicidades
                         $.each(response, function(index, ad) {
-                            $('#publicities').append(`<li class="slide" style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
-                            <div class="card">
-                                <div class="card-body" style="padding: 0rem;">
-                                    <div class="contenedor-imagen" onclick="goPagePublicity(${ad.id})">
-                                        <img src="{{ asset('${ad.image}') }}" class="img-fluid imagen-zoom"
-                                            alt="Imagen 1">
-                                        <div class="texto-encima">${ad.title}</div>
+                            $('#publicities').append(`<li class="slide"
+                                style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
+                                <div class="card" style="max-height: 5rem;">
+                                    <div class="card-body" style="padding: 0rem;">
+                                        <div class="contenedor-imagen" onclick="goPagePublicity(${ad.id})"
+                                            style="position: relative;
+                                            display: inline-block;
+                                            overflow: hidden;
+                                            width: 100%;
+                                            height: 100%;">
+                                            <img src="{{asset('${ad.image}')}}" class="img-fluid imagen-zoom">
+                                            <div class="texto-encima">${ad.title}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>`);
+                            </li>`);
                         });
 
                         //Mostrar las nuevas publicidades
@@ -761,7 +766,7 @@
         }
 
         // Llamar a la función updateAds cada 5 segundos
-        //setInterval(updateAds, 10000);
+        setInterval(updateAds, 10000);
     });
 
     $('#boton-flotante').click(function() {
