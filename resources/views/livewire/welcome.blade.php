@@ -96,11 +96,15 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="welcomeModalLabel">¡Bienvenido!</h5>
+                        <h5 class="modal-title" id="welcomeModalLabel">Estimad@ {{ Auth::user()->name }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        ¡Gracias por confirmar tu correo electrónico! Bienvenido a Tulobuscas.
+                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Es un placer darte la Bienvenida a Tulobuscas. Nos complace informarte que tu empresa ha completado con éxito todo el proceso de registro en nuestro sistema.</p>
+                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">A partir de ahora, comenzarás a disfrutar de los numerosos beneficios que Tulobuscas te ofrece. Nuestro objetivo es proporcionarte las herramientas y recursos necesarios para impulsar tu empresa.</p>
+                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Además, nos complace ofrecerte 30 días de servicio gratuito como parte de nuestro recibimiento. Tendrás acceso completo a todas nuestras características y servicios. Esperamos que explores y descubras todo lo que Tulobuscas tiene para ofrecer.</p>
+                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Si tienes alguna pregunta o necesitas asistencia no dudes en ponerte en contacto con nosotros. Estamos aquí para ayudarte.</p>
+                        <p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Reiteramos nuestra calurosa bienvenida a Tulobuscas. Estamos entusiasmados y esperamos con interés la oportunidad de colaborarte y crecer juntos.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>

@@ -4,6 +4,7 @@ namespace App\Events;
 
 use App\Models\User;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 
 class EmailVerified
 {
@@ -18,8 +19,12 @@ class EmailVerified
 
     public function handle()
     {
-        // Mostrar el modal de bienvenida
-        session(['welcome_modal_shown' => true]);
+        $user = Auth::user();
+
+        if ($user && $user->profiles_id != 3){
+            // Mostrar el modal de bienvenida
+            session(['welcome_modal_shown' => true]);
+        }
     }
 }
 

@@ -312,9 +312,6 @@ class UserManagement extends Component
         $plan->created_at = Carbon::now();
         $plan->save();
 
-        
-        Auth::user()->notify(new RegisterStore);
-
         // Puedes devolver una respuesta JSON si lo prefieres
         return json_encode('stores'.'-'.$store->id);
     }
