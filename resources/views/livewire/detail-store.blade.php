@@ -659,6 +659,10 @@
 
                         //Mostrar las nuevas publicidades
                         $.each(response, function(index, ad) {
+                            var imageAd = `{{asset('${ad.image}')}}`;
+                            if(imageAd.includes('//storage')){
+                                imageAd = imageAd.replaceAll('//storage','/storage');
+                            } 
                             $('#publicities').append(`<li class="slide"
                                 style="margin-top: .5rem;border-radius: 15px;background: transparent;border: transparent;">
                                 <div class="card" style="max-height: 5rem;">
@@ -669,7 +673,7 @@
                                             overflow: hidden;
                                             width: 100%;
                                             height: 100%;">
-                                            <img src="{{asset('${ad.image}')}}" class="img-fluid imagen-zoom">
+                                            <img src="${imageAd}" class="img-fluid imagen-zoom">
                                             <div class="texto-encima">${ad.title}</div>
                                         </div>
                                     </div>
