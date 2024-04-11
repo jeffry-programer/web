@@ -453,6 +453,7 @@ class MainController extends Controller{
         }
 
         User::create([
+            'profiles_id' => 3,
             'name' => $request->name,
             'email' => $request->email,
             'email_verified_at' => Carbon::now(),
@@ -462,8 +463,7 @@ class MainController extends Controller{
         return response()->json(['message' => 'Usuario registrado exitosamente'], 201);
     }
 
-    public function loginApi(Request $request)
-    {
+    public function loginApi(Request $request){
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
@@ -473,16 +473,28 @@ class MainController extends Controller{
         }
     }
 
-    public function logoutApi(Request $request)
-    {
+    public function logoutApi(Request $request){
         $request->user()->token()->revoke();
         return response()->json(['message' => 'Successfully logged out'], 200);
     }
 
-    public function current(Request $request)
-    {
+    public function current(Request $request){
         $user = Auth::user();
         return response()->json($user, 200);
     }
+
+    public function subscriptionsApi(Request $request){
+        $user = User::where('email', $request->email)->first();
+        $subscriptions = Subscription::where('users_id', $user->id)->get();
+        $array_subscriptions = array();
+        foreach($subscriptions as $key){
+            $store = [
+                'name' => $key->store->name,
+                'image' => $key->store->image
+            ];
+            $array_subscriptions[] = $store;
+        }
+        return response()->json($array_subscriptions, 200);
+    }   
 }
 
