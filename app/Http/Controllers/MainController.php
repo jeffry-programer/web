@@ -519,6 +519,7 @@ class MainController extends Controller{
         $array_subscriptions = array();
         foreach($subscriptions as $key){
             $store = [
+                'id' => $key->id,
                 'name' => $key->store->name,
                 'image' => $key->store->image
             ];
@@ -526,5 +527,12 @@ class MainController extends Controller{
         }
         return response()->json($array_subscriptions, 200);
     }   
+
+    public function nullSubscription(Request $request){
+        $subscription = Subscription::find($request->id);
+        $subscription->delete();
+
+        return response()->json('Subscripcion eliminada exitosamente', 200);
+    }
 }
 

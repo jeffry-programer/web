@@ -21,3 +21,5 @@ Route::post('login', [MainController::class, 'loginApi']);
 Route::post('verifiedApi', [MainController::class, 'verifiedApi']);
 Route::post('subscriptions', [MainController::class, 'subscriptionsApi']);
 Route::post('sendVerifiedEmailApi', [MainController::class, 'sendVerifiedEmailApi']);
+Route::post('nullSubscription', [MainController::class, 'nullSubscription']);
+
