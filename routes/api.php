@@ -18,4 +18,6 @@ Route::get('/publicities', [MainController::class, 'getPublicitiesApi']);
 Route::get('/stores', [MainController::class, 'getStoresApi']);
 Route::post('register',  [MainController::class, 'registerApi']);
 Route::post('login', [MainController::class, 'loginApi']);
+Route::post('verifiedApi', [MainController::class, 'verifiedApi']);
 Route::post('subscriptions', [MainController::class, 'subscriptionsApi']);
+Route::post('sendVerifiedEmailApi', [MainController::class, 'sendVerifiedEmailApi']);

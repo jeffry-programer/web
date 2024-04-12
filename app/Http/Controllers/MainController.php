@@ -20,6 +20,7 @@ use App\Models\Modell;
 use App\Models\SubCategory;
 use App\Models\TypeProduct;
 use App\Models\User;
+use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -452,25 +453,54 @@ class MainController extends Controller{
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        User::create([
+        $user = User::create([
             'profiles_id' => 3,
             'name' => $request->name,
             'email' => $request->email,
-            'email_verified_at' => Carbon::now(),
             'password' => Hash::make($request->password),
         ]);
+
+        $user->notify(new VerifiedEmailApi($user, $request->token));
 
         return response()->json(['message' => 'Usuario registrado exitosamente'], 201);
     }
 
+    public function sendVerifiedEmailApi(Request $request){
+        $user = User::where('email', $request->email)->first();
+        if($user->email_verified_at != null){
+            return response()->json(['error' => 'Correo verificado'], 422);
+        }
+        $user->notify(new VerifiedEmailApi($user, $request->token));
+    }
+
     public function loginApi(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+            $user = User::where('email', $request->email)->first();
+            if($user->email_verified_at == null){
+                return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
+            }
             return response()->json(['user' => $user], 200);
         } else {
             return response()->json(['error' => 'Credenciales invalidas'], 422);
         }
+    }
+
+    public function verifiedApi(Request $request){
+        $user = User::where('email', $request->email)->first();
+        if($user)
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+        return response()->json(['user' => $user], 200);
     }
 
     public function logoutApi(Request $request){
