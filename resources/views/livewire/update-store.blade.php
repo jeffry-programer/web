@@ -25,8 +25,11 @@
                         value="{{ $store->description }}" placeholder="Ingrese una descripción">
                     @if ($store->typeStore->description == env('TIPO_GRUA'))
                         <label>Tipo de grúa</label>
-                        <input type="text" class="form-control mt-3" name="tipo" value="{{ $store->tipo }}"
-                            placeholder="Ingrese un tipo">
+                        <select name="tipo" class="form-select mt-3">
+                            <option value="Plataforma plana" @if($store->tipo == 'Plataforma plana') selected @endif>Plataforma plana</option>
+                            <option value="Grúas de gancho" @if($store->tipo == 'Grúas de gancho') selected @endif>Grúas de gancho</option>
+                            <option value="Grúas de arrastre" @if($store->tipo == 'Grúas de arrastre') selected @endif>Grúas de arrastre</option>
+                        </select>
                     @endif
                 </div>
                 <div class="col-md-6 form-group">

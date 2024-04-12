@@ -167,7 +167,7 @@
                     </li>
                 @endif
 
-                @if (!$condition2)
+                @if (!$condition2 && count($products_promotion) > 0)
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#promotions" type="button"
                             role="tab" aria-controls="promotions" aria-selected="false">Promociones</button>

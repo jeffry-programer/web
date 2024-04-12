@@ -75,7 +75,7 @@ function loadDataSession(){
   $("#value-city").val(city);
   $("#value-state").val(state);
   $("#value-country").val(country);
-  $("#btn-ubi").text(nameCity);
+  if(nameCity != null) $("#btn-ubi").text(nameCity);
 }
 
 
