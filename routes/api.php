@@ -22,4 +22,9 @@ Route::post('verifiedApi', [MainController::class, 'verifiedApi']);
 Route::post('subscriptions', [MainController::class, 'subscriptionsApi']);
 Route::post('sendVerifiedEmailApi', [MainController::class, 'sendVerifiedEmailApi']);
 Route::post('nullSubscription', [MainController::class, 'nullSubscription']);
+Route::post('nullSubscription2', [MainController::class, 'nullSubscription2']);
+Route::post('store_detail', [MainController::class, 'storeDetail']);
+Route::post('products_store_detail', [MainController::class, 'ProductStoreDetail']);
+Route::post('subscribe_store', [MainController::class, 'SubscribeStore']);
+
 

@@ -534,5 +534,37 @@ class MainController extends Controller{
 
         return response()->json('Subscripcion eliminada exitosamente', 200);
     }
+
+    public function nullSubscription2(Request $request){
+        $subscription = Subscription::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->delete();
+        return response()->json('Subscripcion eliminada exitosamente', 200);
+    }
+
+    public function storeDetail(Request $request){
+        $store = Store::find($request->store_id);
+        $subscription = count(Subscription::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->get()) > 0;
+        return response()->json(['store' => $store, 'subscription' => $subscription], 200);
+    }
+
+    public function ProductStoreDetail(Request $request){
+        // Obtén la tienda específica
+        $store = Store::find($request->store_id);
+
+        // Obtén todos los productos asociados a esta tienda
+        $products = $store->products;
+
+        return response()->json(['products' => $products], 200);
+    }
+
+    public function SubscribeStore(Request $request){
+        $subscription = new Subscription();
+        $subscription->stores_id = $request->store_id;
+        $subscription->users_id = $request->user_id;
+        $subscription->created_at = Carbon::now();
+        $subscription->save();
+
+        return response()->json(['ok' => $subscription], 200);
+    }
+    
 }
 
