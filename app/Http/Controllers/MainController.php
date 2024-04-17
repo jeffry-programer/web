@@ -431,14 +431,14 @@ class MainController extends Controller{
     }
 
     public function getPublicitiesApi(){
-        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
+        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         return response()->json($publicities);
     }
 
     public function getStoresApi(){
         $stores = Store::where('status', true)->whereHas('promotions', function ($query){
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->take(8)->get();
+        })->inRandomOrder()->limit(10)->get();
         return response()->json($stores);
     }
 
@@ -564,6 +564,16 @@ class MainController extends Controller{
         $subscription->save();
 
         return response()->json(['ok' => $subscription], 200);
+    }
+
+    public function publicityDetail(Request $request){
+        $publicity = Publicity::find($request->id);
+        return response()->json(['publicity' => $publicity], 200);
+    }
+
+    public function pubilicitiesDetail(Request $request){
+        $publicities = Publicity::where('id', '!=', $request->id)->get();
+        return response()->json(['publicities' => $publicities], 200);
     }
     
 }
