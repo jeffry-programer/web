@@ -520,6 +520,7 @@ class MainController extends Controller{
         foreach($subscriptions as $key){
             $store = [
                 'id' => $key->id,
+                'id_store' => $key->stores_id,
                 'name' => $key->store->name,
                 'image' => $key->store->image
             ];
