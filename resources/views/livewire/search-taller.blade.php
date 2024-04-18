@@ -1,7 +1,7 @@
 <div>
     <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Talleres</h5>
-        <button type="button" class="btn-close" onclick="closeModal();" wire:click="cleanData()" aria-label="Close"></button>
+        <button type="button" class="btn-close" onclick="closeModal2();" wire:click="cleanData()" aria-label="Close"></button>
     </div>
     <div class="modal-body">
         <div class="row">
@@ -76,14 +76,14 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal();" wire:click="cleanData()">Cerrar</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal2();" wire:click="cleanData()">Cerrar</button>
         <button type="button" class="btn btn-primary" id="btn-search-store" @if($disabled) disabled @endif
             wire:click="searchStore">Buscar</button>
     </div>
 </div>
 
 <script>
-    function closeModal(){
+    function closeModal2(){
         $("#myInput2").val(null);
         $("#country_id2").val('');
         $("#exampleModal27").modal('hide');
