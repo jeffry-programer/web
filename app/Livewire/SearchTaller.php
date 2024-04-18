@@ -23,6 +23,13 @@ class SearchTaller extends Component
     public $data_stores = [];
     public $new_message = false;
 
+    public function cleanData(){
+        $this->data_stores = [];
+        $this->dataCities = [];
+        $this->disabled = true;
+        $this->empty_stores = false;
+    }
+
     public function render()
     {
         $countries = Country::all();

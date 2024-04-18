@@ -273,7 +273,7 @@
                                             <tbody>
                                                 @foreach ($products as $product)
                                                     @php
-                                                        if($product->store == null){
+                                                        if($product->store == null || $product->product == null){
                                                             continue;
                                                         }
                                                     @endphp
