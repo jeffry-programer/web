@@ -223,7 +223,7 @@ class UserManagement extends Component
         $query = 'insert into '.$name_table. ' (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id'){
                 if($count == 0){
                     $query .= $field;
                 }else{
@@ -235,7 +235,7 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'){
+            if($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'  && $field != 'current_team_id'){
                 if($field == 'image' || $field == 'image2'){
                     $data[$field] = '';
                 } 
@@ -722,7 +722,7 @@ class UserManagement extends Component
         $query = 'update '.$name_table. ' set ';
         $count = 0;
         foreach($atributes as $field){
-            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'){
+            if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id'){
                 if($count == 0){
                     $query .= "$field = '".$data[$field]."' ";
                 }else{
@@ -731,8 +731,13 @@ class UserManagement extends Component
                         $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
                     }
                     if($field !== 'image' && $field !== 'image2'){
-                        if($field == 'password') $data[$field] = Hash::make($data[$field]);
-                        $query .= ", $field = '".$data[$field]."' ";
+                        if($field == 'password' && $data[$field] != ''){
+                            $data[$field] = Hash::make($data[$field]);
+                            $query .= ", $field = '".$data[$field]."' ";
+                        }
+                        if($field != 'password'){
+                            $query .= ", $field = '".$data[$field]."' ";
+                        }
                     }
                 }
                 $count++;
@@ -822,7 +827,6 @@ class UserManagement extends Component
         }else{
             $route_image = $request->file('file')->store('public/images-user/'.$request->id);
         }
-
 
         $url = Storage::url($route_image);
 

@@ -28,5 +28,7 @@ Route::post('products_store_detail', [MainController::class, 'ProductStoreDetail
 Route::post('subscribe_store', [MainController::class, 'SubscribeStore']);
 Route::post('publicity', [MainController::class, 'publicityDetail']);
 Route::post('publicities', [MainController::class, 'pubilicitiesDetail']);
+Route::post('updateData', [MainController::class, 'updateDataApi']);
+Route::post('upload-image', [MainController::class, 'uploadImageApi']);
 
 

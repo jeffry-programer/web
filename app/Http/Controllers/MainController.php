@@ -577,5 +577,36 @@ class MainController extends Controller{
         return response()->json(['publicities' => $publicities], 200);
     }
     
+    public function updateDataApi(Request $request){
+        $user = User::find($request->id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->address = $request->address;
+        $user->phone = $request->phone;
+        $user->save();
+
+        return response()->json(['user' => $user], 200);
+    }
+
+    public function uploadImageApi(Request $request){
+        if ($request->hasFile('image')) {
+            // Obtener el directorio donde se guardarán las imágenes
+            $directory = 'public/images-user/'.$request->id;
+
+            // Verificar si existen imágenes antiguas en el directorio
+            if (Storage::exists($directory)) {
+                // Eliminar todas las imágenes antiguas del directorio
+                Storage::deleteDirectory($directory);
+            }
+            $route_image = $request->file('image')->store('public/images-user/'.$request->id);
+            $url = Storage::url($route_image);
+            $user = User::find($request->id);
+            $user->image = $url;
+            $user->save();
+            return response()->json(['url' => asset($url), 'url2' => str_replace('/storage/', '', $url)]);
+        } else {
+            return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
+        }
+    }
 }
 
