@@ -7,6 +7,7 @@ use App\Models\Box;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\cylinderCapacity;
 use App\Models\Product;
 use App\Models\ProductStore;
@@ -17,6 +18,7 @@ use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypeStore;
 use App\Models\Modell;
+use App\Models\State;
 use App\Models\SubCategory;
 use App\Models\TypeProduct;
 use App\Models\User;
@@ -29,13 +31,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class MainController extends Controller{ 
-    public function searchStores(){
+class MainController extends Controller
+{
+    public function searchStores()
+    {
         return view('search-stores');
     }
 
-    public function detailStore(){
-        $name_store = str_replace('-',' ', explode('?', explode('/', $_SERVER['REQUEST_URI'])[2]))[0];
+    public function detailStore()
+    {
+        $name_store = str_replace('-', ' ', explode('?', explode('/', $_SERVER['REQUEST_URI'])[2]))[0];
         // Array asociativo con las vocales acentuadas y sus codificaciones URL
         $vocales = array(
             '%C3%A1' => 'á',
@@ -63,57 +68,64 @@ class MainController extends Controller{
         // Reemplazar cada vocal acentuada por su equivalente sin codificación URL
         $name_store = str_replace(array_keys($vocales), array_values($vocales), $name_store);
         $store = Store::where('name', $name_store)->first();
-        if($store == null){
+        if ($store == null) {
             return redirect('/');
         }
         $user = User::find($store->users_id);
-        if($user == null){
+        if ($user == null) {
             return redirect('/');
         }
-        if(isset(explode('/', $_SERVER['REQUEST_URI'])[3])){
+        if (isset(explode('/', $_SERVER['REQUEST_URI'])[3])) {
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
             $product = Product::where('link', $link_product)->first();
-            if($product == null){
-                return redirect('/tienda/'.str_replace(' ','-', $store->name));
+            if ($product == null) {
+                return redirect('/tienda/' . str_replace(' ', '-', $store->name));
             }
         }
         $link_product = "";
-        if(isset(explode('/', $_SERVER['REQUEST_URI'])[3])){
+        if (isset(explode('/', $_SERVER['REQUEST_URI'])[3])) {
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
             $product_detail = Product::where('link', $link_product)->first();
             $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $product_detail->id)->first();
-            if($product_store == null) return redirect('/tienda/'.str_replace(' ','-', $store->name));
+            if ($product_store == null) return redirect('/tienda/' . str_replace(' ', '-', $store->name));
         }
         return view('detail-store');
     }
 
-    public function admin(){
-        return view('admin.dashboard'); 
+    public function admin()
+    {
+        return view('admin.dashboard');
     }
 
-    public function terminos(){
+    public function terminos()
+    {
         return view('terminos');
     }
-    public function preguntas(){
+    public function preguntas()
+    {
         return view('preguntas');
     }
-    public function ayuda(){
+    public function ayuda()
+    {
         return view('ayuda');
     }
-    public function politicas(){
+    public function politicas()
+    {
         return view('politicas');
     }
 
-    public function contacto(){
+    public function contacto()
+    {
         return view('contacto');
     }
 
-    public function publicity($id){
+    public function publicity($id)
+    {
 
         $date = Carbon::now();
 
         $publicity = Publicity::find($id);
-        if($publicity == null){
+        if ($publicity == null) {
             return redirect('/');
         }
         $store = Store::find($publicity->stores_id);
@@ -121,22 +133,22 @@ class MainController extends Controller{
 
         $subscribed = false;
 
-        if(isset(Auth::user()->id)){
+        if (isset(Auth::user()->id)) {
             $subscribe = Subscription::where('users_id', Auth::user()->id)->where('stores_id', $store->id)->first();
-            if($subscribe != false){
+            if ($subscribe != false) {
                 $subscribed = true;
             }
-
         }
-        
+
         return view('publicity', ['publicity' => $publicity, 'publicities' => $publicities, 'subscribed' => $subscribed, 'store' => $store]);
     }
 
-    public function subscribe(Request $request){
-        if(!isset(Auth::user()->id)){
+    public function subscribe(Request $request)
+    {
+        if (!isset(Auth::user()->id)) {
             return redirect('/login');
         }
-        
+
         $subscription = new Subscription();
         $subscription->users_id = Auth::user()->id;
         $subscription->stores_id = $request->id;
@@ -144,37 +156,44 @@ class MainController extends Controller{
         $subscription->save();
 
         //session()->flash('message', 'Suscrito exitosamente!!');
-        return redirect('/publicities/'.str_replace(' ', '-', $request->id_p));
+        return redirect('/publicities/' . str_replace(' ', '-', $request->id_p));
     }
 
-    
-    public function unsubscribe(Request $request){
-        $subscribed = Subscription::where('users_id', Auth::user()->id)->where('stores_id',$request->id)->first();
+
+    public function unsubscribe(Request $request)
+    {
+        $subscribed = Subscription::where('users_id', Auth::user()->id)->where('stores_id', $request->id)->first();
         $subscribed->delete();
         //session()->flash('message', 'Suscripción anulada exitosamente!!');
-        return redirect('/publicities/'.str_replace(' ', '-', $request->id_p));
+        return redirect('/publicities/' . str_replace(' ', '-', $request->id_p));
     }
 
-    public function register(){
+    public function register()
+    {
         return view('register');
     }
 
-    public function registerStore(){
+    public function registerStore()
+    {
         return view('register-store');
     }
 
-    public function registerTaller(){
+    public function registerTaller()
+    {
         return view('register-taller');
     }
 
-    public function registerGrua(){
+    public function registerGrua()
+    {
         return view('register-grua');
     }
 
-    public function registerStorePost(Request $request){
+    public function registerStorePost(Request $request)
+    {
     }
 
-    public function registerDataStore(){
+    public function registerDataStore()
+    {
         $type_stores = TypeStore::all();
         $cities = City::all();
         $array_data = [
@@ -185,7 +204,8 @@ class MainController extends Controller{
     }
 
 
-    public function registerDataTaller(){
+    public function registerDataTaller()
+    {
         $type_stores = TypeStore::all();
         $cities = City::all();
         $array_data = [
@@ -195,7 +215,8 @@ class MainController extends Controller{
         return view('register-data-taller', $array_data);
     }
 
-    public function registerDataGrua(){
+    public function registerDataGrua()
+    {
         $type_stores = TypeStore::all();
         $cities = City::all();
         $array_data = [
@@ -206,7 +227,8 @@ class MainController extends Controller{
     }
 
 
-    public function productStoreMasive(){
+    public function productStoreMasive()
+    {
         $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
         $tables2 = Table::where('type', 2)->get();
         $stores = Store::where('status', true)->whereHas('typeStore', function ($query) {
@@ -224,7 +246,8 @@ class MainController extends Controller{
         return view('product-store-massive', $data);
     }
 
-    public function productDeleteMasive(){
+    public function productDeleteMasive()
+    {
         $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
         $tables2 = Table::where('type', 2)->get();
         $stores = Store::all();
@@ -240,7 +263,8 @@ class MainController extends Controller{
         return view('product-delete-massive', $data);
     }
 
-    public function productStoreDeleteMasive(){
+    public function productStoreDeleteMasive()
+    {
         $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
         $tables2 = Table::where('type', 2)->get();
         $stores = Store::all();
@@ -256,7 +280,8 @@ class MainController extends Controller{
         return view('product-store-delete-massive', $data);
     }
 
-    public function associteProducts(Request $request){
+    public function associteProducts(Request $request)
+    {
         $exist = false;
         $products_ids = explode(',', $request->products_id[0]);
         $amounts = explode(',', $request->amounts[0]);
@@ -264,8 +289,8 @@ class MainController extends Controller{
 
         array_shift($products_ids);
 
-        foreach($products_ids as $index => $key){
-            if(count(ProductStore::where('products_id', $key)->where('stores_id', $request->store_id)->get()) > 0){
+        foreach ($products_ids as $index => $key) {
+            if (count(ProductStore::where('products_id', $key)->where('stores_id', $request->store_id)->get()) > 0) {
                 $exist = true;
                 continue; // Salta a la siguiente iteración
             }
@@ -280,7 +305,7 @@ class MainController extends Controller{
             $product_store->save();
         }
 
-        if($exist){
+        if ($exist) {
             session()->flash('info', 'Algunos de los productos que ud selecciono ya estan asociados a esta tienda por lo que no fue necesario asociarlos');
         }
 
@@ -288,14 +313,15 @@ class MainController extends Controller{
         return redirect('/admin/product_store_masive');
     }
 
-    public function deleteProducts(Request $request){
+    public function deleteProducts(Request $request)
+    {
         $exist = false;
         $products_ids = explode(',', $request->products_id[0]);
 
         array_shift($products_ids);
 
-        foreach($products_ids as $key){
-            if(count(ProductStore::where('products_id', $key)->get()) > 0){
+        foreach ($products_ids as $key) {
+            if (count(ProductStore::where('products_id', $key)->get()) > 0) {
                 $exist = true;
                 continue; // Salta a la siguiente iteración
             }
@@ -307,7 +333,7 @@ class MainController extends Controller{
             Product::destroy($key);
         }
 
-        if($exist){
+        if ($exist) {
             session()->flash('info', 'Algunos de los productos que ud selecciono estan asociados a una tienda por lo que no se pueden eliminar');
         }
 
@@ -315,16 +341,17 @@ class MainController extends Controller{
         return redirect('/admin/product_delete_masive');
     }
 
-    public function deleteProductStore(Request $request){
+    public function deleteProductStore(Request $request)
+    {
         $exist = false;
         $products_ids = explode(',', $request->products_id[0]);
 
         array_shift($products_ids);
 
-        foreach($products_ids as $key){
+        foreach ($products_ids as $key) {
             $product_id = ProductStore::find($key)->products_id;
             $promotions = Promotion::where('products_id', $product_id)->where('status', true)->get();
-            if(count($promotions) > 0){
+            if (count($promotions) > 0) {
                 $promotion = Promotion::where('products_id', $product_id)->where('status', true)->first();
                 $date_end = Carbon::parse($promotion->date_end);
                 $date = Carbon::now();
@@ -337,7 +364,7 @@ class MainController extends Controller{
             ProductStore::destroy($key);
         }
 
-        if($exist){
+        if ($exist) {
             session()->flash('info', 'Algunos de los productos que ud selecciono estan asociados a una promoción vigente por lo que no se pueden eliminar');
         }
 
@@ -345,12 +372,13 @@ class MainController extends Controller{
         return redirect('/admin/product_store_delete_masive');
     }
 
-    public function products(){
+    public function products()
+    {
         $tables = Table::where('type', 1)->orderBy('label', 'ASC')->get();
         $tables2 = Table::where('type', 2)->get();
         $products = Product::all();
-        $categories = Category::all(); 
-        $subCategories = SubCategory::all(); 
+        $categories = Category::all();
+        $subCategories = SubCategory::all();
         $cylinder_capacities = cylinderCapacity::all();
         $models = Modell::all();
         $boxes = Box::all();
@@ -373,12 +401,14 @@ class MainController extends Controller{
         return view('products', $data);
     }
 
-    public function getMoreProducts(Request $request){
+    public function getMoreProducts(Request $request)
+    {
         $products = Store::find($request->store_id)->products()->paginate(6, ['*'], 'page', $request->page);
         return response()->json($products);
     }
 
-    public function uploadImageStore(Request $request){
+    public function uploadImageStore(Request $request)
+    {
         if ($request->hasFile('file')) {
             $request->validate([
                 'file' => 'required|image|max:2048'
@@ -388,25 +418,25 @@ class MainController extends Controller{
 
             $rutaImagenEliminar = "";
 
-            if($request->type == 'banner'){
-                $rutaImagenEliminar = 'public/images-stores/'.$store->image2;
-            }else{
-                $rutaImagenEliminar = 'public/images-stores/'.$store->image;
+            if ($request->type == 'banner') {
+                $rutaImagenEliminar = 'public/images-stores/' . $store->image2;
+            } else {
+                $rutaImagenEliminar = 'public/images-stores/' . $store->image;
             }
 
-            if(Storage::exists($rutaImagenEliminar)){
+            if (Storage::exists($rutaImagenEliminar)) {
                 Storage::delete($rutaImagenEliminar);
             }
 
             $route_image = $request->file('file')->store('public/images-stores');
             $url = Storage::url($route_image);
 
-            if($request->type == 'banner'){
+            if ($request->type == 'banner') {
                 $store->image2 = $url;
-            }else{
+            } else {
                 $store->image = $url;
             }
-            
+
             $store->save();
 
             return response()->json(['url' => $url]);
@@ -415,34 +445,39 @@ class MainController extends Controller{
         return response()->json(['error' => 'No se proporcionó ninguna imagen'], 422);
     }
 
-    public function autocompleteProducts(Request $request){
+    public function autocompleteProducts(Request $request)
+    {
         $search = $request->get('term');
-        $products = Product::where('name', 'LIKE', '%'.$search.'%')->take(5)->get();
+        $products = Product::where('name', 'LIKE', '%' . $search . '%')->take(5)->get();
         return response()->json($products);
     }
 
-    public function autocompleteProductStore(Request $request){
+    public function autocompleteProductStore(Request $request)
+    {
         $search = $request->get('term');
         $store = $request->get('store');
-        $products = Product::whereHas('stores', function($query) use ($store) {
+        $products = Product::whereHas('stores', function ($query) use ($store) {
             $query->where('stores.id', $store);
-        })->where('name', 'LIKE', '%'.$search.'%')->take(5)->get();
+        })->where('name', 'LIKE', '%' . $search . '%')->take(5)->get();
         return response()->json($products);
     }
 
-    public function getPublicitiesApi(){
+    public function getPublicitiesApi()
+    {
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         return response()->json($publicities);
     }
 
-    public function getStoresApi(){
-        $stores = Store::where('status', true)->whereHas('promotions', function ($query){
+    public function getStoresApi()
+    {
+        $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
         })->inRandomOrder()->limit(10)->get();
         return response()->json($stores);
     }
 
-    public function registerApi(Request $request){
+    public function registerApi(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -465,15 +500,17 @@ class MainController extends Controller{
         return response()->json(['message' => 'Usuario registrado exitosamente'], 201);
     }
 
-    public function sendVerifiedEmailApi(Request $request){
+    public function sendVerifiedEmailApi(Request $request)
+    {
         $user = User::where('email', $request->email)->first();
-        if($user->email_verified_at != null){
+        if ($user->email_verified_at != null) {
             return response()->json(['error' => 'Correo verificado'], 422);
         }
         $user->notify(new VerifiedEmailApi($user, $request->token));
     }
 
-    public function loginApi(Request $request){
+    public function loginApi(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
@@ -486,7 +523,7 @@ class MainController extends Controller{
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = User::where('email', $request->email)->first();
-            if($user->email_verified_at == null){
+            if ($user->email_verified_at == null) {
                 return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
             }
             return response()->json(['user' => $user], 200);
@@ -495,29 +532,33 @@ class MainController extends Controller{
         }
     }
 
-    public function verifiedApi(Request $request){
+    public function verifiedApi(Request $request)
+    {
         $user = User::where('email', $request->email)->first();
-        if($user)
-        $user->email_verified_at = Carbon::now();
+        if ($user)
+            $user->email_verified_at = Carbon::now();
         $user->save();
         return response()->json(['user' => $user], 200);
     }
 
-    public function logoutApi(Request $request){
+    public function logoutApi(Request $request)
+    {
         $request->user()->token()->revoke();
         return response()->json(['message' => 'Successfully logged out'], 200);
     }
 
-    public function current(Request $request){
+    public function current(Request $request)
+    {
         $user = Auth::user();
         return response()->json($user, 200);
     }
 
-    public function subscriptionsApi(Request $request){
+    public function subscriptionsApi(Request $request)
+    {
         $user = User::where('email', $request->email)->first();
         $subscriptions = Subscription::where('users_id', $user->id)->get();
         $array_subscriptions = array();
-        foreach($subscriptions as $key){
+        foreach ($subscriptions as $key) {
             $store = [
                 'id' => $key->id,
                 'id_store' => $key->stores_id,
@@ -527,27 +568,31 @@ class MainController extends Controller{
             $array_subscriptions[] = $store;
         }
         return response()->json($array_subscriptions, 200);
-    }   
+    }
 
-    public function nullSubscription(Request $request){
+    public function nullSubscription(Request $request)
+    {
         $subscription = Subscription::find($request->id);
         $subscription->delete();
 
         return response()->json('Subscripcion eliminada exitosamente', 200);
     }
 
-    public function nullSubscription2(Request $request){
+    public function nullSubscription2(Request $request)
+    {
         $subscription = Subscription::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->delete();
         return response()->json('Subscripcion eliminada exitosamente', 200);
     }
 
-    public function storeDetail(Request $request){
+    public function storeDetail(Request $request)
+    {
         $store = Store::find($request->store_id);
         $subscription = count(Subscription::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->get()) > 0;
         return response()->json(['store' => $store, 'subscription' => $subscription], 200);
     }
 
-    public function ProductStoreDetail(Request $request){
+    public function ProductStoreDetail(Request $request)
+    {
         // Obtén la tienda específica
         $store = Store::find($request->store_id);
 
@@ -557,7 +602,8 @@ class MainController extends Controller{
         return response()->json(['products' => $products], 200);
     }
 
-    public function SubscribeStore(Request $request){
+    public function SubscribeStore(Request $request)
+    {
         $subscription = new Subscription();
         $subscription->stores_id = $request->store_id;
         $subscription->users_id = $request->user_id;
@@ -567,17 +613,20 @@ class MainController extends Controller{
         return response()->json(['ok' => $subscription], 200);
     }
 
-    public function publicityDetail(Request $request){
+    public function publicityDetail(Request $request)
+    {
         $publicity = Publicity::find($request->id);
         return response()->json(['publicity' => $publicity], 200);
     }
 
-    public function pubilicitiesDetail(Request $request){
+    public function pubilicitiesDetail(Request $request)
+    {
         $publicities = Publicity::where('id', '!=', $request->id)->get();
         return response()->json(['publicities' => $publicities], 200);
     }
-    
-    public function updateDataApi(Request $request){
+
+    public function updateDataApi(Request $request)
+    {
         $user = User::find($request->id);
         $user->name = $request->name;
         $user->email = $request->email;
@@ -588,17 +637,18 @@ class MainController extends Controller{
         return response()->json(['user' => $user], 200);
     }
 
-    public function uploadImageApi(Request $request){
+    public function uploadImageApi(Request $request)
+    {
         if ($request->hasFile('image')) {
             // Obtener el directorio donde se guardarán las imágenes
-            $directory = 'public/images-user/'.$request->id;
+            $directory = 'public/images-user/' . $request->id;
 
             // Verificar si existen imágenes antiguas en el directorio
             if (Storage::exists($directory)) {
                 // Eliminar todas las imágenes antiguas del directorio
                 Storage::deleteDirectory($directory);
             }
-            $route_image = $request->file('image')->store('public/images-user/'.$request->id);
+            $route_image = $request->file('image')->store('public/images-user/' . $request->id);
             $url = Storage::url($route_image);
             $user = User::find($request->id);
             $user->image = $url;
@@ -608,5 +658,26 @@ class MainController extends Controller{
             return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
         }
     }
-}
 
+    public function getCountriesApi()
+    {
+        return Country::all();
+    }
+
+    public function getStatesApi($countryId)
+    {
+        return State::where('countries_id', $countryId)->get();
+    }
+
+    public function getCitiesByState($stateId)
+    {
+        $state = State::findOrFail($stateId);
+        $municipalities = $state->municipalities()->with('cities')->get();
+    
+        $cities = $municipalities->flatMap(function ($municipality) {
+            return $municipality->cities;
+        });
+    
+        return response()->json($cities);
+    }
+}

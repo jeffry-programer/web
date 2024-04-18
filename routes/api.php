@@ -30,5 +30,8 @@ Route::post('publicity', [MainController::class, 'publicityDetail']);
 Route::post('publicities', [MainController::class, 'pubilicitiesDetail']);
 Route::post('updateData', [MainController::class, 'updateDataApi']);
 Route::post('upload-image', [MainController::class, 'uploadImageApi']);
+Route::get('countries', [MainController::class, 'getCountriesApi']);
+Route::get('countries/{countryId}/states', [MainController::class, 'getStatesApi']);
+Route::get('states/{stateId}/cities', [MainController::class, 'getCitiesByState']); // Obtener ciudades por estado
 
 
