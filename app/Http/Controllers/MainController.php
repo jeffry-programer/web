@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class MainController extends Controller
 {
@@ -528,7 +527,7 @@ class MainController extends Controller
             }
             return response()->json(['user' => $user], 200);
         } else {
-            return response()->json(['error' => 'Credenciales invalidas'], 422);
+            return response()->json(['error' => 'Credenciales incorrectas'], 422);
         }
     }
 
@@ -673,11 +672,59 @@ class MainController extends Controller
     {
         $state = State::findOrFail($stateId);
         $municipalities = $state->municipalities()->with('cities')->get();
-    
+
         $cities = $municipalities->flatMap(function ($municipality) {
             return $municipality->cities;
         });
-    
+
         return response()->json($cities);
+    }
+
+    public function getProductDetail($productId, $idStore)
+    {
+        $product = Product::find($productId);
+        $product_store = ProductStore::where('products_id', $productId)->where('stores_id', $idStore)->first();
+
+        $response = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'detail' => $product->detail,
+            'code' => $product->code,
+            'reference' => $product->reference,
+            'image' => $product->image,
+            'amount' => $product_store->amount,
+            'price' => $product_store->price,
+        ];
+
+        // Retornar el array con la información
+        return response()->json($response);
+    }
+
+    public function getStoreSearch($query)
+    {
+        $search =  str_replace('-',' ',$query);
+        
+        // Agregar un asterisco al término de búsqueda para incluir coincidencias parciales
+        $search = $search . '*';
+
+        $stores = Store::where('status', true)->whereHas('products', function ($query) use ($search) {
+            $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search]);
+        })->with(['products' => function ($query) use ($search) {
+            $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search]);
+        }])->get();
+
+        // Retornar las tiendas encontradas
+        return response()->json($stores);
+    }
+
+    public function getProductsSearch($query)
+    {
+        $string = $query;
+        $products = Product::whereHas('stores', function ($query) {
+            $query->where('status', 1); // Filtra tiendas activas
+        })->where('name', 'like', $string . '%')->get();
+
+        return response()->json($products);
     }
 }
