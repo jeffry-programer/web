@@ -701,14 +701,14 @@ class MainController extends Controller
         return response()->json($response);
     }
 
-    public function getStoreSearch($query, $city_id)
+    public function getStoreSearch($query, $cityId)
     {
         $search = str_replace('-', ' ', $query);
 
         // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
         $searchQuery = '"' . $search . '"';
 
-        $stores = Store::where('status', true)->where('cities_id', $city_id)
+        $stores = Store::where('status', true)->where('cities_id', $cityId)
             ->whereHas('products', function ($query) use ($searchQuery) {
                 // Utilizar MATCH... AGAINST para búsqueda booleana
                 $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
@@ -723,7 +723,7 @@ class MainController extends Controller
             // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
             $searchQuery = $search . '*';
 
-            $stores = Store::where('status', true)->where('cities_id', $city_id)
+            $stores = Store::where('status', true)->where('cities_id', $cityId)
                 ->whereHas('products', function ($query) use ($searchQuery) {
                     // Utilizar MATCH... AGAINST para búsqueda booleana
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
