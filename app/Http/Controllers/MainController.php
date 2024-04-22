@@ -27,6 +27,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -601,6 +602,33 @@ class MainController extends Controller
         return response()->json(['products' => $products], 200);
     }
 
+    public function ProductStoreDetails(Request $request)
+    {
+        $search = str_replace('-', ' ', $request->product_search);
+
+        // Obtén el ID de la ciudad
+        $store_id = $request->store_id;
+
+        // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
+        $searchQuery = '"' . $search . '"';
+
+        // Obtener la tienda que coincide con el ID de la tienda proporcionado
+        $store = Store::find($store_id);
+
+        // Buscar productos que coincidan con la búsqueda y estén asociados a la tienda encontrada
+        $products = $store->products()->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery])->get();
+
+        // Si no se encontraron productos, buscar con coincidencias parciales
+        if ($products->isEmpty()) {
+            $searchQuery = $search . '*';
+
+            $products = $store->products()->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery])->get();
+        }
+
+        // Retornar los productos encontrados
+        return response()->json($products, 200);
+    }
+
     public function SubscribeStore(Request $request)
     {
         $subscription = new Subscription();
@@ -746,6 +774,15 @@ class MainController extends Controller
             $query->where('status', 1); // Filtra tiendas activas
         })->where('name', 'like', $string . '%')->get();
 
+        return response()->json($products);
+    }
+
+    public function getProductsSearch2($query, $id)
+    {
+        $string = $query;
+        $products = Product::whereHas('stores', function ($query) use ($id) {
+            $query->where('stores.id', $id);   // Filtra tiendas activas
+        })->where('name', 'like', $string . '%')->get();
         return response()->json($products);
     }
 }

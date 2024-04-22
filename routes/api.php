@@ -25,6 +25,7 @@ Route::post('nullSubscription', [MainController::class, 'nullSubscription']);
 Route::post('nullSubscription2', [MainController::class, 'nullSubscription2']);
 Route::post('store_detail', [MainController::class, 'storeDetail']);
 Route::post('products_store_detail', [MainController::class, 'ProductStoreDetail']);
+Route::post('products_store_details', [MainController::class, 'ProductStoreDetails']);
 Route::post('subscribe_store', [MainController::class, 'SubscribeStore']);
 Route::post('publicity', [MainController::class, 'publicityDetail']);
 Route::post('publicities', [MainController::class, 'pubilicitiesDetail']);
@@ -36,3 +37,4 @@ Route::get('states/{stateId}/cities', [MainController::class, 'getCitiesByState'
 Route::get('product-detail/{productId}-{idStore}', [MainController::class, 'getProductDetail']);
 Route::get('search-stores/{query}_{cityId}', [MainController::class, 'getStoreSearch']);
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
+Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
