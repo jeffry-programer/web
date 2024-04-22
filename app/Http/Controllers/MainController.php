@@ -701,18 +701,39 @@ class MainController extends Controller
         return response()->json($response);
     }
 
-    public function getStoreSearch($query)
+    public function getStoreSearch($query, $city_id)
     {
-        $search =  str_replace('-',' ',$query);
-        
-        // Agregar un asterisco al término de búsqueda para incluir coincidencias parciales
-        $search = $search . '*';
+        $search = str_replace('-', ' ', $query);
 
-        $stores = Store::where('status', true)->whereHas('products', function ($query) use ($search) {
-            $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search]);
-        })->with(['products' => function ($query) use ($search) {
-            $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search]);
-        }])->get();
+        // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
+        $searchQuery = '"' . $search . '"';
+
+        $stores = Store::where('status', true)->where('cities_id', $city_id)
+            ->whereHas('products', function ($query) use ($searchQuery) {
+                // Utilizar MATCH... AGAINST para búsqueda booleana
+                $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+            })
+            ->with(['products' => function ($query) use ($searchQuery) {
+                // Utilizar MATCH... AGAINST para búsqueda booleana
+                $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+            }])
+            ->get();
+
+        if (count($stores) == 0) {
+            // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
+            $searchQuery = $search . '*';
+
+            $stores = Store::where('status', true)->where('cities_id', $city_id)
+                ->whereHas('products', function ($query) use ($searchQuery) {
+                    // Utilizar MATCH... AGAINST para búsqueda booleana
+                    $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+                })
+                ->with(['products' => function ($query) use ($searchQuery) {
+                    // Utilizar MATCH... AGAINST para búsqueda booleana
+                    $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+                }])
+                ->get();
+        }
 
         // Retornar las tiendas encontradas
         return response()->json($stores);
