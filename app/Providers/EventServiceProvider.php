@@ -3,11 +3,12 @@
 namespace App\Providers;
 
 use App\Events\EmailVerified;
+use App\Events\NewMessage;
+use App\Listeners\ProcessNewMessage;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,7 +23,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         Verified::class => [
             EmailVerified::class
-        ]
+        ],
+        NewMessage::class => [
+            ProcessNewMessage::class
+        ],
     ];
 
     /**

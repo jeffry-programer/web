@@ -7,6 +7,7 @@ use App\Models\Box;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
 use App\Models\Product;
@@ -587,8 +588,16 @@ class MainController extends Controller
     public function storeDetail(Request $request)
     {
         $store = Store::find($request->store_id);
+        $conversation = Conversation::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->first();
+        if($conversation == null){
+            $conversation = new Conversation();
+            $conversation->users_id = $request->user_id;
+            $conversation->stores_id = $request->store_id;
+            $conversation->created_at = Carbon::now();
+            $conversation->save();
+        }
         $subscription = count(Subscription::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->get()) > 0;
-        return response()->json(['store' => $store, 'subscription' => $subscription], 200);
+        return response()->json(['store' => $store, 'subscription' => $subscription, 'conversation' => $conversation], 200);
     }
 
     public function ProductStoreDetail(Request $request)
