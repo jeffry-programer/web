@@ -17,7 +17,9 @@ class MessageController extends Controller
         $conversation = Conversation::find($conversationId);
         $messages = Message::where('conversations_id', $conversation->id)->orderBy('created_at', 'asc')->get();
         $store = Store::find($conversation->stores_id);
-        return response()->json(['messages' => $messages, 'store' => $store]);
+        $user = User::find($conversation->users_id);
+        $user_store = User::find($store->users_id);
+        return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user, 'userStore' => $user_store]);
     }
 
     public function store(Request $request)

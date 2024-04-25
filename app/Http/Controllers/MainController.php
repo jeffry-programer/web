@@ -589,7 +589,7 @@ class MainController extends Controller
     {
         $store = Store::find($request->store_id);
         $conversation = Conversation::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->first();
-        if($conversation == null){
+        if ($conversation == null && $store->users_id != $request->user_id){
             $conversation = new Conversation();
             $conversation->users_id = $request->user_id;
             $conversation->stores_id = $request->store_id;
@@ -793,5 +793,38 @@ class MainController extends Controller
             $query->where('stores.id', $id);   // Filtra tiendas activas
         })->where('name', 'like', $string . '%')->get();
         return response()->json($products);
+    }
+
+    public function getChats($userId)
+    {
+        $final_array = [];
+
+        // Buscar conversaciones del usuario
+        $conversations = Conversation::where('users_id', $userId)->get();
+
+        // Si no hay conversaciones, buscar la tienda del usuario y obtener las conversaciones asociadas a ella
+        if (count($conversations) == 0) {
+            $store = Store::where('users_id', $userId)->first();
+            if ($store != null) {
+                $conversations = Conversation::where('stores_id', $store->id)->get();
+            }
+        }
+
+        // Recorrer las conversaciones y agregar datos al array final
+        foreach ($conversations as $key => $conversation) {
+            $user = User::find($conversation->users_id);
+            $store = Store::find($conversation->stores_id);
+
+            // Verificar si se encontraron tanto el usuario como la tienda
+            if ($user && $store) {
+                $final_array[$key]['user_name'] = $user->name;
+                $final_array[$key]['user_img'] = $user->image;
+                $final_array[$key]['store_name'] = $store->name;
+                $final_array[$key]['store_img'] = $store->image;
+                $final_array[$key]['id'] = $conversation->id;
+            }
+        }
+
+        return response()->json($final_array);
     }
 }

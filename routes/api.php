@@ -40,4 +40,5 @@ Route::get('search-stores/{query}_{cityId}', [MainController::class, 'getStoreSe
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
 Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
 Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
+Route::get('/chats/{userId}', [MainController::class, 'getChats']);
 Route::post('/messages', [MessageController::class, 'store']);
