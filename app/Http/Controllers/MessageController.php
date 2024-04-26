@@ -11,25 +11,35 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
+
 {
-    public function index($conversationId)
+    public function index($conversationId, $userEmail)
     {
         $conversation = Conversation::find($conversationId);
         $messages = Message::where('conversations_id', $conversation->id)->orderBy('created_at', 'asc')->get();
         $store = Store::find($conversation->stores_id);
         $user = User::find($conversation->users_id);
         $user_store = User::find($store->users_id);
+        $messages = $conversation->messages;
+        // Iterar sobre los mensajes y actualizar su estado a true
+        foreach ($messages as $message) {
+            if($message->from != $userEmail){
+                $message->status = true;
+                $message->save();
+            }
+        }
         return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user, 'userStore' => $user_store]);
     }
 
     public function store(Request $request)
     {
         $email = User::find($request->userId)->email;
-        
+
         $message = new Message();
         $message->conversations_id = $request->id;
         $message->content = $request->content;
         $message->from = $email;
+        $message->status = false;
         $message->created_at = Carbon::now();
         $message->save();
 

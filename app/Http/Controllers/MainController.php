@@ -589,7 +589,7 @@ class MainController extends Controller
     {
         $store = Store::find($request->store_id);
         $conversation = Conversation::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->first();
-        if ($conversation == null && $store->users_id != $request->user_id){
+        if ($conversation == null && $store->users_id != $request->user_id) {
             $conversation = new Conversation();
             $conversation->users_id = $request->user_id;
             $conversation->stores_id = $request->store_id;
@@ -799,28 +799,35 @@ class MainController extends Controller
     {
         $final_array = [];
 
-        // Buscar conversaciones del usuario
-        $conversations = Conversation::where('users_id', $userId)->get();
+        // Obtener conversaciones del usuario y las asociadas a su tienda (si tiene)
+        $conversations = Conversation::where('users_id', $userId)
+            ->orWhereHas('store', function ($query) use ($userId) {
+                $query->where('users_id', $userId);
+            })
+            ->with(['user', 'store', 'messages'])
+            ->get();
 
-        // Si no hay conversaciones, buscar la tienda del usuario y obtener las conversaciones asociadas a ella
-        if (count($conversations) == 0) {
-            $store = Store::where('users_id', $userId)->first();
-            if ($store != null) {
-                $conversations = Conversation::where('stores_id', $store->id)->get();
-            }
-        }
+        // Ordenar las conversaciones por la fecha del mensaje más reciente
+        $conversations = $conversations->sortByDesc(function ($conversation) {
+            return optional($conversation->messages->last())->created_at;
+        });
 
         // Recorrer las conversaciones y agregar datos al array final
         foreach ($conversations as $key => $conversation) {
-            $user = User::find($conversation->users_id);
-            $store = Store::find($conversation->stores_id);
+            $user = $conversation->user;
+            $store = $conversation->store;
+            $lastMessage = $conversation->messages->last(); // Obtener el último mensaje
 
-            // Verificar si se encontraron tanto el usuario como la tienda
-            if ($user && $store) {
+            // Verificar si se encontraron tanto el usuario como la tienda y si hay mensajes
+            if ($user && $store && $lastMessage) {
                 $final_array[$key]['user_name'] = $user->name;
                 $final_array[$key]['user_img'] = $user->image;
                 $final_array[$key]['store_name'] = $store->name;
                 $final_array[$key]['store_img'] = $store->image;
+                $final_array[$key]['last_message'] = $lastMessage->content;
+                $final_array[$key]['last_message_time'] = $lastMessage->created_at;
+                $final_array[$key]['last_message_status'] = $lastMessage->status;
+                $final_array[$key]['last_message_from'] = $lastMessage->from;
                 $final_array[$key]['id'] = $conversation->id;
             }
         }

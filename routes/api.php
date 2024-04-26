@@ -39,6 +39,6 @@ Route::get('product-detail/{productId}-{idStore}', [MainController::class, 'getP
 Route::get('search-stores/{query}_{cityId}', [MainController::class, 'getStoreSearch']);
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
 Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
-Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
+Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 'index']);
 Route::get('/chats/{userId}', [MainController::class, 'getChats']);
 Route::post('/messages', [MessageController::class, 'store']);
