@@ -33,19 +33,34 @@ class MessageController extends Controller
 
     public function store(Request $request)
     {
-        $email = User::find($request->userId)->email;
+        $user = User::find($request->userId);
 
         $message = new Message();
         $message->conversations_id = $request->id;
         $message->content = $request->content;
-        $message->from = $email;
+        $message->from = $user->email;
         $message->status = false;
         $message->created_at = Carbon::now();
         $message->save();
 
         event(new NewMessage($message));
 
-        return response()->json($message);
+        $conversation = Conversation::find($request->id);
+        $user1 = User::find($conversation->users_id);
+        $store = Store::find($conversation->stores_id);
+        $user2 = User::find($store->users_id);
+
+        if($user1->email == $user->email){
+            $token = $user2->token;
+            $name = $store->name;
+        }else{
+            $token = $user1->token;
+            $name = $user1->name;
+        }
+
+        if($token == null) $token = '';
+
+        return response()->json(['token' => $token, 'message' => $message->content, 'from' => $name, 'conversation' => $conversation->id]);
     }
 
     public function update(Request $request, $id)

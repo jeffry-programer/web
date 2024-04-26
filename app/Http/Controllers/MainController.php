@@ -522,11 +522,15 @@ class MainController extends Controller
         }
 
         $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)){
             $user = User::where('email', $request->email)->first();
-            if ($user->email_verified_at == null) {
+            if ($user->email_verified_at == null){
                 return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
             }
+
+            $user->token = $request->token_fcm;
+            $user->save();
+
             return response()->json(['user' => $user], 200);
         } else {
             return response()->json(['error' => 'Credenciales incorrectas'], 422);
