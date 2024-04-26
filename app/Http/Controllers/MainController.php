@@ -785,7 +785,7 @@ class MainController extends Controller
         $string = $query;
         $products = Product::whereHas('stores', function ($query) {
             $query->where('status', 1); // Filtra tiendas activas
-        })->where('name', 'like', $string . '%')->get();
+        })->where('name', 'like',  '%' . $string . '%')->get();
 
         return response()->json($products);
     }
@@ -795,7 +795,7 @@ class MainController extends Controller
         $string = $query;
         $products = Product::whereHas('stores', function ($query) use ($id) {
             $query->where('stores.id', $id);   // Filtra tiendas activas
-        })->where('name', 'like', $string . '%')->get();
+        })->where('name', 'like', '%' . $string . '%')->get();
         return response()->json($products);
     }
 
