@@ -19,6 +19,7 @@ use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypeStore;
 use App\Models\Modell;
+use App\Models\SearchUser;
 use App\Models\State;
 use App\Models\SubCategory;
 use App\Models\TypeProduct;
@@ -27,6 +28,7 @@ use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -463,20 +465,6 @@ class MainController extends Controller
         return response()->json($products);
     }
 
-    public function getPublicitiesApi()
-    {
-        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
-        return response()->json($publicities);
-    }
-
-    public function getStoresApi()
-    {
-        $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
-            $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->inRandomOrder()->limit(10)->get();
-        return response()->json($stores);
-    }
-
     public function registerApi(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -522,9 +510,9 @@ class MainController extends Controller
         }
 
         $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)){
+        if (Auth::attempt($credentials)) {
             $user = User::where('email', $request->email)->first();
-            if ($user->email_verified_at == null){
+            if ($user->email_verified_at == null) {
                 return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
             }
 
@@ -752,7 +740,7 @@ class MainController extends Controller
         return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
-    public function getStoreSearch($query, $cityId)
+    public function getStoreSearch($query, $cityId, $userId)
     {
         $search = str_replace('-', ' ', $query);
 
@@ -784,6 +772,21 @@ class MainController extends Controller
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
                 }])
                 ->get();
+        }
+
+        if (count($stores) > 0) {
+            foreach ($stores as $key) {
+                $store = Store::where('users_id', $userId)->first();
+                if ($store == null) {
+                    $product_store_id = ProductStore::where('products_id', $key->products[0]->id)->where('stores_id', $key->id)->pluck('id')->firstOrFail();
+                    $search = new SearchUser();
+                    $search->users_id = $userId;
+                    $search->stores_id = $key->id;
+                    $search->product_stores_id = $product_store_id;
+                    $search->created_at = Carbon::now();
+                    $search->save();
+                }
+            }
         }
 
         // Retornar las tiendas encontradas
@@ -847,5 +850,57 @@ class MainController extends Controller
         }
 
         return response()->json($final_array);
+    }
+
+    public function getInfoHome($userId)
+    {
+        // Últimas tiendas más buscadas
+        $mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
+            ->whereNotNull('stores_id')
+            ->groupBy('stores_id')
+            ->orderBy('search_count', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Obtener información de las tiendas
+        $lastStores = [];
+        foreach ($mostSearchedStores as $searchedStore) {
+            $store = Store::find($searchedStore->stores_id);
+            if ($store) {
+                $lastStores[] = $store;
+            }
+        }
+        // Últimos productos más buscados por el usuario actual
+        $mostSearchedProducts = SearchUser::select('product_stores_id', DB::raw('COUNT(*) as search_count'))
+            ->where('users_id', $userId)
+            ->whereNotNull('product_stores_id')
+            ->groupBy('product_stores_id')
+            ->orderBy('search_count', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Obtener información de los productos
+        $lastSearch = [];
+        foreach ($mostSearchedProducts as $searchedProduct) {
+            $productStore = ProductStore::find($searchedProduct->product_stores_id);
+            if ($productStore) {
+                $product = $productStore->product;
+                if ($product) {
+                    $storeId = $productStore->stores_id;
+                    $lastSearch[] = [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'image' => $product->image,
+                        'description' => $product->description,
+                        'store_id' => $storeId,
+                    ];
+                }
+            }
+        }
+        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
+        $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
+            $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
+        })->inRandomOrder()->limit(10)->get();
+        return response()->json(['publicities' => $publicities, 'stores' => $stores, 'lastStores' => $lastStores, 'lastSearch' => $lastSearch]);
     }
 }
