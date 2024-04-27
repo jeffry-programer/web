@@ -721,7 +721,7 @@ class MainController extends Controller
         return response()->json($cities);
     }
 
-    public function getProductDetail($productId, $idStore)
+    public function getProductDetail($productId, $idStore, $idUser)
     {
         $product = Product::find($productId);
         $product_store = ProductStore::where('products_id', $productId)->where('stores_id', $idStore)->first();
@@ -738,8 +738,18 @@ class MainController extends Controller
             'price' => $product_store->price,
         ];
 
+        $conversation = Conversation::where('stores_id', $idStore)->where('users_id', $idUser)->first();
+        $store = Store::find($idStore);
+        if ($conversation == null && $store->users_id != $idUser) {
+            $conversation = new Conversation();
+            $conversation->users_id = $idUser;
+            $conversation->stores_id = $idStore;
+            $conversation->created_at = Carbon::now();
+            $conversation->save();
+        }
+
         // Retornar el array con la información
-        return response()->json($response);
+        return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
     public function getStoreSearch($query, $cityId)
