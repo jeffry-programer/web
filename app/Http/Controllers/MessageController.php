@@ -9,6 +9,9 @@ use App\Models\Store;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\Notification;
 
 class MessageController extends Controller
 
@@ -23,7 +26,7 @@ class MessageController extends Controller
         $messages = $conversation->messages;
         // Iterar sobre los mensajes y actualizar su estado a true
         foreach ($messages as $message) {
-            if($message->from != $userEmail){
+            if ($message->from != $userEmail) {
                 $message->status = true;
                 $message->save();
             }
@@ -50,15 +53,30 @@ class MessageController extends Controller
         $store = Store::find($conversation->stores_id);
         $user2 = User::find($store->users_id);
 
-        if($user1->email == $user->email){
+        if ($user1->email == $user->email) {
             $token = $user2->token;
             $name = $store->name;
-        }else{
+        } else {
             $token = $user1->token;
             $name = $user1->name;
         }
 
-        if($token == null) $token = '';
+        if ($token != null) {
+            // Crea una instancia de Firebase
+            $firebase = (new Factory)->withServiceAccount(config('FIREBASE_CREDENTIALS'));
+
+            // Obtiene una instancia del servicio de mensajería
+            $messaging = $firebase->createMessaging();
+
+            // Crea el mensaje de notificación
+            $message = CloudMessage::new()
+                ->withNotification(Notification::create($name, $message->content))
+                ->withTarget('token', $token);
+
+            // Envía el mensaje
+            $messaging->send($message);
+        }
+
 
         return response()->json(['token' => $token, 'message' => $message->content, 'from' => $name, 'conversation' => $conversation->id]);
     }

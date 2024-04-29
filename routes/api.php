@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/get-stores-promotion', [MainController::class, 'getAllStoresPromotion']);
 Route::get('/get-info-home/{userId}', [MainController::class, 'getInfoHome']);
 Route::post('register',  [MainController::class, 'registerApi']);
 Route::post('login', [MainController::class, 'loginApi']);
@@ -35,7 +36,7 @@ Route::get('countries', [MainController::class, 'getCountriesApi']);
 Route::get('countries/{countryId}/states', [MainController::class, 'getStatesApi']);
 Route::get('states/{stateId}/cities', [MainController::class, 'getCitiesByState']); // Obtener ciudades por estado
 Route::get('product-detail/{productId}_{idStore}_{idUser}', [MainController::class, 'getProductDetail']);
-Route::get('search-stores/{query}_{cityId}_{userId}', [MainController::class, 'getStoreSearch']);
+Route::get('search-stores', [MainController::class, 'getStoreSearch']);
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
 Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
 Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 'index']);

@@ -30,7 +30,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -740,14 +739,14 @@ class MainController extends Controller
         return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
-    public function getStoreSearch($query, $cityId, $userId)
+    public function getStoreSearch(Request $request)
     {
-        $search = str_replace('-', ' ', $query);
+        $search = str_replace('-', ' ', $_GET['query']);
 
         // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
         $searchQuery = '"' . $search . '"';
 
-        $stores = Store::where('status', true)->where('cities_id', $cityId)
+        $stores = Store::where('status', true)->where('cities_id', $_GET['cityId'])
             ->whereHas('products', function ($query) use ($searchQuery) {
                 // Utilizar MATCH... AGAINST para búsqueda booleana
                 $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
@@ -756,13 +755,13 @@ class MainController extends Controller
                 // Utilizar MATCH... AGAINST para búsqueda booleana
                 $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
             }])
-            ->get();
+            ->paginate(10);
 
         if (count($stores) == 0) {
             // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
             $searchQuery = $search . '*';
 
-            $stores = Store::where('status', true)->where('cities_id', $cityId)
+            $stores = Store::where('status', true)->where('cities_id', $_GET['cityId'])
                 ->whereHas('products', function ($query) use ($searchQuery) {
                     // Utilizar MATCH... AGAINST para búsqueda booleana
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
@@ -771,16 +770,16 @@ class MainController extends Controller
                     // Utilizar MATCH... AGAINST para búsqueda booleana
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
                 }])
-                ->get();
+                ->paginate(10);
         }
 
         if (count($stores) > 0) {
             foreach ($stores as $key) {
-                $store = Store::where('users_id', $userId)->first();
+                $store = Store::where('users_id', $_GET['userId'])->first();
                 if ($store == null) {
                     $product_store_id = ProductStore::where('products_id', $key->products[0]->id)->where('stores_id', $key->id)->pluck('id')->firstOrFail();
                     $search = new SearchUser();
-                    $search->users_id = $userId;
+                    $search->users_id = $_GET['userId'];
                     $search->stores_id = $key->id;
                     $search->product_stores_id = $product_store_id;
                     $search->created_at = Carbon::now();
@@ -826,6 +825,7 @@ class MainController extends Controller
 
         // Ordenar las conversaciones por la fecha del mensaje más reciente
         $conversations = $conversations->sortByDesc(function ($conversation) {
+            // Obtener la fecha del último mensaje
             return optional($conversation->messages->last())->created_at;
         });
 
@@ -849,7 +849,7 @@ class MainController extends Controller
             }
         }
 
-        return response()->json($final_array);
+        return response()->json(array_values($final_array));
     }
 
     public function getInfoHome($userId)
@@ -902,5 +902,13 @@ class MainController extends Controller
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
         })->inRandomOrder()->limit(10)->get();
         return response()->json(['publicities' => $publicities, 'stores' => $stores, 'lastStores' => $lastStores, 'lastSearch' => $lastSearch]);
+    }
+
+    public function getAllStoresPromotion(Request $request)
+    {
+        $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
+            $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
+        })->paginate(10);
+        return response()->json($stores);
     }
 }
