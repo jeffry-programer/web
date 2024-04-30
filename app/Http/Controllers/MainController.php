@@ -551,11 +551,26 @@ class MainController extends Controller
         $subscriptions = Subscription::where('users_id', $user->id)->get();
         $array_subscriptions = array();
         foreach ($subscriptions as $key) {
+            $conversation = Conversation::where('stores_id', $key->stores_id)->where('users_id', $user->id)->first();
+            $user_store = Store::where('users_id', $user->id)->first();
+            if ($conversation == null && $key->store->users_id != $user->id && $user_store == null) {
+                $conversation = new Conversation();
+                $conversation->users_id = $user->id;
+                $conversation->stores_id = $key->stores_id;
+                $conversation->created_at = Carbon::now();
+                $conversation->save();
+            }
+            if (isset($conversation->id)) {
+                $conversation = $conversation->id;
+            } else {
+                $conversation = 0;
+            }
             $store = [
                 'id' => $key->id,
                 'id_store' => $key->stores_id,
                 'name' => $key->store->name,
-                'image' => $key->store->image
+                'image' => $key->store->image,
+                'conversation' => $conversation
             ];
             $array_subscriptions[] = $store;
         }
@@ -580,7 +595,8 @@ class MainController extends Controller
     {
         $store = Store::find($request->store_id);
         $conversation = Conversation::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->first();
-        if ($conversation == null && $store->users_id != $request->user_id) {
+        $user_store = Store::where('users_id', $request->user_id)->first();
+        if ($conversation == null && $store->users_id != $request->user_id && $user_store == null) {
             $conversation = new Conversation();
             $conversation->users_id = $request->user_id;
             $conversation->stores_id = $request->store_id;
@@ -727,7 +743,8 @@ class MainController extends Controller
 
         $conversation = Conversation::where('stores_id', $idStore)->where('users_id', $idUser)->first();
         $store = Store::find($idStore);
-        if ($conversation == null && $store->users_id != $idUser) {
+        $user_store = Store::where('users_id', $idUser)->first();
+        if ($conversation == null && $store->users_id != $idUser && $user_store == null) {
             $conversation = new Conversation();
             $conversation->users_id = $idUser;
             $conversation->stores_id = $idStore;
@@ -741,54 +758,61 @@ class MainController extends Controller
 
     public function getStoreSearch(Request $request)
     {
-        $search = str_replace('-', ' ', $_GET['query']);
+        $search = $_GET['query'];
 
-        // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
-        $searchQuery = '"' . $search . '"';
+        // Divide la consulta de búsqueda en palabras clave
+        $searchKeywords = explode(' ', $search);
 
-        $stores = Store::where('status', true)->where('cities_id', $_GET['cityId'])
-            ->whereHas('products', function ($query) use ($searchQuery) {
-                // Utilizar MATCH... AGAINST para búsqueda booleana
-                $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+        $stores = Store::where('status', true)
+            ->where('cities_id', $_GET['cityId'])
+            ->whereHas('products', function ($query) use ($searchKeywords) {
+                foreach ($searchKeywords as $keyword) {
+                    $query->where('name', 'like', '%' . $keyword . '%');
+                }
             })
-            ->with(['products' => function ($query) use ($searchQuery) {
-                // Utilizar MATCH... AGAINST para búsqueda booleana
-                $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+            ->with(['products' => function ($query) use ($searchKeywords) {
+                foreach ($searchKeywords as $keyword) {
+                    $query->where('name', 'like', '%' . $keyword . '%');
+                }
             }])
             ->paginate(10);
 
         if (count($stores) == 0) {
-            // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
             $searchQuery = $search . '*';
 
-            $stores = Store::where('status', true)->where('cities_id', $_GET['cityId'])
+            $stores = Store::where('status', true)
+                ->where('cities_id', $_GET['cityId'])
                 ->whereHas('products', function ($query) use ($searchQuery) {
-                    // Utilizar MATCH... AGAINST para búsqueda booleana
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
                 })
                 ->with(['products' => function ($query) use ($searchQuery) {
-                    // Utilizar MATCH... AGAINST para búsqueda booleana
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
                 }])
                 ->paginate(10);
         }
 
         if (count($stores) > 0) {
-            foreach ($stores as $key) {
-                $store = Store::where('users_id', $_GET['userId'])->first();
-                if ($store == null) {
-                    $product_store_id = ProductStore::where('products_id', $key->products[0]->id)->where('stores_id', $key->id)->pluck('id')->firstOrFail();
+            foreach ($stores as $store) {
+                $userSearchedStores = SearchUser::where('users_id', $_GET['userId'])
+                    ->where('stores_id', $store->id)
+                    ->count();
+
+                if ($userSearchedStores == 0) {
+                    $product_store_id = ProductStore::where('products_id', $store->products[0]->id)
+                        ->where('stores_id', $store->id)
+                        ->pluck('id')
+                        ->firstOrFail();
+
                     $search = new SearchUser();
                     $search->users_id = $_GET['userId'];
-                    $search->stores_id = $key->id;
+                    $search->stores_id = $store->id;
                     $search->product_stores_id = $product_store_id;
-                    $search->created_at = Carbon::now();
+                    $search->created_at = now();
                     $search->save();
                 }
             }
         }
 
-        // Retornar las tiendas encontradas
         return response()->json($stores);
     }
 

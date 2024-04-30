@@ -25,15 +25,15 @@ class ProcessNewMessage
 
         // Configuración de Pusher
         $options = array(
-            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'cluster' => 'sa1',
             'useTLS' => true // Usar TLS para conexiones seguras
         );
 
         // Crea una nueva instancia de Pusher
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
+            'e23d61d2d0481c4e1ed1',
+            '61c35688a5288cd07b7c',
+            '1792757',
             $options
         );
 

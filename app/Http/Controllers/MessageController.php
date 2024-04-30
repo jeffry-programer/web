@@ -37,18 +37,19 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $user = User::find($request->userId);
+        $conversationId = $request->id;
+        $content = $request->content;
 
         $message = new Message();
-        $message->conversations_id = $request->id;
-        $message->content = $request->content;
+        $message->conversations_id = $conversationId;
+        $message->content = $content;
         $message->from = $user->email;
         $message->status = false;
-        $message->created_at = Carbon::now();
         $message->save();
 
         event(new NewMessage($message));
 
-        $conversation = Conversation::find($request->id);
+        $conversation = Conversation::find($conversationId);
         $user1 = User::find($conversation->users_id);
         $store = Store::find($conversation->stores_id);
         $user2 = User::find($store->users_id);
@@ -61,24 +62,17 @@ class MessageController extends Controller
             $name = $user1->name;
         }
 
-        if ($token != null) {
-            // Crea una instancia de Firebase
-            $firebase = (new Factory)->withServiceAccount(env('FIREBASE_CREDENTIALS'));
+        $conversationId = 8;
 
-            // Obtiene una instancia del servicio de mensajería
-            $messaging = $firebase->createMessaging();
+        $url = '/home';
 
-            // Crea el mensaje de notificación
-            $message = CloudMessage::new()
-                ->withNotification(Notification::create($name, $message->content))
-                ->withTarget('token', $token);
+        $token = 'deIGD72qT7qNCekk0mTQ5L:APA91bF-B_RJ6xqNGbAZk9CFGeWJUev-wK8kY6ue_oAObcrvN_ZM1L-DfjrQqZ4MDGbc2n2dpohzh2MwNV4xRgww-4gC7xzP2mhYhGEzQ9a9MfdgB9b7FDDsB9AGe4aN0GZQnnbdt1SJ';
+        fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
+            'title' => $name,
+            'body' => $content,
+        ])->send();
 
-            // Envía el mensaje
-            $messaging->send($message);
-        }
-
-
-        return response()->json(['token' => $token, 'message' => $message->content, 'from' => $name, 'conversation' => $conversation->id]);
+        return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito']);
     }
 
     public function update(Request $request, $id)
