@@ -62,11 +62,6 @@ class MessageController extends Controller
             $name = $user1->name;
         }
 
-        $conversationId = 8;
-
-        $url = '/home';
-
-        $token = 'deIGD72qT7qNCekk0mTQ5L:APA91bF-B_RJ6xqNGbAZk9CFGeWJUev-wK8kY6ue_oAObcrvN_ZM1L-DfjrQqZ4MDGbc2n2dpohzh2MwNV4xRgww-4gC7xzP2mhYhGEzQ9a9MfdgB9b7FDDsB9AGe4aN0GZQnnbdt1SJ';
         fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
             'title' => $name,
             'body' => $content,
