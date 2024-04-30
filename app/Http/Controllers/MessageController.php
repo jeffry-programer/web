@@ -63,7 +63,7 @@ class MessageController extends Controller
 
         if ($token != null) {
             // Crea una instancia de Firebase
-            $firebase = (new Factory)->withServiceAccount(config('FIREBASE_CREDENTIALS'));
+            $firebase = (new Factory)->withServiceAccount(env('FIREBASE_CREDENTIALS'));
 
             // Obtiene una instancia del servicio de mensajería
             $messaging = $firebase->createMessaging();
