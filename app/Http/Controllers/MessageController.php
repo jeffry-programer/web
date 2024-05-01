@@ -56,10 +56,10 @@ class MessageController extends Controller
 
         if ($user1->email == $user->email) {
             $token = $user2->token;
-            $name = $store->name;
+            $name = $user1->name;
         } else {
             $token = $user1->token;
-            $name = $user1->name;
+            $name = $store->name;
         }
 
         fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
