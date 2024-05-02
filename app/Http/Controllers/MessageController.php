@@ -62,10 +62,12 @@ class MessageController extends Controller
             $name = $store->name;
         }
 
-        fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
-            'title' => $name,
-            'body' => $content,
-        ])->send();
+        if(strlen($token) > 10){
+            fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
+                'title' => $name,
+                'body' => $content,
+            ])->send();
+        }
 
         return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito']);
     }

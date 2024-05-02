@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
+use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductStore;
 use App\Models\Promotion;
@@ -19,6 +20,8 @@ use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypeStore;
 use App\Models\Modell;
+use App\Models\Plan;
+use App\Models\PlanContracting;
 use App\Models\SearchUser;
 use App\Models\State;
 use App\Models\SubCategory;
@@ -188,10 +191,6 @@ class MainController extends Controller
     public function registerGrua()
     {
         return view('register-grua');
-    }
-
-    public function registerStorePost(Request $request)
-    {
     }
 
     public function registerDataStore()
@@ -518,7 +517,13 @@ class MainController extends Controller
             $user->token = $request->token_fcm;
             $user->save();
 
-            return response()->json(['user' => $user], 200);
+            $store = Store::where('users_id', $user->id)->first();
+
+            if($store != null){
+                return response()->json(['user' => $user, 'store' => $store->id], 200);
+            }else{
+                return response()->json(['user' => $user], 200);
+            }
         } else {
             return response()->json(['error' => 'Credenciales incorrectas'], 422);
         }
@@ -702,6 +707,28 @@ class MainController extends Controller
         }
     }
 
+    public function uploadImageApi2(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            // Obtener el directorio donde se guardarán las imágenes
+            $directory = 'public/images-stores/' . $request->id;
+
+            // Verificar si existen imágenes antiguas en el directorio
+            if (Storage::exists($directory)) {
+                // Eliminar todas las imágenes antiguas del directorio
+                Storage::deleteDirectory($directory);
+            }
+            $route_image = $request->file('image')->store('public/images-stores/' . $request->id);
+            $url = Storage::url($route_image);
+            $store = Store::find($request->id);
+            $store->image = $url;
+            $store->save();
+            return response()->json(['url' => asset($url), 'url2' => str_replace('/storage/', '', $url)]);
+        } else {
+            return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
+        }
+    }
+
     public function getCountriesApi()
     {
         return Country::all();
@@ -758,7 +785,7 @@ class MainController extends Controller
 
     public function getStoreSearch(Request $request)
     {
-        $search = $_GET['query'];
+        $search = str_replace('-', ' ', $_GET['query']);
 
         // Divide la consulta de búsqueda en palabras clave
         $searchKeywords = explode(' ', $search);
@@ -775,7 +802,7 @@ class MainController extends Controller
                     $query->where('name', 'like', '%' . $keyword . '%');
                 }
             }])
-            ->paginate(10);
+            ->with('city')->paginate(10);
 
         if (count($stores) == 0) {
             $searchQuery = $search . '*';
@@ -788,8 +815,8 @@ class MainController extends Controller
                 ->with(['products' => function ($query) use ($searchQuery) {
                     $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
                 }])
-                ->paginate(10);
-        }
+                ->with('city')->paginate(10);
+            }
 
         if (count($stores) > 0) {
             foreach ($stores as $store) {
@@ -889,7 +916,7 @@ class MainController extends Controller
         // Obtener información de las tiendas
         $lastStores = [];
         foreach ($mostSearchedStores as $searchedStore) {
-            $store = Store::find($searchedStore->stores_id);
+            $store = Store::with('city')->find($searchedStore->stores_id);
             if ($store) {
                 $lastStores[] = $store;
             }
@@ -924,7 +951,7 @@ class MainController extends Controller
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->inRandomOrder()->limit(10)->get();
+        })->with('city')->inRandomOrder()->limit(10)->get();
         return response()->json(['publicities' => $publicities, 'stores' => $stores, 'lastStores' => $lastStores, 'lastSearch' => $lastSearch]);
     }
 
@@ -932,7 +959,72 @@ class MainController extends Controller
     {
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->paginate(10);
+        })->with('city')->paginate(10);
         return response()->json($stores);
+    }
+
+    public function registerStorePost(Request $request)
+    {
+        // Validación de los datos
+        $request->validate([
+            'cities_id' => 'required',
+            'name' => 'required|string|max:100|unique:stores',
+            'description' => 'required|string|max:255',
+            'email' => 'required|email|unique:stores',
+            'address' => 'required|max:255',
+            'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/']
+        ]);
+
+        $type_store = TypeStore::where('description', $request->typeStore)->first();
+
+        //Registro de la tienda
+        $store = new Store();
+        $store->type_stores_id = $type_store->id;
+        $store->users_id = $request->users_id;
+        $store->cities_id = $request->cities_id;
+        $store->name = $request->name;
+        $store->description = $request->description;
+        $store->email = $request->email;
+        $store->address = $request->address;
+        $store->link = str_replace(' ','-', $request->name);
+        $store->status = false;
+        $store->phone = $request->phone;
+        $store->score_store = 0;
+        $store->created_at = Carbon::now();
+
+        if($request->typeStore == 'Grua'){
+            $store->tipo = $request->tipo;
+            $store->dimensiones = $request->dimensiones;
+        }
+
+        $store->save();
+
+        //Registro del plan contratado
+        $type_plan = Plan::where('description', 'Basico')->first();
+        $plan = new PlanContracting();
+        $plan->plans_id = $type_plan->id;
+        $plan->stores_id = $store->id;
+        $plan->date_init = Carbon::now();
+        $plan->date_end = Carbon::now()->addDay(intval($type_plan->days));
+        $plan->status = true;
+        $plan->created_at = Carbon::now();
+        $plan->save();
+
+        // Eliminar todas las conversaciones y sus mensajes asociados para el usuario dado
+        Conversation::where('users_id', $request->users_id)->delete();
+
+        //Cambiar perfil de usuario
+        $user = User::find($request->users_id);
+        if($request->typeStore == 'Tienda'){
+            $user->profiles_id = 2;
+        }else if($request->typeStore == 'Taller'){
+            $user->profiles_id = 4;
+        }else{
+            $user->profiles_id = 5;
+        }
+        $user->save();
+
+        //Devolvemos la tienda
+        return response()->json(['store' => $store, 'user' => $user], 200);
     }
 }

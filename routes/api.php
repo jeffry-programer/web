@@ -32,6 +32,7 @@ Route::post('publicity', [MainController::class, 'publicityDetail']);
 Route::post('publicities', [MainController::class, 'pubilicitiesDetail']);
 Route::post('updateData', [MainController::class, 'updateDataApi']);
 Route::post('upload-image', [MainController::class, 'uploadImageApi']);
+Route::post('upload-image-store', [MainController::class, 'uploadImageApi2']);
 Route::get('countries', [MainController::class, 'getCountriesApi']);
 Route::get('countries/{countryId}/states', [MainController::class, 'getStatesApi']);
 Route::get('states/{stateId}/cities', [MainController::class, 'getCitiesByState']); // Obtener ciudades por estado
@@ -42,3 +43,5 @@ Route::get('search-products2/{query}-{id}', [MainController::class, 'getProducts
 Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 'index']);
 Route::get('/chats/{userId}', [MainController::class, 'getChats']);
 Route::post('/messages', [MessageController::class, 'store']);
+Route::post('/registerStore', [MainController::class, 'registerStorePost']);
+
