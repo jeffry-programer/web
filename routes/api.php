@@ -44,4 +44,7 @@ Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 
 Route::get('/chats/{userId}', [MainController::class, 'getChats']);
 Route::post('/messages', [MessageController::class, 'store']);
 Route::post('/registerStore', [MainController::class, 'registerStorePost']);
+Route::get('/type-publicities/{userId}', [MainController::class, 'typePublicities']);
+Route::post('/save-publicity', [MainController::class, 'savePublicity']);
+Route::post('/save-promotion', [MainController::class, 'savePromotion']);
 

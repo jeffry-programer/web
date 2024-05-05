@@ -26,6 +26,7 @@ use App\Models\SearchUser;
 use App\Models\State;
 use App\Models\SubCategory;
 use App\Models\TypeProduct;
+use App\Models\TypePublicity;
 use App\Models\User;
 use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
@@ -519,9 +520,9 @@ class MainController extends Controller
 
             $store = Store::where('users_id', $user->id)->first();
 
-            if($store != null){
+            if ($store != null) {
                 return response()->json(['user' => $user, 'store' => $store->id], 200);
-            }else{
+            } else {
                 return response()->json(['user' => $user], 200);
             }
         } else {
@@ -785,53 +786,80 @@ class MainController extends Controller
 
     public function getStoreSearch(Request $request)
     {
-        $search = str_replace('-', ' ', $_GET['query']);
+        $locationStores = 'city';
+        $search = str_replace('-', ' ', $request->query('query'));
 
-        // Divide la consulta de búsqueda en palabras clave
-        $searchKeywords = explode(' ', $search);
+        // Validar que los parámetros necesarios estén presentes
+        if (!$request->has('cityId') || !$request->has('userId')) {
+            return response()->json(['error' => 'Missing required parameters'], 400);
+        }
+
+        $cityId = $request->query('cityId');
+        $userId = $request->query('userId');
 
         $stores = Store::where('status', true)
-            ->where('cities_id', $_GET['cityId'])
-            ->whereHas('products', function ($query) use ($searchKeywords) {
-                foreach ($searchKeywords as $keyword) {
-                    $query->where('name', 'like', '%' . $keyword . '%');
-                }
+            ->where('cities_id', $cityId)
+            ->whereHas('products', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
             })
-            ->with(['products' => function ($query) use ($searchKeywords) {
-                foreach ($searchKeywords as $keyword) {
-                    $query->where('name', 'like', '%' . $keyword . '%');
-                }
+            ->with(['products' => function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
             }])
-            ->with('city')->paginate(10);
+            ->with('city')
+            ->paginate(10);
 
         if (count($stores) == 0) {
-            $searchQuery = $search . '*';
+            $locationStores = 'state';
+
+            // Obtener el estado al que pertenece la ciudad
+            $city = City::findOrFail($cityId);
+            $municipalityId = $city->municipalities_id;
+
+            // Obtener todas las ciudades del mismo municipio
+            $cities = City::where('municipalities_id', $municipalityId)->pluck('id');
 
             $stores = Store::where('status', true)
-                ->where('cities_id', $_GET['cityId'])
-                ->whereHas('products', function ($query) use ($searchQuery) {
-                    $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+                ->whereIn('cities_id', $cities)
+                ->whereHas('products', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
                 })
-                ->with(['products' => function ($query) use ($searchQuery) {
-                    $query->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery]);
+                ->with(['products' => function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
                 }])
-                ->with('city')->paginate(10);
-            }
+                ->with('city')
+                ->paginate(10);
 
-        if (count($stores) > 0) {
+            if (count($stores) == 0) {
+                $locationStores = 'country';
+
+                // Obtener todas las ciudades del país
+                $cities = City::pluck('id');
+
+                $stores = Store::where('status', true)
+                    ->whereIn('cities_id', $cities)
+                    ->whereHas('products', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->with(['products' => function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    }])
+                    ->with('city')
+                    ->paginate(10);
+            }
+        }
+
+        if (!$stores->isEmpty()) {
             foreach ($stores as $store) {
-                $userSearchedStores = SearchUser::where('users_id', $_GET['userId'])
+                // Registrar la búsqueda del usuario si se encuentran tiendas
+                $userSearchedStores = SearchUser::where('users_id', $userId)
                     ->where('stores_id', $store->id)
                     ->count();
 
                 if ($userSearchedStores == 0) {
-                    $product_store_id = ProductStore::where('products_id', $store->products[0]->id)
-                        ->where('stores_id', $store->id)
-                        ->pluck('id')
-                        ->firstOrFail();
+                    $product_store_id = $store->products->first()->pivot->id;
 
                     $search = new SearchUser();
-                    $search->users_id = $_GET['userId'];
+                    $search->users_id = $userId;
                     $search->stores_id = $store->id;
                     $search->product_stores_id = $product_store_id;
                     $search->created_at = now();
@@ -840,7 +868,7 @@ class MainController extends Controller
             }
         }
 
-        return response()->json($stores);
+        return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
     }
 
     public function getProductsSearch($query)
@@ -986,13 +1014,13 @@ class MainController extends Controller
         $store->description = $request->description;
         $store->email = $request->email;
         $store->address = $request->address;
-        $store->link = str_replace(' ','-', $request->name);
+        $store->link = str_replace(' ', '-', $request->name);
         $store->status = false;
         $store->phone = $request->phone;
         $store->score_store = 0;
         $store->created_at = Carbon::now();
 
-        if($request->typeStore == 'Grua'){
+        if ($request->typeStore == 'Grua') {
             $store->tipo = $request->tipo;
             $store->dimensiones = $request->dimensiones;
         }
@@ -1015,16 +1043,84 @@ class MainController extends Controller
 
         //Cambiar perfil de usuario
         $user = User::find($request->users_id);
-        if($request->typeStore == 'Tienda'){
+        if ($request->typeStore == 'Tienda') {
             $user->profiles_id = 2;
-        }else if($request->typeStore == 'Taller'){
+        } else if ($request->typeStore == 'Taller') {
             $user->profiles_id = 4;
-        }else{
+        } else {
             $user->profiles_id = 5;
         }
         $user->save();
 
         //Devolvemos la tienda
         return response()->json(['store' => $store, 'user' => $user], 200);
+    }
+
+    public function typePublicities($userId)
+    {
+        $type_publicities = TypePublicity::all();
+        $store = Store::where('users_id', $userId)->first();
+        $products = $store->products;
+        return response()->json(['type_publicities' => $type_publicities, 'products' => $products], 200);
+    }
+
+    public function savePublicity(Request $request)
+    {
+        if ($request->hasFile('selectedImage')) {
+            $store = Store::where('users_id', $request->user_id)->first();
+            $type_publicity = TypePublicity::find($request->type);
+
+            $publicity = new Publicity();
+            $publicity->stores_id = $store->id;
+            $publicity->type_publicities_id = $request->type;
+            $publicity->title = $request->title;
+            $publicity->image = '';
+            $publicity->description = $request->description;
+            $publicity->link = str_replace(' ', '-', $store->name);
+            $publicity->status = false;
+            $publicity->date_init = Carbon::now();
+            $publicity->date_end = Carbon::now()->addDays($type_publicity->amount_days);
+            $publicity->created_at = Carbon::now();
+            $publicity->save();
+
+            $route_image = $request->file('selectedImage')->store('public/images-publicity/' . $publicity->id);
+            $url = Storage::url($route_image);
+
+            $publicity->image = $url;
+            $publicity->save();
+
+            return response()->json(['success' => 'Publicity created successfully'], 200);
+        } else {
+            return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
+        }
+    }
+
+    public function savePromotion(Request $request)
+    {
+        if ($request->hasFile('selectedImage')) {
+
+            $store = Store::where('users_id', $request->user_id)->first();
+            $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $request->products_id)->first();
+            $promotion = new Promotion();
+            $promotion->products_id = $request->products_id;
+            $promotion->stores_id = $store->id;
+            $promotion->date_init = $request->date_init;
+            $promotion->date_end = $request->date_end;
+            $promotion->price = $product_store->price - ($product_store->price * ($request->percent_promotion * 0.01));
+            $promotion->image = '';
+            $promotion->status = false;
+            $promotion->description = $request->description;
+            $promotion->created_at = Carbon::now();
+            $promotion->save();
+
+            $route_image = $request->file('selectedImage')->store('public/images-promotion/' . $promotion->id);
+            $url = Storage::url($route_image);
+            $promotion->image = $url;
+            $promotion->save();
+
+            return response()->json(['success' => 'Promotion created successfully'], 200);
+        } else {
+            return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
+        }
     }
 }
