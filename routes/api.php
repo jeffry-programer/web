@@ -38,6 +38,7 @@ Route::get('countries/{countryId}/states', [MainController::class, 'getStatesApi
 Route::get('states/{stateId}/cities', [MainController::class, 'getCitiesByState']); // Obtener ciudades por estado
 Route::get('product-detail/{productId}_{idStore}_{idUser}', [MainController::class, 'getProductDetail']);
 Route::get('search-stores', [MainController::class, 'getStoreSearch']);
+Route::get('search-stores2', [MainController::class, 'getStoreSearch2']);
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
 Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
 Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 'index']);
@@ -47,4 +48,5 @@ Route::post('/registerStore', [MainController::class, 'registerStorePost']);
 Route::get('/type-publicities/{userId}', [MainController::class, 'typePublicities']);
 Route::post('/save-publicity', [MainController::class, 'savePublicity']);
 Route::post('/save-promotion', [MainController::class, 'savePromotion']);
+Route::get('/cities', [MainController::class, 'getCities']);
 

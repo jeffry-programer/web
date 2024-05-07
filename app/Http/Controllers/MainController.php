@@ -871,6 +871,28 @@ class MainController extends Controller
         return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
     }
 
+    public function getStoreSearch2(Request $request)
+    {
+        // Obtén el valor del parámetro 'query' de la consulta
+        $query = $request->query('query');
+
+        if ($query == '') {
+            $stores = Store::where('status', true)
+                ->where('type_stores_id', $request->type)
+                ->where('cities_id', $request->cityId)
+                ->with('city')
+                ->paginate(10);
+        } else {
+            $stores = Store::where('status', true)
+                ->where('type_stores_id', $request->type)
+                ->where('cities_id', $request->cityId)
+                ->where('name', 'like', '%' . $query . '%')
+                ->with('city')
+                ->paginate(10);
+        }
+        return response()->json($stores, 200);
+    }
+
     public function getProductsSearch($query)
     {
         $string = $query;
@@ -1122,5 +1144,12 @@ class MainController extends Controller
         } else {
             return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
         }
+    }
+
+    public function getCities()
+    {
+        $cities = City::all();
+        $type_stores = TypeStore::all();
+        return response()->json(['cities' => $cities, 'type_stores' => $type_stores], 200);
     }
 }
