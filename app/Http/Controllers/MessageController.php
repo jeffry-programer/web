@@ -65,7 +65,7 @@ class MessageController extends Controller
         if(strlen($token) > 10){
             fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
                 'title' => $name,
-                'body' => $content,
+                'body' => $content
             ])->send();
         }
 

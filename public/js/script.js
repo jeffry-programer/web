@@ -80,7 +80,18 @@ function loadDataSession(){
 
 
 function seleccionarCiudad(id){
-    $("#cities_id").val(id);
+  $("#cities_id").val(id);
+  $.ajax({
+    url: '/cities/' + id + '/sectors',
+    type: 'GET',
+    success: function(data) {
+      var options = '<option value="">Selecciona un sector</option>';
+      $.each(data, function(id, name){
+        options += '<option value="' + id + '">' + name + '</option>';
+      });
+      $('#sectors_id').html(options);
+    }
+  });
 }  
 
 

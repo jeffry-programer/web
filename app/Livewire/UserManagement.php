@@ -61,6 +61,7 @@ class UserManagement extends Component
         $name_label = explode("/", $_SERVER['REQUEST_URI'])[3];
         $name_label = str_replace("_", " ", $name_label);
         $name_label = str_replace("%20", " ", $name_label);
+        $name_label = str_replace("%C3%B1", "ñ", $name_label);
         $name_table = Table::where('label', $name_label)->first()->name;
         if($name_table == 'products'){
             $data = Product::all();
@@ -283,15 +284,15 @@ class UserManagement extends Component
     }
 
     public function registerStore(Request $request){
-        // Validación de los datos
         $request->validate([
-            'cities_id' => 'required',
-            'name' => 'required|string|max:100|unique:stores',
-            'description' => 'required|string|max:255',
-            'email' => 'required|email|unique:stores',
-            'address' => 'required|max:255',
+            'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/'],
             'RIF' => 'required|max:45',
-            'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/']
+            'address' => 'required|max:255',
+            'email' => 'required|email|unique:stores',
+            'description' => 'required|string|max:255',
+            'name' => 'required|string|max:100|unique:stores',
+            'sectors_id' => 'required',
+            'cities_id' => 'required',
         ]);
 
         $data = $request->all();

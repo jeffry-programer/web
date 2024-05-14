@@ -245,6 +245,9 @@ return [
         'percent_promotion'        => 'porcentaje promoción',
         'type_publicity'           => 'tipo publicidad',
         'type_publicities_id'      => 'tipo publicidad',
-        'file'                     => 'imagen'
+        'file'                     => 'imagen',
+        'cities_id'                => 'ciudad',
+        'sectors_id'               => 'sector',
+        'RIF'                      => 'RIF'
     ],
 ];

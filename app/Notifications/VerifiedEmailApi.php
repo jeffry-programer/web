@@ -32,6 +32,6 @@ class VerifiedEmailApi extends Notification
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)->subject('Tulobuscas nueva')->view('emails.verify-email-api', ['user' => $this->user, 'token' => $this->token]);
+        return (new MailMessage)->subject('Código de verificación Tulobuscas')->view('emails.verify-email-api', ['user' => $this->user, 'token' => $this->token]);
     }
 }

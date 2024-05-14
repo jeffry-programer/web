@@ -93,6 +93,12 @@
                                   </div>
                             </div>
                             <div class="col-md-6 form-group">
+                                <label class="py-3" for="name">{{ __('Sector') }}</label>
+                                <select class="form-select" id="sectors_id" name="sectors_id">
+                                    <option value="">Selecciona un sector</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Nombre de la tienda') }}</label>
                                 <input class="form-control" placeholder="Por favor ingrese un nombre" class="block mt-1 w-full" type="text" name="name" id="name" required/>
                             </div>
