@@ -809,19 +809,19 @@ class MainController extends Controller
         $cityId = $request->query('cityId');
         $userId = $request->query('userId');
 
-        if($request->sectorId !== 'Todos'){
+        if ($request->sectorId !== 'Todos') {
             $stores = Store::where('status', true)
-            ->where('cities_id', $cityId)
-            ->where('sectors_id', $request->sectorId)
-            ->whereHas('products', function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->with(['products' => function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            }])
-            ->with('city')
-            ->paginate(10);
-            if(count($stores) > 0){
+                ->where('cities_id', $cityId)
+                ->where('sectors_id', $request->sectorId)
+                ->whereHas('products', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->with(['products' => function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                }])
+                ->with('city')
+                ->paginate(10);
+            if (count($stores) > 0) {
                 $locationStores = 'sector';
             }
         }
@@ -897,7 +897,7 @@ class MainController extends Controller
             }
         }
 
-        return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);   
+        return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
     }
 
     public function getStoreSearch2(Request $request)
@@ -1203,7 +1203,11 @@ class MainController extends Controller
         //Encontrando tiendas que se encuentran en esa ciudad, que son ese tipo de tienda y que estan activas
         $stores = Store::whereHas('typeStore', function ($query) use ($request) {
             $query->where('description', $request->type);
-        })->where('status', true)->where('cities_id', $request->city)->get();
+        })->where('status', true)->where('cities_id', $request->city);
+
+        if ($request->sector) {
+            $stores->where('sectors_id', $request->sector)->get();
+        }
 
         //Recorriendo las tiendas para enviar la notificacion a cada una de ellas
         /*foreach($stores as $store){
@@ -1214,13 +1218,19 @@ class MainController extends Controller
             ])->send();
         }*/
 
-        $token = '';
+        $token = 'deIGD72qT7qNCekk0mTQ5L:APA91bF-B_RJ6xqNGbAZk9CFGeWJUev-wK8kY6ue_oAObcrvN_ZM1L-DfjrQqZ4MDGbc2n2dpohzh2MwNV4xRgww-4gC7xzP2mhYhGEzQ9a9MfdgB9b7FDDsB9AGe4aN0GZQnnbdt1SJ';
         fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
             'title' => $name,
             'body' => 'Requiero auxilio vial'
+        ])->data([
+            'click_action' => 'OPEN_URL',
+            'url' => '/chats',
+            'android' => [
+                'priority' => 'high'
+            ]
         ])->send();
 
-        return response()->json('ok', 200);
+        return response()->json($stores, 200);
     }
 
     public function sectors(City $city)
