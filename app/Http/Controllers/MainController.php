@@ -885,7 +885,7 @@ class MainController extends Controller
                     ->count();
 
                 if ($userSearchedStores == 0) {
-                    $product_store_id = $store->products->first()->pivot->id;
+                    $product_store_id = $store->products->first()->pivot->products_id;
 
                     $search = new SearchUser();
                     $search->users_id = $userId;
