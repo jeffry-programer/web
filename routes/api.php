@@ -52,3 +52,10 @@ Route::post('/save-promotion', [MainController::class, 'savePromotion']);
 Route::get('/cities', [MainController::class, 'getCities']);
 Route::get('/states', [MainController::class, 'getStates']);
 Route::post('/send-signal-aux', [MainController::class, 'sendSignalAux']);
+Route::get('/get-signals-aux', [MainController::class, 'getSignalsAux']);
+Route::post('/change-status-signal', [MainController::class, 'changeStatusSignalsAux']);
+Route::post('/remove-status-signal', [MainController::class, 'removeSignalsAux']);
+Route::post('/close-status-signal', [MainController::class, 'closeSignalsAux']);
+Route::post('/quality-signal', [MainController::class, 'qualitySignal']);
+
+

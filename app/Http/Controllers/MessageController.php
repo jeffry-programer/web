@@ -20,9 +20,16 @@ class MessageController extends Controller
     {
         $conversation = Conversation::find($conversationId);
         $messages = Message::where('conversations_id', $conversation->id)->orderBy('created_at', 'asc')->get();
-        $store = Store::find($conversation->stores_id);
-        $user = User::find($conversation->users_id);
-        $user_store = User::find($store->users_id);
+        $store = User::find($conversation->stores_id)->store;
+        if($userEmail == User::find($conversation->users_id)->email){
+            $user = User::find($conversation->stores_id);
+        }else{
+            $user = User::find($conversation->users_id);
+        }
+        if($user->store){
+            $user->name = $user->store->name;
+            $user->image = $user->store->image;
+        }
         $messages = $conversation->messages;
         // Iterar sobre los mensajes y actualizar su estado a true
         foreach ($messages as $message) {
@@ -31,7 +38,7 @@ class MessageController extends Controller
                 $message->save();
             }
         }
-        return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user, 'userStore' => $user_store]);
+        return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user]);
     }
 
     public function store(Request $request)
@@ -51,7 +58,7 @@ class MessageController extends Controller
 
         $conversation = Conversation::find($conversationId);
         $user1 = User::find($conversation->users_id);
-        $store = Store::find($conversation->stores_id);
+        $store = User::find($conversation->stores_id)->store;
         $user2 = User::find($store->users_id);
 
         if ($user1->email == $user->email) {
@@ -66,6 +73,12 @@ class MessageController extends Controller
             fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
                 'title' => $name,
                 'body' => $content
+            ])->data([
+                'click_action' => 'OPEN_URL',
+                'url' => '/chat/'.$conversation->id,
+                'android' => [
+                    'priority' => 'high'
+                ]
             ])->send();
         }
 

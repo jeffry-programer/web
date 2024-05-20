@@ -24,6 +24,7 @@ use App\Models\Plan;
 use App\Models\PlanContracting;
 use App\Models\SearchUser;
 use App\Models\Sector;
+use App\Models\SignalAux;
 use App\Models\State;
 use App\Models\SubCategory;
 use App\Models\TypeProduct;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Js;
 
 class MainController extends Controller
 {
@@ -558,12 +560,12 @@ class MainController extends Controller
         $subscriptions = Subscription::where('users_id', $user->id)->get();
         $array_subscriptions = array();
         foreach ($subscriptions as $key) {
-            $conversation = Conversation::where('stores_id', $key->stores_id)->where('users_id', $user->id)->first();
-            $user_store = Store::where('users_id', $user->id)->first();
-            if ($conversation == null && $key->store->users_id != $user->id && $user_store == null) {
+            $store = Store::find($key->stores_id);
+            $conversation = Conversation::where('stores_id', $store->users_id)->where('users_id', $user->id)->first();
+            if ($conversation == null && $key->store->users_id != $user->id){
                 $conversation = new Conversation();
                 $conversation->users_id = $user->id;
-                $conversation->stores_id = $key->stores_id;
+                $conversation->stores_id = $store->users_id;
                 $conversation->created_at = Carbon::now();
                 $conversation->save();
             }
@@ -601,12 +603,11 @@ class MainController extends Controller
     public function storeDetail(Request $request)
     {
         $store = Store::find($request->store_id);
-        $conversation = Conversation::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->first();
-        $user_store = Store::where('users_id', $request->user_id)->first();
-        if ($conversation == null && $store->users_id != $request->user_id && $user_store == null) {
+        $conversation = Conversation::where('stores_id', $store->user->id)->where('users_id', $request->user_id)->first();
+        if ($conversation == null && $store->users_id != $request->user_id){
             $conversation = new Conversation();
             $conversation->users_id = $request->user_id;
-            $conversation->stores_id = $request->store_id;
+            $conversation->stores_id = $store->users_id;
             $conversation->created_at = Carbon::now();
             $conversation->save();
         }
@@ -781,13 +782,12 @@ class MainController extends Controller
             'price' => $product_store->price,
         ];
 
-        $conversation = Conversation::where('stores_id', $idStore)->where('users_id', $idUser)->first();
         $store = Store::find($idStore);
-        $user_store = Store::where('users_id', $idUser)->first();
-        if ($conversation == null && $store->users_id != $idUser && $user_store == null) {
+        $conversation = Conversation::where('stores_id', $store->user->id)->where('users_id', $idUser)->first();
+        if ($conversation == null && $store->users_id != $idUser){
             $conversation = new Conversation();
             $conversation->users_id = $idUser;
-            $conversation->stores_id = $idStore;
+            $conversation->stores_id = $store->users_id;
             $conversation->created_at = Carbon::now();
             $conversation->save();
         }
@@ -955,12 +955,7 @@ class MainController extends Controller
         $final_array = [];
 
         // Obtener conversaciones del usuario y las asociadas a su tienda (si tiene)
-        $conversations = Conversation::where('users_id', $userId)
-            ->orWhereHas('store', function ($query) use ($userId) {
-                $query->where('users_id', $userId);
-            })
-            ->with(['user', 'store', 'messages'])
-            ->get();
+        $conversations = Conversation::where('users_id', $userId)->orWhere('stores_id', $userId)->with(['user', 'store', 'messages'])->get();
 
         // Ordenar las conversaciones por la fecha del mensaje más reciente
         $conversations = $conversations->sortByDesc(function ($conversation) {
@@ -968,18 +963,29 @@ class MainController extends Controller
             return optional($conversation->messages->last())->created_at;
         });
 
+        $my_user = User::find($userId);
+
         // Recorrer las conversaciones y agregar datos al array final
         foreach ($conversations as $key => $conversation) {
             $user = $conversation->user;
-            $store = $conversation->store;
+            $store = User::find($conversation->stores_id)->store;
             $lastMessage = $conversation->messages->last(); // Obtener el último mensaje
 
             // Verificar si se encontraron tanto el usuario como la tienda y si hay mensajes
             if ($user && $store && $lastMessage) {
-                $final_array[$key]['user_name'] = $user->name;
-                $final_array[$key]['user_img'] = $user->image;
-                $final_array[$key]['store_name'] = $store->name;
-                $final_array[$key]['store_img'] = $store->image;
+                if($my_user->id == $store->user->id){
+                    $user = User::find($conversation->users_id);
+                }else{
+                    $user = User::find($conversation->stores_id);
+                }
+                if($user->store){
+                    $final_array[$key]['user_name'] = $user->store->name;
+                    $final_array[$key]['user_img'] = $user->store->image;
+                }else{
+                    $final_array[$key]['user_name'] = $user->name;
+                    $final_array[$key]['user_img'] = $user->image;
+                }
+
                 $final_array[$key]['last_message'] = $lastMessage->content;
                 $final_array[$key]['last_message_time'] = $lastMessage->created_at;
                 $final_array[$key]['last_message_status'] = $lastMessage->status;
@@ -1210,25 +1216,28 @@ class MainController extends Controller
         }
 
         //Recorriendo las tiendas para enviar la notificacion a cada una de ellas
-        /*foreach($stores as $store){
-            $token = $store->user->token;
-            fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
+        foreach ($stores as $store) {
+            $signal = new SignalAux();
+            $signal->users_id = $user->id;
+            $signal->stores_id = $store->user->id;
+            $signal->detail = $request->description;
+            $signal->status = false;
+            $signal->status2 = false;
+            $signal->read = false;
+            $signal->created_at = Carbon::now();
+            $signal->save();
+
+            fcm()->to([$store->token])->priority('high')->timeToLive(0)->notification([
                 'title' => $name,
                 'body' => 'Requiero auxilio vial'
+            ])->data([
+                'click_action' => 'OPEN_URL',
+                'url' => '/signals-aux',
+                'android' => [
+                    'priority' => 'high'
+                ]
             ])->send();
-        }*/
-
-        $token = 'deIGD72qT7qNCekk0mTQ5L:APA91bF-B_RJ6xqNGbAZk9CFGeWJUev-wK8kY6ue_oAObcrvN_ZM1L-DfjrQqZ4MDGbc2n2dpohzh2MwNV4xRgww-4gC7xzP2mhYhGEzQ9a9MfdgB9b7FDDsB9AGe4aN0GZQnnbdt1SJ';
-        fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
-            'title' => $name,
-            'body' => 'Requiero auxilio vial'
-        ])->data([
-            'click_action' => 'OPEN_URL',
-            'url' => '/chats',
-            'android' => [
-                'priority' => 'high'
-            ]
-        ])->send();
+        }
 
         return response()->json($stores, 200);
     }
@@ -1236,5 +1245,95 @@ class MainController extends Controller
     public function sectors(City $city)
     {
         return $city->sectors()->pluck('description', 'id');
+    }
+
+    public function getSignalsAux(Request $request)
+    {
+        $user_id = $request->userId;
+        $signals_aux = SignalAux::where('users_id', $user_id)->get();
+        $array_data = [];
+        foreach ($signals_aux as $key => $signal) {
+            $user = User::find($signal->stores_id);
+            $array_data[$key]['id'] = $signal->id;
+            $array_data[$key]['name'] = $user->store->name;
+            $array_data[$key]['image'] = $user->store->image;
+            $array_data[$key]['created_at'] = $signal->created_at;
+            $array_data[$key]['status'] = $signal->status;
+            $array_data[$key]['status2'] = $signal->status2;
+            $array_data[$key]['read'] = $signal->read;
+        }
+        $signals_aux2 = SignalAux::where('stores_id', $user_id)->get();
+        $array_data2 = [];
+        foreach ($signals_aux2 as $key => $signal) {
+            $user = User::find($signal->users_id);
+            if ($user->store) {
+                $array_data2[$key]['id'] = $signal->id;
+                $array_data2[$key]['name'] = $user->store->name;
+                $array_data2[$key]['image'] = $user->store->image;
+                $array_data2[$key]['created_at'] = $signal->created_at;
+                $array_data2[$key]['status'] = $signal->status;
+                $array_data2[$key]['status2'] = $signal->status2;
+                $array_data2[$key]['read'] = $signal->read;
+            } else {
+                $array_data2[$key]['id'] = $signal->id;
+                $array_data2[$key]['name'] = $user->name;
+                $array_data2[$key]['image'] = $user->image;
+                $array_data2[$key]['created_at'] = $signal->created_at;
+                $array_data2[$key]['status'] = $signal->status;
+                $array_data2[$key]['status2'] = $signal->status2;
+                $array_data2[$key]['read'] = $signal->read;
+            }
+        }
+
+        return response()->json(['array_send' => $array_data, 'array_recive' => $array_data2], 200);
+    }
+
+    public function changeStatusSignalsAux(Request $request)
+    {
+        $signal = SignalAux::find($request->id);
+        $signal->status = true;
+        $signal->save();
+
+        $conversation = Conversation::where('users_id', $signal->users_id)->first();
+        if ($conversation == null) {
+            $conversation = new Conversation();
+            $conversation->users_id = $signal->users_id;
+            $conversation->stores_id = $signal->stores_id;
+            $conversation->created_at = Carbon::now();
+            $conversation->save();
+        }
+
+        return response()->json(['id' => $conversation->id], 200);
+    }
+
+    public function removeSignalsAux(Request $request)
+    {
+        $signal = SignalAux::find($request->id);
+        if ($signal != null) {
+            $signal->delete();
+        }
+        return response()->json('ok', 200);
+    }
+
+    public function closeSignalsAux(Request $request)
+    {
+        $signal = SignalAux::find($request->id);
+        $signal->read = true;
+        $signal->save();
+        return response()->json('ok', 200);
+    }
+
+    public function qualitySignal(Request $request)
+    {
+        $signal = SignalAux::find($request->id);
+        $store = Store::where('users_id', $signal->stores_id)->first();
+        if ($store != null) {
+            $store->score_store = ($request->rate + $store->score_store) / 2;
+            $store->save();
+            $signal->status2 = true;
+            $signal->save();
+            return response()->json('ok', 200);
+        }
+        return response()->json('La tienda no fue encontrada', 401);
     }
 }
