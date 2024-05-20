@@ -885,14 +885,15 @@ class MainController extends Controller
                     ->count();
 
                 if ($userSearchedStores == 0) {
-                    $product_store_id = $store->products->first()->pivot->products_id;
-
-                    $search = new SearchUser();
-                    $search->users_id = $userId;
-                    $search->stores_id = $store->id;
-                    $search->product_stores_id = $product_store_id;
-                    $search->created_at = now();
-                    $search->save();
+                    $product_store_id = ProductStore::where('products_id', $store->products->first()->id)->where('stores_id', $store->id)->first();
+                    if($product_store_id != null){
+                        $search = new SearchUser();
+                        $search->users_id = $userId;
+                        $search->stores_id = $store->id;
+                        $search->product_stores_id = $product_store_id->id;
+                        $search->created_at = now();
+                        $search->save();
+                    }
                 }
             }
         }
