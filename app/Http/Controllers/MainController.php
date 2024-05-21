@@ -562,7 +562,7 @@ class MainController extends Controller
         foreach ($subscriptions as $key) {
             $store = Store::find($key->stores_id);
             $conversation = Conversation::where('stores_id', $store->users_id)->where('users_id', $user->id)->first();
-            if ($conversation == null && $key->store->users_id != $user->id){
+            if ($conversation == null && $key->store->users_id != $user->id) {
                 $conversation = new Conversation();
                 $conversation->users_id = $user->id;
                 $conversation->stores_id = $store->users_id;
@@ -604,7 +604,7 @@ class MainController extends Controller
     {
         $store = Store::find($request->store_id);
         $conversation = Conversation::where('stores_id', $store->user->id)->where('users_id', $request->user_id)->first();
-        if ($conversation == null && $store->users_id != $request->user_id){
+        if ($conversation == null && $store->users_id != $request->user_id) {
             $conversation = new Conversation();
             $conversation->users_id = $request->user_id;
             $conversation->stores_id = $store->users_id;
@@ -784,7 +784,7 @@ class MainController extends Controller
 
         $store = Store::find($idStore);
         $conversation = Conversation::where('stores_id', $store->user->id)->where('users_id', $idUser)->first();
-        if ($conversation == null && $store->users_id != $idUser){
+        if ($conversation == null && $store->users_id != $idUser) {
             $conversation = new Conversation();
             $conversation->users_id = $idUser;
             $conversation->stores_id = $store->users_id;
@@ -879,18 +879,14 @@ class MainController extends Controller
 
         if (!$stores->isEmpty()) {
             foreach ($stores as $store) {
-                // Registrar la búsqueda del usuario si se encuentran tiendas
-                $userSearchedStores = SearchUser::where('users_id', $userId)
-                    ->where('stores_id', $store->id)
-                    ->count();
-
-                if ($userSearchedStores == 0) {
-                    $product_store_id = ProductStore::where('products_id', $store->products->first()->id)->where('stores_id', $store->id)->first();
-                    if($product_store_id != null){
+                $product_store = ProductStore::where('products_id', $store->products->first()->id)->where('stores_id', $store->id)->first();
+                if ($product_store != null) {
+                    $searchs = SearchUser::where('product_stores_id', $product_store->id)->get();
+                    if(count($searchs) == 0){
                         $search = new SearchUser();
                         $search->users_id = $userId;
                         $search->stores_id = $store->id;
-                        $search->product_stores_id = $product_store_id->id;
+                        $search->product_stores_id = $product_store->id;
                         $search->created_at = now();
                         $search->save();
                     }
@@ -974,15 +970,15 @@ class MainController extends Controller
 
             // Verificar si se encontraron tanto el usuario como la tienda y si hay mensajes
             if ($user && $store && $lastMessage) {
-                if($my_user->id == $store->user->id){
+                if ($my_user->id == $store->user->id) {
                     $user = User::find($conversation->users_id);
-                }else{
+                } else {
                     $user = User::find($conversation->stores_id);
                 }
-                if($user->store){
+                if ($user->store) {
                     $final_array[$key]['user_name'] = $user->store->name;
                     $final_array[$key]['user_img'] = $user->store->image;
-                }else{
+                } else {
                     $final_array[$key]['user_name'] = $user->name;
                     $final_array[$key]['user_img'] = $user->image;
                 }
@@ -1216,6 +1212,8 @@ class MainController extends Controller
             $stores->where('sectors_id', $request->sector)->get();
         }
 
+        $stores = $stores->get();
+
         //Recorriendo las tiendas para enviar la notificacion a cada una de ellas
         foreach ($stores as $store) {
             $signal = new SignalAux();
@@ -1259,6 +1257,7 @@ class MainController extends Controller
             $array_data[$key]['name'] = $user->store->name;
             $array_data[$key]['image'] = $user->store->image;
             $array_data[$key]['created_at'] = $signal->created_at;
+            $array_data[$key]['detail'] = $signal->detail;
             $array_data[$key]['status'] = $signal->status;
             $array_data[$key]['status2'] = $signal->status2;
             $array_data[$key]['read'] = $signal->read;
@@ -1272,6 +1271,7 @@ class MainController extends Controller
                 $array_data2[$key]['name'] = $user->store->name;
                 $array_data2[$key]['image'] = $user->store->image;
                 $array_data2[$key]['created_at'] = $signal->created_at;
+                $array_data2[$key]['detail'] = $signal->detail;
                 $array_data2[$key]['status'] = $signal->status;
                 $array_data2[$key]['status2'] = $signal->status2;
                 $array_data2[$key]['read'] = $signal->read;
@@ -1280,6 +1280,7 @@ class MainController extends Controller
                 $array_data2[$key]['name'] = $user->name;
                 $array_data2[$key]['image'] = $user->image;
                 $array_data2[$key]['created_at'] = $signal->created_at;
+                $array_data2[$key]['detail'] = $signal->detail;
                 $array_data2[$key]['status'] = $signal->status;
                 $array_data2[$key]['status2'] = $signal->status2;
                 $array_data2[$key]['read'] = $signal->read;
@@ -1292,8 +1293,16 @@ class MainController extends Controller
     public function changeStatusSignalsAux(Request $request)
     {
         $signal = SignalAux::find($request->id);
+        if ($signal == null) {
+            return response()->json(['id' => 0], 200);
+        }
         $signal->status = true;
         $signal->save();
+
+        // Eliminar todas las filas relacionadas con el usuario excepto la actual
+        SignalAux::where('users_id', $signal->users_id)
+            ->where('id', '!=', $signal->id)
+            ->delete();
 
         $conversation = Conversation::where('users_id', $signal->users_id)->first();
         if ($conversation == null) {
