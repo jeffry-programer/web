@@ -57,5 +57,6 @@ Route::post('/change-status-signal', [MainController::class, 'changeStatusSignal
 Route::post('/remove-status-signal', [MainController::class, 'removeSignalsAux']);
 Route::post('/close-status-signal', [MainController::class, 'closeSignalsAux']);
 Route::post('/quality-signal', [MainController::class, 'qualitySignal']);
+Route::post('/change-status-message', [MessageController::class, 'changeStatusMessage']);
 
 

@@ -75,7 +75,7 @@ class MessageController extends Controller
                 'body' => $content
             ])->data([
                 'click_action' => 'OPEN_URL',
-                'url' => '/chat/'.$conversation->id,
+                'url' => '/chat/'.$request->id,
                 'android' => [
                     'priority' => 'high'
                 ]
@@ -83,6 +83,13 @@ class MessageController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito']);
+    }
+
+    public function changeStatusMessage(Request $request){
+        $message = Message::find($request->id);
+        $message->status = true;
+        $message->save();
+        return response()->json($message);
     }
 
     public function update(Request $request, $id)
