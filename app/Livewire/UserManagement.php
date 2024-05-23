@@ -22,16 +22,13 @@ use App\Models\Publicy;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\SubCategory;
-use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypePublicity;
 use App\Models\User;
 use App\Notifications\NotifyAdmin;
 use App\Notifications\NotifyUsers;
-use App\Notifications\RegisterStore;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -104,6 +101,7 @@ class UserManagement extends Component
                 $error = true;
             }
         }
+
         if(isset($request->description)){
             if($name_table == 'products' || $name_table == 'stores' || $name_table == 'publicities' || $name_table == 'promotions'){
                 if(strlen($request->description) > 255){
@@ -125,9 +123,12 @@ class UserManagement extends Component
                 if(count(DB::table($name_table)->where('name',$request->name)->where('categories_id',$request->categories_id)->get()) > 0){
                     $error = true;
                 }
+            }else if($name_table == 'municipalities'){
+                if(count(DB::table($name_table)->where('name',$request->name)->where('states_id',$request->states_id)->get()) > 0){
+                    $error = true;
+                }
             }else if($name_table == 'users'){
-                $users = User::where('email', $request->email)->get();
-                $error = count($users) > 0;
+                $error = true;
             }else if(count(DB::table($name_table)->where('name',$request->name)->get()) > 0){
                 $error = true;
             }
@@ -135,6 +136,10 @@ class UserManagement extends Component
         if(isset($request->description)){
             if($name_table == 'operations'){
                 if(count(Operation::where('description',$request->description)->where('modules_id',$request->modules_id)->get()) > 0){
+                    $error = true;
+                }
+            }else if($name_table == 'sectors'){
+                if(count(DB::table($name_table)->where('description',$request->description)->where('municipalities_id',$request->municipalities_id)->get()) > 0){
                     $error = true;
                 }
             }else if($name_table != 'products' && $name_table != 'stores' && $name_table != 'publicities' && $name_table != 'promotions'){
