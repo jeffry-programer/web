@@ -20,6 +20,7 @@ use App\Models\Subscription;
 use App\Models\Table;
 use App\Models\TypeStore;
 use App\Models\Modell;
+use App\Models\Municipality;
 use App\Models\Plan;
 use App\Models\PlanContracting;
 use App\Models\SearchUser;
@@ -1345,5 +1346,12 @@ class MainController extends Controller
             return response()->json('ok', 200);
         }
         return response()->json('La tienda no fue encontrada', 401);
+    }
+
+    public function updateComponent(Request $request){
+        $states = State::all();
+        $municipalities = Municipality::where('states_id', $request->stateId)->get();
+        $sectors = Sector::where('municipalities_id', $request->municipalityId)->get();
+        return response()->json(['states' => $states, 'municipalities' => $municipalities, 'sectors' => $sectors]);
     }
 }

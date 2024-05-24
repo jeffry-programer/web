@@ -74,7 +74,17 @@ class UserManagement extends Component
             if(str_contains($field, '_id')){
                 $table = explode("_id", $field)[0];
                 $extra_data[$field]['fields'] = Schema::getColumnListing($table);
-                $extra_data[$field]['values'] = DB::table($table)->get();
+                if(DB::table($table)->first() != null){
+                    if(isset(DB::table($table)->first()->name)){
+                        $extra_data[$field]['values'] = DB::table($table)->orderBy('name', 'asc')->get();
+                    }else if(isset(DB::table($table)->first()->description)){
+                        $extra_data[$field]['values'] = DB::table($table)->orderBy('description', 'asc')->get();
+                    }else{
+                        $extra_data[$field]['values'] = DB::table($table)->get();
+                    }
+                }else{
+                    $extra_data[$field]['values'] = DB::table($table)->get();
+                }
             }
         }
 

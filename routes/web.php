@@ -4,6 +4,7 @@ use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Livewire\AssociateProduct;
+use App\Livewire\Counter;
 use App\Livewire\DetailStore;
 use App\Livewire\Subscribe;
 use App\Livewire\UserManagement;
@@ -35,6 +36,7 @@ Route::get('/table-store-imgs', [AssociateProduct::class, 'storeData'])->name('t
 Route::get('/publicities/{id}', [MainController::class, 'publicity']);
 Route::get('/autocomplete-products', [MainController::class, 'autocompleteProducts'])->name('autocomplete-products');
 Route::get('/autocomplete-products-store', [MainController::class, 'autocompleteProductStore'])->name('autocomplete-products-store');
+Route::get('update-counter-component', [MainController::class, 'updateComponent']);
 
 
 
