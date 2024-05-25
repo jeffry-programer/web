@@ -5,7 +5,7 @@
                 <label for="country" class="py-3">Estado<span
                         style="color: red;
                     margin-left: .2rem;">*</span></label>
-                <select class="form-select" wire:model="state_id" id="state" wire:change="changeState">
+                <select wire:ignore class="form-select" wire:model="state_id" id="state" wire:change="changeState">
                     <option value="" selected>Seleccione un estado</option>
                     @foreach ($states as $index => $state)
                         <option value="{{ $state->id }}">{{ $state->name }}</option>
