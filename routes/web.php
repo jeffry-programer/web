@@ -81,7 +81,6 @@ Route::middleware([
     Route::post('/null-subscribe', [Subscribe::class, 'nullSubscribe'])->name('null-subscribe');
     Route::get('/municipalities/{municipality}/sectors', [MainController::class, 'sectors']);
     Route::get('/states/{state}/municipalities', [MainController::class, 'municipalities']);
-    s
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {
