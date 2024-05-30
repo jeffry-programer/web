@@ -14,8 +14,12 @@ class Municipality extends Model
         return $this->belongsTo(State::class, 'states_id', 'id');
     }
 
-    public function cities()
+    public function stores()
     {
-        return $this->hasMany(City::class, 'municipalities_id');
+        return $this->hasMany(Municipality::class, 'municipalities_id');
+    }
+
+    public function sectors(){
+        return $this->hasMany(Sector::class, 'id', 'municipalities_id');
     }
 }

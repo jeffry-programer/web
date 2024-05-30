@@ -9,7 +9,7 @@ class Store extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['users_id','type_stores_id','sectors_id','cities_id','name','description','email','address','RIF','phone','image','image2','link','status','score_store','capacidad','tipo','dimensiones'];
+    protected $fillable = ['users_id','type_stores_id','sectors_id','municipalities_id','name','description','email','address','RIF','phone','image','image2','link','status','score_store','capacidad','tipo','dimensiones'];
 
     public function promotions(){
         return $this->hasMany(Promotion::class, 'stores_id');
@@ -21,10 +21,6 @@ class Store extends Model
 
     public function subscriptions(){
         return $this->hasMany(Subscription::class, 'stores_id');
-    }
-
-    public function city(){
-        return $this->belongsTo(City::class, 'cities_id', 'id');
     }
 
     public function typeStore(){
@@ -46,5 +42,9 @@ class Store extends Model
     // Relación con los planes contratados de la tienda
     public function planContrating(){
         return $this->belongsTo(PlanContracting::class, 'id', 'stores_id');
+    }
+
+    public function municipality(){
+        return $this->belongsTo(Municipality::class, 'municipalities_id');
     }
 }

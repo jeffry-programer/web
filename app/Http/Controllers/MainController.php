@@ -201,10 +201,12 @@ class MainController extends Controller
     public function registerDataStore()
     {
         $type_stores = TypeStore::all();
-        $cities = City::all();
+        $municipalities = Municipality::all();
+        $states = State::all();
         $array_data = [
             'type_stores' => $type_stores,
-            'cities' => $cities
+            'municipalities' => $municipalities,
+            'states' => $states
         ];
         return view('register-data-store', $array_data);
     }
@@ -213,10 +215,12 @@ class MainController extends Controller
     public function registerDataTaller()
     {
         $type_stores = TypeStore::all();
-        $cities = City::all();
+        $municipalities = Municipality::all();
+        $states = State::all();
         $array_data = [
             'type_stores' => $type_stores,
-            'cities' => $cities
+            'municipalities' => $municipalities,
+            'states' => $states
         ];
         return view('register-data-taller', $array_data);
     }
@@ -224,10 +228,12 @@ class MainController extends Controller
     public function registerDataGrua()
     {
         $type_stores = TypeStore::all();
-        $cities = City::all();
+        $municipalities = Municipality::all();
+        $states = State::all();
         $array_data = [
             'type_stores' => $type_stores,
-            'cities' => $cities
+            'municipalities' => $municipalities,
+            'states' => $states
         ];
         return view('register-data-grua', $array_data);
     }
@@ -762,7 +768,7 @@ class MainController extends Controller
 
     public function getSectorsByCity($cityId)
     {
-        $sectors = Sector::where('cities_id', $cityId)->get();
+        $sectors = Sector::where('municipalities_id', $cityId)->get();
         return response()->json($sectors);
     }
 
@@ -802,17 +808,12 @@ class MainController extends Controller
         $locationStores = 'city';
         $search = str_replace('-', ' ', $request->query('query'));
 
-        // Validar que los parámetros necesarios estén presentes
-        if (!$request->has('cityId') || !$request->has('userId')) {
-            return response()->json(['error' => 'Missing required parameters'], 400);
-        }
-
         $cityId = $request->query('cityId');
         $userId = $request->query('userId');
 
         if ($request->sectorId !== 'Todos') {
             $stores = Store::where('status', true)
-                ->where('cities_id', $cityId)
+                ->where('municipalities_id', $cityId)
                 ->where('sectors_id', $request->sectorId)
                 ->whereHas('products', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
@@ -828,7 +829,7 @@ class MainController extends Controller
         }
 
         $stores = Store::where('status', true)
-            ->where('cities_id', $cityId)
+            ->where('municipalities_id', $cityId)
             ->whereHas('products', function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
@@ -842,14 +843,14 @@ class MainController extends Controller
             $locationStores = 'state';
 
             // Obtener el estado al que pertenece la ciudad
-            $city = City::findOrFail($cityId);
-            $municipalityId = $city->municipalities_id;
+            $municipality = Municipality::findOrFail($cityId);
+            $municipalityId = $municipality->municipalities_id;
 
             // Obtener todas las ciudades del mismo municipio
-            $cities = City::where('municipalities_id', $municipalityId)->pluck('id');
+            $municipalities = Municipality::where('municipalities_id', $municipalityId)->pluck('id');
 
             $stores = Store::where('status', true)
-                ->whereIn('cities_id', $cities)
+                ->whereIn('municipalities_id', $municipalities)
                 ->whereHas('products', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
                 })
@@ -863,10 +864,10 @@ class MainController extends Controller
                 $locationStores = 'country';
 
                 // Obtener todas las ciudades del país
-                $cities = City::pluck('id');
+                $municipalities = Municipality::pluck('id');
 
                 $stores = Store::where('status', true)
-                    ->whereIn('cities_id', $cities)
+                    ->whereIn('municipalities_id', $municipalities)
                     ->whereHas('products', function ($query) use ($search) {
                         $query->where('name', 'like', '%' . $search . '%');
                     })
@@ -911,7 +912,7 @@ class MainController extends Controller
             $stores->where('type_stores_id', $request->type);
         }
         if ($request->has('cityId')) {
-            $stores->where('cities_id', $request->cityId);
+            $stores->where('municipalities_id', $request->cityId);
         }
         if ($request->has('sectorId') && $request->sectors_id !== 'Todos') {
             $stores->where('sectors_id', $request->sectorId);
@@ -1059,7 +1060,7 @@ class MainController extends Controller
     {
         // Validación de los datos
         $request->validate([
-            'cities_id' => 'required',
+            'municipalities_id' => 'required',
             'sectors_id' => 'required',
             'name' => 'required|string|max:100|unique:stores',
             'description' => 'required|string|max:255',
@@ -1075,7 +1076,7 @@ class MainController extends Controller
         $store = new Store();
         $store->type_stores_id = $type_store->id;
         $store->users_id = $request->users_id;
-        $store->cities_id = $request->cities_id;
+        $store->municipalities_id = $request->municipalities_id;
         $store->sectors_id = $request->sectors_id;
         $store->name = $request->name;
         $store->description = $request->description;
@@ -1207,7 +1208,7 @@ class MainController extends Controller
         //Encontrando tiendas que se encuentran en esa ciudad, que son ese tipo de tienda y que estan activas
         $stores = Store::whereHas('typeStore', function ($query) use ($request) {
             $query->where('description', $request->type);
-        })->where('status', true)->where('cities_id', $request->city);
+        })->where('status', true)->where('municipalities_id', $request->city);
 
         if ($request->sector) {
             $stores->where('sectors_id', $request->sector)->get();
@@ -1242,9 +1243,15 @@ class MainController extends Controller
         return response()->json($stores, 200);
     }
 
-    public function sectors(City $city)
+    public function sectors(Request $request)
     {
-        return $city->sectors()->pluck('description', 'id');
+        $sectors = Sector::where('municipalities_id', $request->municipality)->get();
+        return response()->json($sectors, 200);
+    }
+
+    public function municipalities(Request $request){
+        $municipalities = Municipality::where('states_id', $request->state)->get();
+        return response()->json($municipalities, 200);
     }
 
     public function getSignalsAux(Request $request)

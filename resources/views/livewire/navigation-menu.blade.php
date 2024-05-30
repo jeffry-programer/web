@@ -136,9 +136,9 @@
             </div>
             <div class="col-12 d-flex col-md-5 align-items-center justify-content-center">
                 <form action="{{ route('search-stores') }}" class="row" id="form-search" autocomplete="off">
-                    <input type="hidden" id="value-country" name="iSVBGR6m3mmQdQRQCa">  
-                    <input type="hidden" id="value-state" name="DPLY40rNOyz0hl">  
-                    <input type="hidden" id="value-city" name="I9CLmGfm0ppURDM">   
+                    <input type="hidden" id="value-state" name="iSVBGR6m3mmQdQRQCa">  
+                    <input type="hidden" id="value-municipality" name="DPLY40rNOyz0hl">  
+                    <input type="hidden" id="value-sector" name="I9CLmGfm0ppURDM">   
                     <div class="col-2 col-md-3 d-flex align-items-center justify-content-center">
                         <button type="button" style="display: flex;" data-bs-toggle="modal" data-bs-target="#exampleModal" class="select-search"><i class="fa-solid fa-location-dot me-3 my-auto"></i><span class="d-none d-md-flex" id="btn-ubi">Ubicacion</span></button>
                     </div> 
@@ -336,6 +336,79 @@
         $(document).on('click', function(e){
             if(!$(e.target).closest('#myUL98').length && !$(e.target).is('#myUL98')) {
                 $('#myUL98').empty();
+            }
+        });
+
+        function selectCity(id) {
+            $("#city-search").val(id);
+        }
+
+        //Guardar ubicación
+        $("#btn-save-ubi").click(() => {
+            var nameMunicipality = $(`#municipality-${$("#municipality").val()}`).text();
+            var sectorId = $("#sector").val();
+            var municipalityId = $("#municipality").val();
+            var stateId = $("#state").val();
+
+            localStorage.setItem("name_municipality", nameMunicipality);
+            localStorage.setItem("id_sector", sectorId);
+            localStorage.setItem("id_municipality", municipalityId);
+            localStorage.setItem("id_states", stateId);
+
+            $("#value-state").val(stateId);
+            $("#value-municipality").val(municipalityId);
+            $("#value-sector").val(sectorId);
+
+            $("#btn-ubi").html(`${nameMunicipality}`);
+            $("#btn-save-ubi").attr('disabled', true);
+            $("#exampleModal").modal('hide');
+        });
+
+        $(document).ready(() => {
+            var nameMunicipality = localStorage.getItem('name_municipality');
+            if (nameMunicipality !== null) {
+                var sectorId = localStorage.getItem('id_sector');
+                var municipalityId = localStorage.getItem('id_municipality');
+                var stateId = localStorage.getItem('id_states');
+
+                $("#btn-ubi").html(`${nameMunicipality}`);
+                $.ajax({
+                    url: `/update-counter-component?stateId=${stateId}&municipalityId=${municipalityId}&sectorId=${sectorId}`,
+                    type: 'GET',
+                    success: function(data){
+                        var plantilla = '<option>Seleccione una opción</option>';
+                        data.states.forEach(element => {
+                            plantilla += `<option value="${element.id}">${element.name}</option>`;
+                        });
+                        $("#state").html(plantilla);
+                        $("#state").show();
+                        $("#state").val(stateId);
+                        var plantilla = '<option>Seleccione una opción</option>';
+                        data.municipalities.forEach(element => {
+                            plantilla += `<option value="${element.id}">${element.name}</option>`;
+                        });
+                        $("#municipality").html(plantilla);
+                        $("#municipality").show();
+                        $("#municipality").val(municipalityId);
+                        var plantilla = '<option>Seleccione una opción</option><option value="Todos">Todos</option>';
+                        data.sectors.forEach(element => {
+                            plantilla += `<option value="${element.id}">${element.description}</option>`;
+                        });
+                        $("#sector").html(plantilla);
+                        $("#sector").show();
+                        $("#sector").val(sectorId);
+                    }
+                });
+
+                console.log(stateId);
+
+                $("#value-state").val(stateId);
+                $("#value-municipality").val(municipalityId);
+                $("#value-sector").val(sectorId);
+            }
+            var category = localStorage.getItem('categories_id');
+            if (category !== null) {
+                $("#select-search-categories").val(category);
             }
         });
   </script>

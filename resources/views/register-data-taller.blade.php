@@ -70,20 +70,33 @@
                         <input type="hidden" name="dimensiones">
                         <input type="hidden" name="image" value="">
                         <input type="hidden" name="image2" value="">
-                        <input type="hidden" name="type_stores_id" value="2">
                         
                         <div class="row">
+                            <div class="col-md-6 form-group d-none">
+                                <label class="py-3" for="name">{{ __('Tipo de tienda') }}</label>
+                                <select name="type_stores_id" class="form-select mt-1" value="2">
+                                    @foreach ($type_stores as $type_store)
+                                        <option value="{{$type_store->id}}">{{$type_store->description}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="col-md-6 form-group">
-                                <label class="py-3" for="name">{{ __('Ciudad') }}</label>
-                                <input type="hidden" name="cities_id" id="cities_id">
-                                <div class="autocomplete">
-                                    <input class="form-select" type="text" id="myInput5" placeholder="Busca y selecciona una ciudad...">
-                                    <ul id="myUL5">
-                                        @foreach ($cities as $city)
-                                            <li><a onclick="seleccionarCiudad({{$city->id}})">{{$city->name}}</a></li>
+                                <label class="py-3" for="name">{{ __('Estado') }}</label>
+                                <select name="states_id" class="form-select mt-1">
+                                    <option value="">Selecciona un estado</option>
+                                    @foreach ($states as $state)
+                                        <option onclick="seleccionarEstado({{$state->id}})" value="{{$state->id}}">{{$state->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="py-3" for="name">{{ __('Municipio') }}</label>
+                                <select class="form-select" id="municipalities_id" name="municipalities_id">
+                                    <option value="">Selecciona un municipio</option>
+                                        @foreach ($municipalities as $municipality)
+                                            <option onclick="seleccionarMunicipio({{$municipality->id}})" value="{{$municipality->id}}">{{$municipality->name}}</option>
                                         @endforeach
-                                    </ul>
-                                  </div>
+                                </select>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Sector') }}</label>

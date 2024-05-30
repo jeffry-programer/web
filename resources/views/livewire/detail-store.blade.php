@@ -244,8 +244,8 @@
                                             <p>{{ $store->description }}</p>
                                             <p><b>Dirección:</b></p>
                                             <p><i
-                                                    class="fa-solid fa-location-dot me-2"></i>{{ $store->city->municipality->state->name }}
-                                                - {{ $store->city->name }} - {{ $store->address }}</p>
+                                                    class="fa-solid fa-location-dot me-2"></i>{{ $store->municipality->state->name }}
+                                                - {{ $store->municipality->name }} - {{ $store->address }}</p>
                                             <p><b>Correo electrónico:</b></p>
                                             <p>{{ $store->email }}</p>
                                             <p><b>Número de contacto:</b></p>
@@ -447,6 +447,9 @@
                                     @foreach ($subscriptions as $subscription)
                                         <?php
                                         $url_profile = '';
+                                        if($subscription->user == null){
+                                            continue;
+                                        }
                                         if ($subscription->user->image == null) {
                                             $letter = strtoupper($subscription->user->name[0]);
                                             $ruta_imagen = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';

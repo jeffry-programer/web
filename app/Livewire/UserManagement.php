@@ -307,7 +307,8 @@ class UserManagement extends Component
             'description' => 'required|string|max:255',
             'name' => 'required|string|max:100|unique:stores',
             'sectors_id' => 'required',
-            'cities_id' => 'required',
+            'municipalities_id' => 'required',
+            'states_id' => ['required']
         ]);
 
         $data = $request->all();
@@ -558,15 +559,15 @@ class UserManagement extends Component
             }
         }
         if($name_table == 'municipalities'){
-            if(count(City::where('municipalities_id', $request->id)->get()) > 0){
+            if(count(Municipality::where('municipalities_id', $request->id)->get()) > 0){
                 $error = true;
             }
         }
-        if($name_table == 'cities'){            
-            if(count(User::where('cities_id', $request->id)->get()) > 0){
+        if($name_table == 'municipalities_id'){            
+            if(count(User::where('municipalities_id', $request->id)->get()) > 0){
                 $error = true;
             }
-            if(count(Store::where('cities_id', $request->id)->get()) > 0){
+            if(count(Store::where('municipalities_id', $request->id)->get()) > 0){
                 $error = true;
             }
         }
@@ -593,8 +594,8 @@ class UserManagement extends Component
             } 
         }
 
-        if($name_table == 'cities'){
-            if(count(Branch::where('cities_id', $request->id)->get()) > 0){
+        if($name_table == 'municipalities_id'){
+            if(count(Branch::where('municipalities_id', $request->id)->get()) > 0){
                 $error = true;
             } 
         }

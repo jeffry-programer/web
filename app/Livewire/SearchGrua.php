@@ -2,8 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Models\City;
-use App\Models\Country;
+use App\Models\Municipality;
+use App\Models\Sector;
+use App\Models\State;
 use App\Models\Store;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,45 +14,72 @@ class SearchGrua extends Component
 
     use WithPagination;
 
-    public $dataCities = [];
-    public $cityInput;
-    public $country_id;
-    public $disabled = true;
-    public $city_id;
-    public $name_store;
-    public $empty_stores = false;
+    public $type_store = 'Grua';
+    public $municipalities = [];
+    public $states = [];
+    public $sectors = [];
     public $data_stores = [];
+    public $disabled = true;
+    public $empty_stores = false;
     public $new_message = false;
+    public $new_message2 = false;
+    public $new_message3 = false;
+
+    public $selectedState;
+    public $selectedMunicipality;
+    public $selectedSector;
+    public $name_store;
 
     public function cleanData(){
-        $this->data_stores = [];
-        $this->dataCities = [];
         $this->disabled = true;
+        $this->sectors = [];
+        $this->municipalities = [];
+        $this->data_stores = [];
+        $this->selectedState = '';
         $this->empty_stores = false;
+        $this->new_message = false;
+        $this->new_message2 = false;
+        $this->new_message3 = false;
+    }
+
+    public function mount(){
+        $this->states = State::orderBy('name', 'asc')->get();
     }
 
     public function render()
     {
-        $countries = Country::all();
-        return view('livewire.search-grua', ['countries' => $countries]);
+        return view('livewire.search-grua');
     }
 
-    public function search(){
-        $id = $this->country_id;
+    public function changeState()
+    {
+        $this->municipalities = Municipality::where('states_id', $this->selectedState)->orderBy('name', 'asc')->get();
+        $this->changeMunicipality();
+    }
 
-        $cities = City::whereIn('municipalities_id', function($query) use ($id) {
-            $query->select('id')->from('municipalities')->whereIn('states_id', function($query) use ($id) {
-                $query->select('id')->from('states')->where('countries_id', $id);
-            });
-        })->get();
+    public function changeMunicipality(){
+        $this->sectors = Sector::where('municipalities_id', $this->selectedMunicipality)->orderBy('description', 'asc')->get();
+    }
 
-        $this->dataCities = $cities;
+    public function changeSector(){
+        if($this->selectedSector != ''){
+            $this->disabled = false;
+        }
     }
 
     public function searchStore(){
-        $stores = Store::whereHas('typeStore', function ($query) {
-            $query->where('status', true)->where('cities_id', $this->city_id)->where('description', env('TIPO_GRUA'));
+        $type_store = $this->type_store;
+        $this->new_message = false;
+        $this->new_message2 = false;
+        $this->new_message3 = false;
+        $this->empty_stores = false;
+        $stores = Store::where('status', true)->whereHas('typeStore', function ($query) use ($type_store) {
+            $query->where('description', $type_store);
         });
+
+        if($this->selectedSector != "Todos"){
+            $stores->where('sectors_id', $this->selectedSector);
+        }
 
         if($this->name_store != ""){
             $stores->whereFullText('name', $this->name_store);
@@ -60,25 +88,52 @@ class SearchGrua extends Component
 
         if(count($response) == 0){
             $this->new_message = true;
-            $response = Store::whereHas('typeStore', function ($query) {
-                $query->where('status', true)->where('cities_id', $this->city_id)->where('description', env('TIPO_GRUA'));
-            })->get();
+            $stores = Store::where('status', true)->where('municipalities_id', $this->selectedMunicipality)->whereHas('typeStore', function ($query) use ($type_store) {
+                $query->where('description', $type_store);
+            });
+
+            if($this->name_store != ""){
+                $stores->whereFullText('name', $this->name_store);
+            }
+
+            $response = $stores->get();
+
             if(count($response) == 0){
                 $this->new_message = false;
-                $this->empty_stores = true;
-            }else{
-                $this->new_message = true;
-                $this->empty_stores = false;
+                $this->new_message2 = true;
+                $selected_state = $this->selectedState;
+                $stores = Store::where('status', true)->whereHas('municipality', function ($query) use ($selected_state) {
+                    $query->where('states_id', $selected_state);
+                })->whereHas('typeStore', function ($query) use ($type_store) {
+                    $query->where('description', $type_store);
+                });
+    
+                if($this->name_store != ""){
+                    $stores->whereFullText('name', $this->name_store);
+                }
+    
+                $response = $stores->get();
+    
+                if(count($response) == 0){
+                    $this->new_message2 = false;
+                    $this->new_message3 = true;
+                    $stores = Store::where('status', true)->whereHas('typeStore', function ($query) use ($type_store) {
+                        $query->where('description', $type_store);
+                    });
+        
+                    if($this->name_store != ""){
+                        $stores->whereFullText('name', $this->name_store);
+                    }
+        
+                    $response = $stores->get();
+        
+                    if(count($response) == 0){
+                        $this->new_message3 = false;
+                        $this->empty_stores = true;
+                    }
+                }
             }
-        }else{
-            $this->new_message = false;
-            $this->empty_stores = false;
         }
         $this->data_stores = $response;
-    }
-
-    public function selectCity($id){
-        $this->city_id = $id;
-        $this->disabled = false;
     }
 }

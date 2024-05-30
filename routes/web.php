@@ -79,7 +79,9 @@ Route::middleware([
     Route::post('/upload-image-store', [MainController::class, 'uploadImageStore'])->name('upload-image-store');
     Route::post('/subscribe-user', [Subscribe::class, 'subscribe'])->name('subscribe-user');
     Route::post('/null-subscribe', [Subscribe::class, 'nullSubscribe'])->name('null-subscribe');
-    Route::get('/cities/{city}/sectors', [MainController::class, 'sectors']);
+    Route::get('/municipalities/{municipality}/sectors', [MainController::class, 'sectors']);
+    Route::get('/states/{state}/municipalities', [MainController::class, 'municipalities']);
+    s
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {

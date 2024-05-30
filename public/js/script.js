@@ -63,33 +63,36 @@ $(document).ready(() => {
           }
         });
     });
-
-    loadDataSession();
 });
 
-function loadDataSession(){
-  var nameCity = localStorage.getItem('name_city');
-  var city = localStorage.getItem('id_city');
-  var state = localStorage.getItem('id_state');
-  var country = localStorage.getItem('id_country');
-  $("#value-city").val(city);
-  $("#value-state").val(state);
-  $("#value-country").val(country);
-  if(nameCity != null) $("#btn-ubi").text(nameCity);
-}
 
-
-function seleccionarCiudad(id){
-  $("#cities_id").val(id);
+function seleccionarMunicipio(id){
   $.ajax({
-    url: '/cities/' + id + '/sectors',
+    url: '/municipalities/' + id + '/sectors',
     type: 'GET',
     success: function(data) {
+      console.log(data);
       var options = '<option value="">Selecciona un sector</option>';
-      $.each(data, function(id, name){
-        options += '<option value="' + id + '">' + name + '</option>';
+      data.forEach((key) => {
+        options += '<option value="' + key.id + '">' + key.description + '</option>';
       });
       $('#sectors_id').html(options);
+    }
+  });
+}  
+
+
+function seleccionarEstado(id){
+  $.ajax({
+    url: '/states/' + id + '/municipalities',
+    type: 'GET',
+    success: function(data) {
+      console.log(data);
+      var options = '<option value="">Selecciona un municipio</option>';
+      data.forEach((key) => {
+        options += '<option value="' + key.id + '">' + key.name + '</option>';
+      });
+      $('#municipalities_id').html(options);
     }
   });
 }  

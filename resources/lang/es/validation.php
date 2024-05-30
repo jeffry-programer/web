@@ -248,6 +248,8 @@ return [
         'file'                     => 'imagen',
         'cities_id'                => 'ciudad',
         'sectors_id'               => 'sector',
-        'RIF'                      => 'RIF'
+        'RIF'                      => 'RIF',
+        'municipalities_id'        => 'municipio',
+        'states_id'                => 'estado'
     ],
 ];
