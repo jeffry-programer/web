@@ -93,9 +93,6 @@
                                 <label class="py-3" for="name">{{ __('Municipio') }}</label>
                                 <select class="form-select" id="municipalities_id" name="municipalities_id">
                                     <option value="">Selecciona un municipio</option>
-                                        @foreach ($municipalities as $municipality)
-                                            <option onclick="seleccionarMunicipio({{$municipality->id}})" value="{{$municipality->id}}">{{$municipality->name}}</option>
-                                        @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6 form-group">

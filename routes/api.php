@@ -35,8 +35,8 @@ Route::post('upload-image', [MainController::class, 'uploadImageApi']);
 Route::post('upload-image-store', [MainController::class, 'uploadImageApi2']);
 Route::get('countries', [MainController::class, 'getCountriesApi']);
 Route::get('countries/{countryId}/states', [MainController::class, 'getStatesApi']);
-Route::get('states/{stateId}/cities', [MainController::class, 'getCitiesByState']); // Obtener ciudades por estado
-Route::get('cities/{cityId}/sectors', [MainController::class, 'getSectorsByCity']); // Obtener sectores por ciudad
+Route::get('states/{stateId}/municipalities', [MainController::class, 'getMunicipalityByState']); // Obtener ciudades por estado
+Route::get('municipalities/{cityId}/sectors', [MainController::class, 'getSectorsByMunicipality']); // Obtener sectores por ciudad
 Route::get('product-detail/{productId}_{idStore}_{idUser}', [MainController::class, 'getProductDetail']);
 Route::get('search-stores', [MainController::class, 'getStoreSearch']);
 Route::get('search-stores2', [MainController::class, 'getStoreSearch2']);
@@ -49,7 +49,7 @@ Route::post('/registerStore', [MainController::class, 'registerStorePost']);
 Route::get('/type-publicities/{userId}', [MainController::class, 'typePublicities']);
 Route::post('/save-publicity', [MainController::class, 'savePublicity']);
 Route::post('/save-promotion', [MainController::class, 'savePromotion']);
-Route::get('/cities', [MainController::class, 'getCities']);
+Route::get('/municipalities', [MainController::class, 'getMunicipalities']);
 Route::get('/states', [MainController::class, 'getStates']);
 Route::post('/send-signal-aux', [MainController::class, 'sendSignalAux']);
 Route::get('/get-signals-aux', [MainController::class, 'getSignalsAux']);

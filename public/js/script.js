@@ -71,7 +71,6 @@ function seleccionarMunicipio(id){
     url: '/municipalities/' + id + '/sectors',
     type: 'GET',
     success: function(data) {
-      console.log(data);
       var options = '<option value="">Selecciona un sector</option>';
       data.forEach((key) => {
         options += '<option value="' + key.id + '">' + key.description + '</option>';
@@ -90,7 +89,7 @@ function seleccionarEstado(id){
       console.log(data);
       var options = '<option value="">Selecciona un municipio</option>';
       data.forEach((key) => {
-        options += '<option value="' + key.id + '">' + key.name + '</option>';
+        options += '<option onclick="seleccionarMunicipio(' + key.id + ')" value="' + key.id + '">' + key.name + '</option>';
       });
       $('#municipalities_id').html(options);
     }
