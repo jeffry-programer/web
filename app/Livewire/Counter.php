@@ -26,6 +26,10 @@ class Counter extends Component{
     public $states = [];
     public $sectors = [];
 
+    public function mount(){
+        $this->states = State::orderBy('name', 'asc')->get();
+    }
+
     public function render(){
         return view('livewire.counter');
     }
