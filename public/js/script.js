@@ -65,38 +65,6 @@ $(document).ready(() => {
     });
 });
 
-
-function seleccionarMunicipio(id){
-  $.ajax({
-    url: '/municipalities/' + id + '/sectors',
-    type: 'GET',
-    success: function(data) {
-      var options = '<option value="">Selecciona un sector</option>';
-      data.forEach((key) => {
-        options += '<option value="' + key.id + '">' + key.description + '</option>';
-      });
-      $('#sectors_id').html(options);
-    }
-  });
-}  
-
-
-function seleccionarEstado(id){
-  $.ajax({
-    url: '/states/' + id + '/municipalities',
-    type: 'GET',
-    success: function(data) {
-      console.log(data);
-      var options = '<option value="">Selecciona un municipio</option>';
-      data.forEach((key) => {
-        options += '<option onclick="seleccionarMunicipio(' + key.id + ')" value="' + key.id + '">' + key.name + '</option>';
-      });
-      $('#municipalities_id').html(options);
-    }
-  });
-}  
-
-
 function goPagePublicity(id){
     window.location.replace("/publicities/"+id);
 }

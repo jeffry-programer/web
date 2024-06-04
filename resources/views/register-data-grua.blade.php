@@ -81,7 +81,7 @@
                                 <select name="states_id" class="form-select mt-1">
                                     <option value="">Selecciona un estado</option>
                                     @foreach ($states as $state)
-                                        <option onclick="seleccionarEstado({{$state->id}})" value="{{$state->id}}">{{$state->name}}</option>
+                                        <option value="{{$state->id}}">{{$state->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -285,4 +285,55 @@ function hideAlertTime(){
         timer: 3000
     });
 }
+</script>
+
+<script>
+    function seleccionarMunicipio(id){
+        $.ajax({
+            url: '/municipalities/' + id + '/sectors',
+            type: 'GET',
+            success: function(data) {
+                var options = '<option value="">Selecciona un sector</option>';
+                data.forEach((key) => {
+                    options += '<option value="' + key.id + '">' + key.description + '</option>';
+                });
+                $('#sectors_id').html(options);
+            }
+        });
+    }
+
+    function seleccionarEstado(id){
+        $.ajax({
+            url: '/states/' + id + '/municipalities',
+            type: 'GET',
+            success: function(data) {
+                var options = '<option value="">Selecciona un municipio</option>';
+                data.forEach((key) => {
+                    options += '<option value="' + key.id + '">' + key.name + '</option>';
+                });
+                $('#municipalities_id').html(options);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('select[name="states_id"]').change(function() {
+            var stateId = $(this).val();
+            if(stateId) {
+                seleccionarEstado(stateId);
+            } else {
+                $('#municipalities_id').html('<option value="">Selecciona un municipio</option>');
+            }
+        });
+
+        $('#municipalities_id').change(function() {
+            var municipalityId = $(this).val();
+            if(municipalityId) {
+                seleccionarMunicipio(municipalityId);
+            } else {
+                $('#sectors_id').html('<option value="">Selecciona un sector</option>');
+            }
+        });
+    });
+
 </script>
