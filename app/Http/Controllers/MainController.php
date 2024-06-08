@@ -31,8 +31,10 @@ use App\Models\SubCategory;
 use App\Models\TypeProduct;
 use App\Models\TypePublicity;
 use App\Models\User;
+use App\Notifications\ResetPasswordApi;
 use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
+use Google\Cloud\Storage\Connection\Rest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -1385,5 +1387,32 @@ class MainController extends Controller
         $municipalities = Municipality::where('states_id', $request->stateId)->get();
         $sectors = Sector::where('municipalities_id', $request->municipalityId)->get();
         return response()->json(['states' => $states, 'municipalities' => $municipalities, 'sectors' => $sectors]);
+    }
+
+    public function resetPassword(Request $request){
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+    
+        $user = User::where('email', $request->email)->first();
+    
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+    
+        $user->notify(new ResetPasswordApi($request->token));
+    
+        return response()->json($user);
+    }
+
+    public function changePassword(Request $request){
+        $request->validate([
+            'password' => 'required'
+        ]);
+        $user = User::find($request->user_id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json($user);
     }
 }

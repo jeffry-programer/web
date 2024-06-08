@@ -58,5 +58,7 @@ Route::post('/remove-status-signal', [MainController::class, 'removeSignalsAux']
 Route::post('/close-status-signal', [MainController::class, 'closeSignalsAux']);
 Route::post('/quality-signal', [MainController::class, 'qualitySignal']);
 Route::post('/change-status-message', [MessageController::class, 'changeStatusMessage']);
+Route::post('/reset-password', [MainController::class, 'resetPassword']);
+Route::post('/change-password', [MainController::class, 'changePassword']);
 
 
