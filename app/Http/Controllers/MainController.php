@@ -1068,7 +1068,7 @@ class MainController extends Controller
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->with('city')->inRandomOrder()->limit(10)->get();
+        })->with('municipality')->inRandomOrder()->limit(10)->get();
         return response()->json(['publicities' => $publicities, 'stores' => $stores, 'lastStores' => $lastStores, 'lastSearch' => $lastSearch]);
     }
 
@@ -1076,7 +1076,7 @@ class MainController extends Controller
     {
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->with('city')->paginate(10);
+        })->with('municipality')->paginate(10);
         return response()->json($stores);
     }
 
