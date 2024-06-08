@@ -6,11 +6,9 @@ use App\Models\AditionalPicturesProduct;
 use App\Models\Box;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\City;
 use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
-use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductStore;
 use App\Models\Promotion;
@@ -34,14 +32,13 @@ use App\Models\User;
 use App\Notifications\ResetPasswordApi;
 use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
-use Google\Cloud\Storage\Connection\Rest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Js;
+use Illuminate\Support\Facades\Crypt;
 
 class MainController extends Controller
 {
@@ -1012,7 +1009,7 @@ class MainController extends Controller
                     $final_array[$key]['user_img'] = $user->image;
                 }
 
-                $final_array[$key]['last_message'] = $lastMessage->content;
+                $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
                 $final_array[$key]['last_message_time'] = $lastMessage->created_at;
                 $final_array[$key]['last_message_status'] = $lastMessage->status;
                 $final_array[$key]['last_message_from'] = $lastMessage->from;

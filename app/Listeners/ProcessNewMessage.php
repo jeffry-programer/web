@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\NewMessage;
+use Illuminate\Support\Facades\Crypt;
 use Pusher\Pusher;
 
 class ProcessNewMessage
