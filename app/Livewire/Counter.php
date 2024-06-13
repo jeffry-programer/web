@@ -47,12 +47,4 @@ class Counter extends Component{
     public function changeMunicipality(){
         $this->sectors = Sector::where('municipalities_id', $this->municipalities_id)->get();
     }
-
-    public function selectSector(){
-        if($this->sectors_id != ''){
-            $this->disabled = false;
-        }else{
-            $this->disabled = true;
-        }
-    }
 }

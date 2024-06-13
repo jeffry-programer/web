@@ -37,6 +37,7 @@ Route::get('/publicities/{id}', [MainController::class, 'publicity']);
 Route::get('/autocomplete-products', [MainController::class, 'autocompleteProducts'])->name('autocomplete-products');
 Route::get('/autocomplete-products-store', [MainController::class, 'autocompleteProductStore'])->name('autocomplete-products-store');
 Route::get('update-counter-component', [MainController::class, 'updateComponent']);
+Route::get('/states/{state}/municipalities', [MainController::class, 'municipalities']);
 
 
 
@@ -80,7 +81,6 @@ Route::middleware([
     Route::post('/subscribe-user', [Subscribe::class, 'subscribe'])->name('subscribe-user');
     Route::post('/null-subscribe', [Subscribe::class, 'nullSubscribe'])->name('null-subscribe');
     Route::get('/municipalities/{municipality}/sectors', [MainController::class, 'sectors']);
-    Route::get('/states/{state}/municipalities', [MainController::class, 'municipalities']);
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {

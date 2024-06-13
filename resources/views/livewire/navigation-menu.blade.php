@@ -360,11 +360,23 @@
             $("#value-sector").val(sectorId);
 
             $("#btn-ubi").html(`${nameMunicipality}`);
-            $("#btn-save-ubi").attr('disabled', true);
             $("#exampleModal").modal('hide');
         });
 
         $(document).ready(() => {
+            $("#state").change(() => {
+              $.ajax({
+                  url: '/states/' + $("#state").val() + '/municipalities',
+                  type: 'GET',
+                  success: function(data) {
+                      var options = '<option value="">Selecciona un municipio</option>';
+                      data.forEach((key) => {
+                          options += `<option value="${key.id}" data-name="${key.name}" id="municipality-${key.id}">${key.name}</option>`;
+                      });
+                      $('#municipality').html(options);
+                  }
+              });
+            });
             var nameMunicipality = localStorage.getItem('name_municipality');
             if (nameMunicipality !== null) {
                 var sectorId = localStorage.getItem('id_sector');
@@ -385,12 +397,12 @@
                         $("#state").val(stateId);
                         var plantilla = '<option>Seleccione una opción</option>';
                         data.municipalities.forEach(element => {
-                            plantilla += `<option value="${element.id}">${element.name}</option>`;
+                            plantilla += `<option value="${element.id}" id="municipality-${element.id}" data-name="${element.name}">${element.name}</option>`;
                         });
                         $("#municipality").html(plantilla);
                         $("#municipality").show();
                         $("#municipality").val(municipalityId);
-                        var plantilla = '<option>Seleccione una opción</option><option value="Todos">Todos</option>';
+                        var plantilla = '<option value="Todos">Todos</option>';
                         data.sectors.forEach(element => {
                             plantilla += `<option value="${element.id}">${element.description}</option>`;
                         });
