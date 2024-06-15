@@ -8,44 +8,44 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 
 class MessageController extends Controller
 {
     public function index($conversationId, $userEmail)
     {
         $conversation = Conversation::find($conversationId);
-        $messages = Message::where('conversations_id', $conversation->id)
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $messages = Message::where('conversations_id', $conversation->id)->orderBy('created_at', 'asc')->get();
 
         $store = User::find($conversation->stores_id)->store;
 
-        if ($userEmail == User::find($conversation->users_id)->email) {
+        if($userEmail == User::find($conversation->users_id)->email){
             $user = User::find($conversation->stores_id);
-        } else {
+        }else{
             $user = User::find($conversation->users_id);
         }
 
-        if ($user->store) {
+        if($user->store){
             $user->name = $user->store->name;
             $user->image = $user->store->image;
+        }
+
+        if ($user->image == null || $user->image == '') {
+            $letter = strtoupper($user->name[0]);
+            $user->image = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+        }else{
+            $user->image = $user->image;
         }
 
         $messages = $conversation->messages;
 
         // Iterar sobre los mensajes y actualizar su estado a true
         foreach ($messages as $message) {
-            try {
-                $message->content = Crypt::decryptString($message->content);
-            } catch (DecryptException $e) {
-                return response()->json(['error' => 'Failed to decrypt message'], 500);
-            }
-
             if ($message->from != $userEmail) {
                 $message->status = true;
                 $message->save();
             }
+
+            $message->content = Crypt::decryptString($message->content);
         }
 
         return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user]);

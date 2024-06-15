@@ -990,23 +990,31 @@ class MainController extends Controller
 
         // Recorrer las conversaciones y agregar datos al array final
         foreach ($conversations as $key => $conversation) {
-            $user = $conversation->user;
-            $store = User::find($conversation->stores_id)->store;
+            $user = User::find($conversation->users_id);
+            $user2 = User::find($conversation->stores_id);
             $lastMessage = $conversation->messages->last(); // Obtener el último mensaje
 
             // Verificar si se encontraron tanto el usuario como la tienda y si hay mensajes
-            if ($user && $store && $lastMessage) {
-                if ($my_user->id == $store->user->id) {
-                    $user = User::find($conversation->users_id);
+            if ($user && $user2 && $lastMessage) {
+                if ($my_user->id != $user->id) {
+                    $user = $user;
                 } else {
-                    $user = User::find($conversation->stores_id);
+                    $user = $user2;
                 }
+
                 if ($user->store) {
                     $final_array[$key]['user_name'] = $user->store->name;
                     $final_array[$key]['user_img'] = $user->store->image;
                 } else {
                     $final_array[$key]['user_name'] = $user->name;
                     $final_array[$key]['user_img'] = $user->image;
+                }
+
+                if ($final_array[$key]['user_img'] == null || $final_array[$key]['user_img'] == '') {
+                    $letter = strtoupper($final_array[$key]['user_name'][0]);
+                    $final_array[$key]['user_img'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+                }else{
+                    $final_array[$key]['user_img'] = $final_array[$key]['user_img'];
                 }
 
                 $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
