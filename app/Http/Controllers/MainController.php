@@ -1034,32 +1034,45 @@ class MainController extends Controller
         $mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
             ->whereNotNull('stores_id')
             ->groupBy('stores_id')
-            ->orderBy('search_count', 'desc')
+            ->orderBy('id', 'desc')
             ->limit(10)
             ->get();
 
-        // Obtener información de las tiendas
+        // Obtener información de las tiendas ordenadas por la búsqueda más reciente
         $lastStores = [];
         foreach ($mostSearchedStores as $searchedStore) {
-            $store = Store::with('municipality')->find($searchedStore->stores_id);
+            $store = Store::with('municipality')
+                ->where('id', $searchedStore->stores_id)
+                ->orderByDesc('created_at') // Ordena por la fecha de creación más reciente
+                ->first();
+
             if ($store) {
                 $lastStores[] = $store;
             }
         }
+
         // Últimos productos más buscados por el usuario actual
-        $lastSearch = DB::select("SELECT DISTINCT products.*
-        FROM search_users
-        JOIN product_stores ON search_users.product_stores_id = product_stores.id
-        JOIN products ON product_stores.products_id = products.id
-        WHERE search_users.users_id = $userId
-        AND search_users.product_stores_id IS NOT NULL
-        LIMIT 10;");
+        $lastSearch = DB::select("
+            SELECT DISTINCT products.*
+            FROM search_users
+            JOIN product_stores ON search_users.product_stores_id = product_stores.id
+            JOIN products ON product_stores.products_id = products.id
+            WHERE search_users.users_id = :userId
+            AND search_users.product_stores_id IS NOT NULL
+            ORDER BY products.id DESC
+            LIMIT 10;", ['userId' => $userId]);
 
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->with('municipality')->inRandomOrder()->limit(10)->get();
-        return response()->json(['publicities' => $publicities, 'stores' => $stores, 'lastStores' => $lastStores, 'lastSearch' => $lastSearch]);
+        })->with('municipality')->orderByDesc('created_at')->limit(10)->get();
+
+        return response()->json([
+            'publicities' => $publicities,
+            'stores' => $stores,
+            'lastStores' => $lastStores,
+            'lastSearch' => $lastSearch
+        ]);
     }
 
     public function getAllStoresPromotion(Request $request)
