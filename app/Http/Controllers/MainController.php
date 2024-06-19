@@ -1059,7 +1059,7 @@ class MainController extends Controller
             JOIN products ON product_stores.products_id = products.id
             WHERE search_users.users_id = :userId
             AND search_users.product_stores_id IS NOT NULL
-            ORDER BY products.id DESC
+            ORDER BY search_users.id DESC
             LIMIT 10;", ['userId' => $userId]);
 
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
