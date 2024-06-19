@@ -846,7 +846,7 @@ class MainController extends Controller
             if ($stores->isEmpty()) {
                 $locationStores = 'state';
                 $municipalities = Municipality::where('states_id', $state_id)->pluck('id');
-    
+
                 $stores = Store::where('status', true)
                     ->whereIn('municipalities_id', $municipalities)
                     ->whereHas('products', function ($query) use ($search) {
@@ -855,11 +855,11 @@ class MainController extends Controller
                     ->with(['products' => function ($query) use ($search) {
                         $query->where('name', 'like', '%' . $search . '%');
                     }, 'municipality'])->paginate(10);
-    
+
                 if ($stores->isEmpty()) {
                     $locationStores = 'country';
                     $municipalities = Municipality::pluck('id');
-    
+
                     $stores = Store::where('status', true)
                         ->whereIn('municipalities_id', $municipalities)
                         ->whereHas('products', function ($query) use ($search) {
@@ -929,12 +929,12 @@ class MainController extends Controller
             if ($stores->isEmpty()) {
                 $locationStores = 'state';
                 $municipalities = Municipality::where('states_id', $state_id)->pluck('id');
-    
+
                 $stores = Store::where('status', true)->whereIn('municipalities_id', $municipalities)->where('type_stores_id', $request->type)->with('municipality');
                 if ($query !== '') {
                     $stores->where('name', 'like', '%' . $query . '%');
                 }
-                
+
                 $stores = $stores->paginate(10);
 
                 if ($stores->isEmpty()) {
@@ -944,7 +944,7 @@ class MainController extends Controller
                     if ($query !== '') {
                         $stores->where('name', 'like', '%' . $query . '%');
                     }
-                    
+
                     $stores = $stores->paginate(10);
                 }
             }
@@ -1013,7 +1013,7 @@ class MainController extends Controller
                 if ($final_array[$key]['user_img'] == null || $final_array[$key]['user_img'] == '') {
                     $letter = strtoupper($final_array[$key]['user_name'][0]);
                     $final_array[$key]['user_img'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-                }else{
+                } else {
                     $final_array[$key]['user_img'] = $final_array[$key]['user_img'];
                 }
 
@@ -1047,32 +1047,14 @@ class MainController extends Controller
             }
         }
         // Últimos productos más buscados por el usuario actual
-        $mostSearchedProducts = SearchUser::select('product_stores_id', DB::raw('COUNT(*) as search_count'))
-            ->where('users_id', $userId)
-            ->whereNotNull('product_stores_id')
-            ->groupBy('product_stores_id')
-            ->orderBy('search_count', 'desc')
-            ->limit(10)
-            ->get();
+        $lastSearch = DB::select("SELECT DISTINCT products.*
+        FROM search_users
+        JOIN product_stores ON search_users.product_stores_id = product_stores.id
+        JOIN products ON product_stores.products_id = products.id
+        WHERE search_users.users_id = $userId
+        AND search_users.product_stores_id IS NOT NULL
+        LIMIT 10;");
 
-        // Obtener información de los productos
-        $lastSearch = [];
-        foreach ($mostSearchedProducts as $searchedProduct) {
-            $productStore = ProductStore::find($searchedProduct->product_stores_id);
-            if ($productStore) {
-                $product = $productStore->product;
-                if ($product) {
-                    $storeId = $productStore->stores_id;
-                    $lastSearch[] = [
-                        'id' => $product->id,
-                        'name' => $product->name,
-                        'image' => $product->image,
-                        'description' => $product->description,
-                        'store_id' => $storeId,
-                    ];
-                }
-            }
-        }
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
@@ -1281,7 +1263,8 @@ class MainController extends Controller
         return response()->json($sectors, 200);
     }
 
-    public function municipalities(Request $request){
+    public function municipalities(Request $request)
+    {
         $municipalities = Municipality::where('states_id', $request->state)->get();
         return response()->json($municipalities, 200);
     }
@@ -1387,30 +1370,33 @@ class MainController extends Controller
         return response()->json('La tienda no fue encontrada', 401);
     }
 
-    public function updateComponent(Request $request){
+    public function updateComponent(Request $request)
+    {
         $states = State::all();
         $municipalities = Municipality::where('states_id', $request->stateId)->get();
         $sectors = Sector::where('municipalities_id', $request->municipalityId)->get();
         return response()->json(['states' => $states, 'municipalities' => $municipalities, 'sectors' => $sectors]);
     }
 
-    public function resetPassword(Request $request){
+    public function resetPassword(Request $request)
+    {
         $request->validate([
             'email' => 'required|email|exists:users,email',
         ]);
-    
+
         $user = User::where('email', $request->email)->first();
-    
+
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
-    
+
         $user->notify(new ResetPasswordApi($request->token));
-    
+
         return response()->json($user);
     }
 
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
         $request->validate([
             'password' => 'required'
         ]);
