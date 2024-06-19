@@ -878,7 +878,7 @@ class MainController extends Controller
                     ->where('stores_id', $store->id)
                     ->first();
                 if ($product_store != null) {
-                    $searches = SearchUser::where('product_stores_id', $product_store->id)->get();
+                    $searches = SearchUser::where('product_stores_id', $product_store->id)->where('users_id', $request->userId)->get();
                     if ($searches->isEmpty()) {
                         $search = new SearchUser();
                         $search->users_id = $request->userId;
