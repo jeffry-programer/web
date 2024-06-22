@@ -623,13 +623,45 @@ class MainController extends Controller
 
     public function ProductStoreDetail(Request $request)
     {
+        /// Valida que el 'store_id' esté presente en la solicitud
+        $validator = Validator::make($request->all(), [
+            'store_id' => 'required|exists:stores,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 400);
+        }
+
         // Obtén la tienda específica
         $store = Store::find($request->store_id);
+
+        if (!$store) {
+            return response()->json(['error' => 'Store not found'], 404);
+        }
 
         // Obtén todos los productos asociados a esta tienda
         $products = $store->products;
 
-        return response()->json(['products' => $products], 200);
+        $today = Carbon::today(); // Asumiendo que estás usando Carbon para manejar fechas
+
+        // Obtén todas las promociones activas para esta tienda
+        $activePromotions = Promotion::where('stores_id', $store->id)
+            ->where('status', true)
+            ->whereDate('date_init', '<=', $today)
+            ->whereDate('date_end', '>=', $today)
+            ->get()
+            ->keyBy('products_id');
+
+        // Añade la propiedad 'has_promotion' a cada producto
+        $productsWithPromotions = $products->map(function ($product) use ($activePromotions) {
+            $product->has_promotion = $activePromotions->has($product->id);
+            return $product;
+        });
+
+        // Ordena los productos desde los que tienen promociones hasta los que no las tienen
+        $sortedProducts = $productsWithPromotions->sortByDesc('has_promotion')->values();
+
+        return response()->json(['products' => $sortedProducts], 200);
     }
 
     public function ProductStoreDetails(Request $request)

@@ -54,12 +54,16 @@ class UserManagement extends Component
     public function render(){
         $categories = [];
         $modules = [];
+        $states = [];
 
         $name_label = explode("/", $_SERVER['REQUEST_URI'])[3];
         $name_label = str_replace("_", " ", $name_label);
         $name_label = str_replace("%20", " ", $name_label);
         $name_label = str_replace("%C3%B1", "ñ", $name_label);
         $name_table = Table::where('label', $name_label)->first()->name;
+        if($name_table == 'stores'){
+            $states = State::all();
+        }
         if($name_table == 'products'){
             $data = Product::all();
         }else{
@@ -93,7 +97,7 @@ class UserManagement extends Component
 
         if($name_label == 'Productos') $categories = Category::all();
         if($name_label == 'Perfil operaciones') $modules = Module::all();
-        return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2, 'categories' => $categories, 'modules' => $modules]);
+        return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2, 'categories' => $categories, 'modules' => $modules, 'states' => $states]);
     }
 
     public function searchData(Request $request){

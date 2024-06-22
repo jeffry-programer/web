@@ -195,7 +195,7 @@
 
                             @if(Auth::user()->profiles_id == 1)
                               <x-dropdown-link href="/admin/table-management/Cajas" style="text-decoration: none">
-                                  <i class="fa-solid fa-circle-user me-1"></i>{{ __('Adminstación') }}
+                                  <i class="fa-solid fa-circle-user me-1"></i>{{ __('Administración') }}
                               </x-dropdown-link>
                             @endif
 

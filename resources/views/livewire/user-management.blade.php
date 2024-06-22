@@ -266,6 +266,9 @@
                                                                     array_push($arrayExtraFields, $field);
                                                                 }
                                                             }
+                                                            if($label == 'Tiendas'){
+                                                                echo "|states_id";
+                                                            }
                                                             echo "'";
                                                             foreach($atributes as $field){
                                                                 if($field != 'created_at' && $field != 'updated_at'){
@@ -283,6 +286,10 @@
                                                                     }
                                                                 }
                                                                 echo "'";
+                                                            }
+
+                                                            if($label == 'Tiendas'){
+                                                                echo ",'".App\Models\Municipality::find($key->municipalities_id)->states_id."'";
                                                             }
                                                             echo "]";
                                                             ?>)" class="mx-3" data-bs-toggle="tooltip"
@@ -399,8 +406,17 @@
                                         ?>
                                     @else
                                         @if(!($label == 'Productos' && $field == 'sub_categories_id' || $label == 'Perfil operaciones' && $field == 'operations_id'))
+                                            @if($field == 'municipalities_id' && count($states) > 0)
+                                                <label for="">Estado</label>
+                                                <select class="form-select" name="states_id" id="states_id1">
+                                                    <option value="">Seleccione un estado</option>
+                                                    @foreach ($states as $state)
+                                                        <option value="{{$state->id}}">{{$state->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
                                             <label for="">{{__($field)}}</label>
-                                            <select class="form-select" name="{{$field}}">
+                                            <select class="form-select" name="{{$field}}" @if($field == 'municipalities_id') id="municipalities_id1"  @endif @if($field == 'sectors_id') id="sectors_id1"  @endif>
                                                 @foreach ($extra_data[$field]['values'] as $value)
                                                     @foreach ($extra_data[$field]['fields'] as $field2)
                                                         @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
@@ -541,18 +557,27 @@
                             @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                 @if(str_contains($field, '_id'))
                                         @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
-                                        <label for="">{{__($field)}}</label>
-                                        <select class="form-select" name="{{$field}}" id="{{$field}}">
-                                            @foreach ($extra_data[$field]['values'] as $value)
-                                                @foreach ($extra_data[$field]['fields'] as $field2)
-                                                    @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
-                                                        <option value="{{$value->id}}">{{$value->$field2}}</option>
-                                                        @break
-                                                    @endif
+                                            <label for="">{{__($field)}}</label>
+                                            <select class="form-select" name="{{$field}}" id="{{$field}}">
+                                                @foreach ($extra_data[$field]['values'] as $value)
+                                                    @foreach ($extra_data[$field]['fields'] as $field2)
+                                                        @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
+                                                            <option value="{{$value->id}}">{{$value->$field2}}</option>
+                                                            @break
+                                                        @endif
+                                                    @endforeach
                                                 @endforeach
-                                            @endforeach
-                                        </select>
+                                            </select>
                                         @else
+                                            @if($field == 'municipalities_id' && count($states) > 0)
+                                                <label for="">Estado</label>
+                                                <select class="form-select" name="states_id" id="states_id">
+                                                    <option value="">Seleccione un estado</option>
+                                                    @foreach ($states as $state)
+                                                        <option value="{{$state->id}}">{{$state->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
                                             <label for="">{{__($field)}}</label>
                                             <select class="form-select" name="{{$field}}" id="{{$field}}">
                                                 @foreach ($extra_data[$field]['values'] as $value)
@@ -1137,6 +1162,64 @@
                     }
                 });
             }
+        });
+
+        /*------------------------Create----------------------------*/
+        $('#states_id1').change(function() {
+            $.ajax({
+                  url: '/states/' + $("#states_id1").val() + '/municipalities',
+                  type: 'GET',
+                  success: function(data) {
+                      var options = '<option value="">Selecciona un municipio</option>';
+                      data.forEach((key) => {
+                          options += `<option value="${key.id}">${key.name}</option>`;
+                      });
+                      $('#municipalities_id1').html(options);
+                  }
+              });
+        });
+
+        $('#municipalities_id1').change(function() {
+            $.ajax({
+                  url: '/municipalities/' + $("#municipalities_id1").val() + '/sectors',
+                  type: 'GET',
+                  success: function(data) {
+                      var options = '<option value="">Selecciona un sector</option>';
+                      data.forEach((key) => {
+                          options += `<option value="${key.id}">${key.description}</option>`;
+                      });
+                      $('#sectors_id1').html(options);
+                  }
+              });
+        });
+
+        /*------------------------Edit----------------------------*/
+        $('#states_id').change(function() {
+            $.ajax({
+                  url: '/states/' + $("#states_id").val() + '/municipalities',
+                  type: 'GET',
+                  success: function(data) {
+                      var options = '<option value="">Selecciona un municipio</option>';
+                      data.forEach((key) => {
+                          options += `<option value="${key.id}">${key.name}</option>`;
+                      });
+                      $('#municipalities_id').html(options);
+                  }
+              });
+        });
+
+        $('#municipalities_id').change(function() {
+            $.ajax({
+                  url: '/municipalities/' + $("#municipalities_id").val() + '/sectors',
+                  type: 'GET',
+                  success: function(data) {
+                      var options = '<option value="">Selecciona un sector</option>';
+                      data.forEach((key) => {
+                          options += `<option value="${key.id}">${key.description}</option>`;
+                      });
+                      $('#sectors_id').html(options);
+                  }
+              });
         });
     </script>
 @endsection
