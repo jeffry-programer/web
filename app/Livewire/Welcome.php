@@ -14,12 +14,8 @@ class Welcome extends Component
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) use ($date) {
             $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
         })->take(6)->get();
-        $stores2 = Store::where('status', true)->whereHas('promotions', function ($query) use ($date) {
-            $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
-        })->take(6)->get();
-        $stores3 = Store::where('status', true)->whereHas('promotions', function ($query) use ($date) {
-            $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
-        })->take(6)->get();
+        $stores2 = [];
+        $stores3 = [];
         $publicities = Publicy::where('date_end', '>', $date)->where('status', true)->inRandomOrder()->take(8)->get();
         return view('livewire.welcome', ['stores' => $stores,'stores2' => $stores2,'stores3' => $stores3, 'publicities' => $publicities]);
     }

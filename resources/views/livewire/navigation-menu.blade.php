@@ -34,6 +34,13 @@
   background-color: #f4f4f4;
 }
 
+@media (max-width: 768px) {
+  .lupitaaa{
+    margin-left: 1rem;
+  }
+}
+
+
 </style>
 
 <div>
@@ -113,11 +120,24 @@
                 <div class="offcanvas-body">
                   <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                     @if(Auth::user())
-                    <li class="nav-item">
+                      <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ route('profile.show') }}"><i class="fa-solid fa-user-plus me-2"></i>Perfil</a>
                       </li>
+
+                      @if(Auth::user()->profiles_id == 1)
+                        <li class="nav-item">
+                          <a class="nav-link active" href="/admin/table-management/Cajas"><i class="fa-solid fa-circle-user me-2"></i>{{ __('Administración') }}</a>
+                        </li>
+                      @endif
+
+                      @if(Auth::user()->store)
+                        <li class="nav-item">  
+                          <a class="nav-link active" href="/tienda/{{ str_replace(' ','-', $link_store) }}"><i class="fa-solid fa-house me-1"></i>Mi {{ strtolower(Auth::user()->store->typeStore->description) }}</a>
+                        </li>
+                      @endif
+                      
                       <li class="nav-item">
-                        <form method="POST" action="{{ route('logout') }}" x-data>
+                        <form method="POST" action="{{ route('logout') }}" style="margin-top: 0rem !important">
                             @csrf
                             <button class="nav-link active" aria-current="page"><i class="fa-solid fa-right-to-bracket me-2"></i>Cerrar sesión</button>
                         </form>
@@ -158,7 +178,7 @@
                       </div>
                     </div>
                     <div class="col-1 d-flex align-items-center justify-content-center">
-                      <i class="fa-solid fa-magnifying-glass icons-search pointer" onclick="searchData()"></i>
+                      <i class="fa-solid fa-magnifying-glass icons-search pointer lupitaaa" onclick="searchData()"></i>
                       <i class="fa-solid fa-microphone icons-search pointer" style="margin-left: -1rem;"></i>
                     </div>
                 </form>            

@@ -61,7 +61,7 @@
             </div>
         </div>
     </div>
-    @if (!$stores->isEmpty())
+    @if (count($stores) > 0)
         <div class="alert alert-secondary mx-3" role="alert">
             <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas con promociones</h6>
         </div>
@@ -92,7 +92,7 @@
             </div>
         </div>
     @endif
-    @if (!$stores2->isEmpty())
+    @if (count($stores2) > 0)
         <div class="alert alert-secondary mx-3" role="alert">
             <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Tiendas más buscadas</h6>
         </div>
@@ -124,7 +124,7 @@
             </div>
         </div>
     @endif
-    @if (!$stores3->isEmpty())
+    @if (count($stores3) > 0)
         <div class="alert alert-secondary mx-3" role="alert">
             <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Busquedas recientes</h6>
         </div>

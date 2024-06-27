@@ -3,9 +3,6 @@
         <a class="navbar-brand" href="/">
             <img class="img-fluid" style="width: 16rem;" src=" {{ asset('images/piePagiina.png') }} " alt="..">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarNav"  style="justify-content: right;">
             <ul class="navbar-nav ml-auto" style="margin-right: 1rem;">
                 <li class="nav-item active">

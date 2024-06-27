@@ -1063,16 +1063,16 @@ class MainController extends Controller
     public function getInfoHome($userId)
     {
         // Últimas tiendas más buscadas
-        $mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
+        /*$mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
             ->whereNotNull('stores_id')
             ->groupBy('stores_id')
             ->orderBy('id', 'desc')
             ->limit(10)
-            ->get();
+            ->get();*/
 
         // Obtener información de las tiendas ordenadas por la búsqueda más reciente
         $lastStores = [];
-        foreach ($mostSearchedStores as $searchedStore) {
+        /*foreach ($mostSearchedStores as $searchedStore) {
             $store = Store::with('municipality')
                 ->where('id', $searchedStore->stores_id)
                 ->orderByDesc('created_at') // Ordena por la fecha de creación más reciente
@@ -1081,10 +1081,10 @@ class MainController extends Controller
             if ($store) {
                 $lastStores[] = $store;
             }
-        }
+        }*/
 
         // Últimos productos más buscados por el usuario actual
-        $lastSearch = DB::select("
+        /*$lastSearch = DB::select("
             SELECT DISTINCT products.*
             FROM search_users
             JOIN product_stores ON search_users.product_stores_id = product_stores.id
@@ -1092,7 +1092,9 @@ class MainController extends Controller
             WHERE search_users.users_id = :userId
             AND search_users.product_stores_id IS NOT NULL
             ORDER BY search_users.id DESC
-            LIMIT 10;", ['userId' => $userId]);
+            LIMIT 10;", ['userId' => $userId]);*/
+
+        $lastSearch = [];
 
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
