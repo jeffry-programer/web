@@ -1,6 +1,6 @@
 <x-app-layout>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light d-none d-md-block">
         <div class="container">
           <style>
             .active > a {
@@ -33,9 +33,9 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-12">
-            <div class="p-4" style="margin-left: 100px;">
+            <div class="p-4">
               <h2 class="text-justify mt-5">Terminos y condiciones para el uso de la plataforma</h2>            
-              <p class="text-justify mt-10">Tulobuscas es una empresa que se dedica a ofrecer servicios, principalmente de consulta de productos disponibles
+              <p class="text-justify mt-10">Tulobuscas es una aplicación que se dedica a ofrecer servicios, principalmente de consulta de productos disponibles
                   en diversas tiendas, y facilita la comunicación entre estas tiendas y los usuarios.<br><br>
                   Tulobuscas es una plataforma donde las Personas pueden búscar repuestos independientemente
                   de una coategoría, y ver que tiendas tienen lo que búscas.<br><br>En Tulobuscas creamos un canal de comunicación entre la persona que realiza la búsqueda y la tienda que tiene lo que

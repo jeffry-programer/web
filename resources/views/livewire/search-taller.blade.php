@@ -73,7 +73,7 @@
                             <div class="card-body" style="padding-bottom: 4rem;">
                                 <h5 class="card-title">{{ $store->name }}</h5>
                                 <p class="card-text">{{ $store->description }}</p>
-                                <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 18rem;"><i
+                                <p class="position-absolute bottom-0 start-0" style="padding: 1rem;width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;"><i
                                         class="fa-solid fa-location-dot me-1"></i>{{ $store->municipality->name }} -
                                     {{ $store->address }}</p>
                                 <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}"
