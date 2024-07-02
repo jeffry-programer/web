@@ -1495,11 +1495,121 @@ class MainController extends Controller
             }
         }
 
-        $dataTable->addColumn('actions', function ($row) {
-            return '<a href="#" onclick="editUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer"><i class="fas fa-user-edit text-secondary"></i></a>
-                    <a href="#" onclick="deleteUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user"><i class="cursor-pointer fas fa-trash text-secondary"></i></a>';
+        $dataTable->addColumn('actions', function ($row) use ($attributes, $name_label) {
+            $arrayExtraFields = [];
+            $fieldsStr = "";
+            $valuesStr = "";
+            $count = 0;
+
+            foreach ($attributes as $field) {
+                if ($field != 'created_at' && $field != 'updated_at') {
+                    if ($count == 0) {
+                        $fieldsStr .= $field;
+                    } else {
+                        $fieldsStr .= "|$field";
+                    }
+                    $count++;
+                }
+
+                if (str_contains($field, '_id')) {
+                    $arrayExtraFields[] = $field;
+                }
+            }
+
+            if ($name_label == 'Tiendas') {
+                $fieldsStr .= "|states_id";
+            }
+
+            foreach ($attributes as $field) {
+                if ($field != 'created_at' && $field != 'updated_at') {
+                    $valuesStr .= ",'" . $row->$field . "'";
+                }
+            }
+
+            if (isset($row->aditionalPictures)) {
+                $valuesStr .= ",'images:";
+                foreach ($row->aditionalPictures as $index => $image) {
+                    if ($index == 0) {
+                        $valuesStr .= $image->image;
+                    } else {
+                        $valuesStr .= "|$image->image";
+                    }
+                }
+                $valuesStr .= "'";
+            }
+
+            if ($name_label == 'Tiendas') {
+                $municipality = Municipality::find($row->municipalities_id);
+                if ($municipality) {
+                    $valuesStr .= ",'" . $municipality->states_id . "'";
+                }
+            }
+
+            $editUserParams = "['$fieldsStr'$valuesStr]";
+
+            return '<a onclick="editUser('.$editUserParams.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer">
+                        <i class="fas fa-user-edit text-secondary"></i>
+                    </a>
+                    <a href="#" onclick="deleteUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user">
+                        <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                    </a>';
         });
 
         return $dataTable->rawColumns(['actions'])->make(true);
+    }
+
+    public function getData2(Request $request)
+    {
+        $data = Product::with(['brand', 'subcategory', 'model'])->select('products.*');
+
+        return DataTables::of($data)
+            ->addColumn('brand', function ($product) {
+                return $product->brand->description;
+            })
+            ->addColumn('subcategory', function ($product) {
+                return $product->subcategory->name;
+            })
+            ->addColumn('model', function ($product) {
+                return $product->model->description;
+            })
+            ->addColumn('created_at', function ($product) {
+                return $product->created_at->format('d-m-Y');
+            })
+            ->addColumn('actions', function ($row) {
+                // Definir los atributos específicos para la tabla de productos
+                $attributes = [
+                    'id',
+                    'name',
+                    'sub_categories_id',
+                    'brands_id',
+                    'models_id',
+                    'created_at',
+                    'aditionalPictures', // Suponiendo que esto es una relación o atributo de imágenes adicionales
+                ];
+            
+                // Construir el array de campos y valores para editar usuario
+                $fieldsStr = implode('|', $attributes);
+                $valuesStr = implode("','", array_map(function ($field) use ($row) {
+                    if ($field == 'aditionalPictures') {
+                        if (isset($row->aditionalPictures)) {
+                            return 'images:' . implode('|', array_column($row->aditionalPictures->toArray(), 'image'));
+                        } else {
+                            return '';
+                        }
+                    }
+                    return $row->$field ?? '';
+                }, $attributes));
+            
+                // Generar el enlace de editar usuario
+                $editUserParams = "['$fieldsStr','$valuesStr']";
+            
+                return '<a onclick="editUser(' . $editUserParams . ')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer">
+                            <i class="fas fa-user-edit text-secondary"></i>
+                        </a>
+                        <a href="#" onclick="deleteUser(' . $row->id . ')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user">
+                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                        </a>';
+            })->rawColumns(['actions'])
+            ->make(true);
     }
 }

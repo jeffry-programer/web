@@ -269,16 +269,13 @@
                                         <table class="table align-items-center mb-0" id="myTable">
                                             <thead>
                                                 <tr>
-                                                    @foreach ($atributes as $field)
-                                                        @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                                {{ __($field) }}
-                                                            </th>
-                                                        @endif
-                                                    @endforeach
-                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        {{ __('actions') }}
-                                                    </th>
+                                                    <th>Id</th>
+                                                    <th>Nombre</th>
+                                                    <th>Marca</th>
+                                                    <th>Subcategoria</th>
+                                                    <th>Modelo</th>
+                                                    <th>Fecha de Creacion</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -544,20 +541,18 @@
         $('#myTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: {
-                url: '{{ route('your.data.route') }}',
-                data: function (d) {
-                    d.label = '{{ $label }}';
-                }
-            },
+            ajax: "{{ route('products.data') }}",
             columns: [
-                @foreach ($atributes as $field)
-                    @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
-                        { data: '{{ $field }}' },
-                    @endif
-                @endforeach
-                { data: 'actions', orderable: false, searchable: false },
-            ],"oLanguage": {
+                { data: 'id', name: 'id' },
+                { data: 'name', name: 'name' },
+                { data: 'brand', name: 'brand.description' },
+                { data: 'subcategory', name: 'subcategory.name' },
+                { data: 'model', name: 'model.description' },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'actions', name: 'actions', orderable: false, searchable: false }
+            ],
+            pageLength: 10,
+            "oLanguage": {
                 "sSearch": "{{__('Search')}}",
                 "sEmptyTable": "No hay información para mostrar"
             },"language": {
@@ -571,6 +566,7 @@
                 "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
                 "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
             },
+            ordering: false
         });
 
         $("#menu").click(() => {

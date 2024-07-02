@@ -42,4 +42,8 @@ class Product extends Model
     {
         return $this->belongsToMany(Store::class, 'product_stores', 'products_id', 'stores_id');
     }
+
+    public function model(){
+        return $this->belongsTo(Modell::class, 'models_id');
+    }
 }

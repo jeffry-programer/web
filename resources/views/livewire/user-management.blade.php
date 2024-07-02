@@ -92,7 +92,7 @@
 
                 <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
                     <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
-                        href="/admin/table-management/Productos" id="menu">
+                        href="/admin/products" id="menu">
                         <span class="nav-link-text ms-1">Productos</span>
                     </a>
                 </li>
