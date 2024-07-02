@@ -425,5 +425,7 @@
     "You may not leave a team that you created.": "No se puede abandonar un equipo que usted creó.",
     "Your email address is unverified.": "Su dirección de correo electrónico no está verificada.",
     "title" : "Titulo",
-    "statusplan" : "Estado plan"
+    "statusplan" : "Estado plan",
+    "status2" : "Estado2",
+    "read" : "Leido"
 }

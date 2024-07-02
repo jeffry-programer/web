@@ -269,66 +269,19 @@
                                         <table class="table align-items-center mb-0" id="myTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Id</th>
-                                                    <th>Nombre</th>
-                                                    <th>Marca</th>
-                                                    <th>Subcategoria</th>
-                                                    <th>Tipo producto</th>
-                                                    <th>Fecha de Creacion</th>
-                                                    <th>Acciones</th>
+                                                    @foreach ($atributes as $field)
+                                                        @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                                {{ __($field) }}
+                                                            </th>
+                                                        @endif
+                                                    @endforeach
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ __('actions') }}
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($products as $product)
-                                                    <tr>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->id}}</p></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->name}}</p></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                                margin-top: .4rem;">{{$product->brand->description}}</p></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->subcategory->name}}</p></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->typeProduct->description}}</p></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->created_at->format('d-m-Y')}}</p></th>
-                                                        <td class="text-start">
-                                                            <a onclick="editUser(
-                                                                <?php
-                                                                    $arrayExtraFields = [];
-                                                                    $count = 0;
-                                                                    echo "['id|sub_categories_id|cylinder_capacities_id|models_id|boxes_id|type_products_id|brands_id|name|description|code|image|count|link|reference|detail',";
-                                                                    
-                                                                    echo "'$product->id','$product->sub_categories_id','$product->cylinder_capacities_id','$product->models_id','$product->boxes_id','$product->type_products_id','$product->brands_id','$product->name','$product->description','$product->code','$product->image','$product->count','$product->link','$product->reference','$product->detail'";
-                
-                                                                    if(isset($product->aditionalPictures)){
-                                                                        echo ",'images:";
-                                                                        foreach($product->aditionalPictures as $index => $image){
-                                                                            if($index == 0){
-                                                                                echo "$image->image";
-                                                                            }else{
-                                                                                echo "|$image->image";
-                                                                            }
-                                                                        }
-                                                                        echo "'";
-                                                                    }
-                                                                    echo "]";
-                                                                    ?>)" class="mx-3" data-bs-toggle="tooltip"
-                                                                data-bs-original-title="Edit user" style="cursor: pointer">
-                                                                <i class="fas fa-user-edit text-secondary"></i>
-                                                            </a>
-                                                            <a onclick="deleteUser({{$product->id}})" style="cursor: pointer" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user">
-                                                                <i class="cursor-pointer fas fa-trash text-secondary"></i>
-                                                            </a>
-                                                            <form action="{{route('delete-register')}}" id="form-delete-{{$product->id}}" method="POST">
-                                                                @csrf
-                                                                <input type="hidden" name="id" value="{{$product->id}}">
-                                                                <input type="hidden" name="label" value="Productos">
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -589,7 +542,22 @@
     <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>       
     <script>
         $('#myTable').DataTable({
-            "oLanguage": {
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route('your.data.route') }}',
+                data: function (d) {
+                    d.label = '{{ $label }}';
+                }
+            },
+            columns: [
+                @foreach ($atributes as $field)
+                    @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
+                        { data: '{{ $field }}' },
+                    @endif
+                @endforeach
+                { data: 'actions', orderable: false, searchable: false },
+            ],"oLanguage": {
                 "sSearch": "{{__('Search')}}",
                 "sEmptyTable": "No hay información para mostrar"
             },"language": {
@@ -603,7 +571,6 @@
                 "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
                 "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
             },
-            ordering: false
         });
 
         $("#menu").click(() => {

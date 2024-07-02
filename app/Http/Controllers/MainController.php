@@ -39,6 +39,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Schema;
 
 class MainController extends Controller
 {
@@ -86,7 +88,7 @@ class MainController extends Controller
         }
         if (isset(explode('/', $_SERVER['REQUEST_URI'])[3])) {
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
-            $product = Product::where('link', $link_product)->first();
+            $product = Product::where('name', str_replace('-', ' ', $link_product))->first();
             if ($product == null) {
                 return redirect('/tienda/' . str_replace(' ', '-', $store->name));
             }
@@ -94,7 +96,7 @@ class MainController extends Controller
         $link_product = "";
         if (isset(explode('/', $_SERVER['REQUEST_URI'])[3])) {
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
-            $product_detail = Product::where('link', $link_product)->first();
+            $product_detail = Product::where('name', str_replace('-', ' ', $link_product))->first();
             $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $product_detail->id)->first();
             if ($product_store == null) return redirect('/tienda/' . str_replace(' ', '-', $store->name));
         }
@@ -1063,16 +1065,16 @@ class MainController extends Controller
     public function getInfoHome($userId)
     {
         // Últimas tiendas más buscadas
-        /*$mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
+        $mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
             ->whereNotNull('stores_id')
             ->groupBy('stores_id')
             ->orderBy('id', 'desc')
             ->limit(10)
-            ->get();*/
+            ->get();
 
         // Obtener información de las tiendas ordenadas por la búsqueda más reciente
         $lastStores = [];
-        /*foreach ($mostSearchedStores as $searchedStore) {
+        foreach ($mostSearchedStores as $searchedStore) {
             $store = Store::with('municipality')
                 ->where('id', $searchedStore->stores_id)
                 ->orderByDesc('created_at') // Ordena por la fecha de creación más reciente
@@ -1081,10 +1083,10 @@ class MainController extends Controller
             if ($store) {
                 $lastStores[] = $store;
             }
-        }*/
+        }
 
         // Últimos productos más buscados por el usuario actual
-        /*$lastSearch = DB::select("
+        $lastSearch = DB::select("
             SELECT DISTINCT products.*
             FROM search_users
             JOIN product_stores ON search_users.product_stores_id = product_stores.id
@@ -1092,7 +1094,7 @@ class MainController extends Controller
             WHERE search_users.users_id = :userId
             AND search_users.product_stores_id IS NOT NULL
             ORDER BY search_users.id DESC
-            LIMIT 10;", ['userId' => $userId]);*/
+            LIMIT 10;", ['userId' => $userId]);
 
         $lastSearch = [];
 
@@ -1452,5 +1454,52 @@ class MainController extends Controller
         $user->save();
 
         return response()->json($user);
+    }
+
+    public function getData(Request $request)
+    {
+        $name_label = urldecode(str_replace("_", " ", $request->label));
+        $name_table = Table::where('label', $name_label)->value('name');
+        
+        if (!$name_table) {
+            return response()->json(['error' => 'Table not found'], 404);
+        }
+        
+        $attributes = Schema::getColumnListing($name_table);
+        $data = DB::table($name_table)->get();
+
+        $dataTable = DataTables::of($data);
+
+        foreach ($attributes as $field) {
+            if (str_ends_with($field, '_id') && !($name_label == 'Tiendas' && $field == 'states_id')) {
+                $relatedTable = str_replace('_id', '', $field);
+                $dataTable->editColumn($field, function ($row) use ($relatedTable, $field) {
+                    $related = DB::table($relatedTable)->find($row->$field);
+                    return $related->name ?? $related->description ?? '';
+                });
+            }
+        }
+
+        $specialFields = [
+            'status' => function ($row) {
+                return $row->status == 0 ? 'Desactivado' : 'Activado';
+            },
+            'hour' => function ($row) {
+                return date('H:i', strtotime($row->hour));
+            }
+        ];
+
+        foreach ($specialFields as $field => $callback) {
+            if (in_array($field, $attributes)) {
+                $dataTable->editColumn($field, $callback);
+            }
+        }
+
+        $dataTable->addColumn('actions', function ($row) {
+            return '<a href="#" onclick="editUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer"><i class="fas fa-user-edit text-secondary"></i></a>
+                    <a href="#" onclick="deleteUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user"><i class="cursor-pointer fas fa-trash text-secondary"></i></a>';
+        });
+
+        return $dataTable->rawColumns(['actions'])->make(true);
     }
 }

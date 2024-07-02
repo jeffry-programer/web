@@ -81,6 +81,7 @@ Route::middleware([
     Route::post('/subscribe-user', [Subscribe::class, 'subscribe'])->name('subscribe-user');
     Route::post('/null-subscribe', [Subscribe::class, 'nullSubscribe'])->name('null-subscribe');
     Route::get('/municipalities/{municipality}/sectors', [MainController::class, 'sectors']);
+    Route::get('/your-data-route', [MainController::class, 'getData'])->name('your.data.route');
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {

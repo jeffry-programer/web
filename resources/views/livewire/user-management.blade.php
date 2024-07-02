@@ -92,7 +92,7 @@
 
                 <li class="nav-item pb-2 item-bd2 sub-item" style="display: none;">
                     <a class="nav-link {{ Route::currentRouteName() == 'user-management' ? 'active' : '' }}"
-                        href="/admin/products" id="menu">
+                        href="/admin/table-management/Productos" id="menu">
                         <span class="nav-link-text ms-1">Productos</span>
                     </a>
                 </li>
@@ -189,125 +189,18 @@
                                     <thead>
                                         <tr>
                                             @foreach ($atributes as $field)
-                                                @if($field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
+                                                @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                        {{__($field)}}
+                                                        {{ __($field) }}
                                                     </th>
                                                 @endif
                                             @endforeach
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                {{__('actions')}}
+                                                {{ __('actions') }}
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($data as $key)
-                                            <tr>
-                                                @foreach ($atributes as $field)
-                                                    @if($field != 'updated_at' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
-                                                        @if(str_contains($field, '_id'))
-                                                            @foreach ($extra_data[$field]['values'] as $value)
-                                                                @foreach ($extra_data[$field]['fields'] as $field2)
-                                                                    @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
-                                                                        @if($value->id == $key->$field && !str_contains($field2, '_id'))
-                                                                            <td class="ps-4">
-                                                                                <p class="text-xs font-weight-bold mb-0">{{$value->$field2}}</p>
-                                                                            </td> 
-                                                                            @break
-                                                                        @endif
-                                                                    @endif
-                                                                @endforeach
-                                                            @endforeach
-                                                        @elseif((str_contains($field, 'statusplan')))
-                                                            <td class="ps-4">
-                                                                <p class="text-xs font-weight-bold mb-0">{{$key->$field}}</p>
-                                                            </td>             
-                                                        @elseif((str_contains($field, 'status')))
-                                                            @if($key->$field == 0)
-                                                                <td class="ps-4">
-                                                                    <p class="text-xs font-weight-bold mb-0">Desactivado</p>
-                                                                </td>         
-                                                            @else
-                                                                <td class="ps-4">
-                                                                    <p class="text-xs font-weight-bold mb-0">Activado</p>
-                                                                </td>
-                                                            @endif
-                                                        @elseif((str_contains($field, 'hour')))
-                                                            <?php 
-                                                                $key->$field = date('H:i', strtotime($key->$field));
-                                                            ?>
-                                                            <td class="ps-4">
-                                                                <p class="text-xs font-weight-bold mb-0">{{$key->$field}}</p>
-                                                            </td> 
-                                                        @else
-                                                            <td class="ps-4">
-                                                                <p class="text-xs font-weight-bold mb-0">{{$key->$field}}</p>
-                                                            </td> 
-                                                        @endif
-                                                    @endif
-                                                @endforeach
-                                                <td class="text-start">
-                                                    <a onclick="editUser(
-                                                        <?php
-                                                            $arrayExtraFields = [];
-                                                            $count = 0;
-                                                            echo "['";
-                                                            foreach($atributes as $field){
-                                                                if($field != 'created_at' && $field != 'updated_at'){
-                                                                    if($count == 0){
-                                                                        echo "$field";
-                                                                    }else{
-                                                                        echo "|$field";
-                                                                    }
-                                                                    $count++;
-                                                                }
-        
-                                                                if(str_contains($field, '_id')){
-                                                                    array_push($arrayExtraFields, $field);
-                                                                }
-                                                            }
-                                                            if($label == 'Tiendas'){
-                                                                echo "|states_id";
-                                                            }
-                                                            echo "'";
-                                                            foreach($atributes as $field){
-                                                                if($field != 'created_at' && $field != 'updated_at'){
-                                                                    echo ",'".$key->$field."'";
-                                                                }
-                                                            }
-        
-                                                            if(isset($key->aditionalPictures)){
-                                                                echo ",'images:";
-                                                                foreach($key->aditionalPictures as $index => $image){
-                                                                    if($index == 0){
-                                                                        echo "$image->image";
-                                                                    }else{
-                                                                        echo "|$image->image";
-                                                                    }
-                                                                }
-                                                                echo "'";
-                                                            }
-
-                                                            if($label == 'Tiendas'){
-                                                                echo ",'".App\Models\Municipality::find($key->municipalities_id)->states_id."'";
-                                                            }
-                                                            echo "]";
-                                                            ?>)" class="mx-3" data-bs-toggle="tooltip"
-                                                        data-bs-original-title="Edit user" style="cursor: pointer">
-                                                        <i class="fas fa-user-edit text-secondary"></i>
-                                                    </a>
-                                                        <a onclick="deleteUser({{$key->id}})" class="mx-3" data-bs-toggle="tooltip"
-                                                            data-bs-original-title="Edit user">
-                                                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
-                                                        </a>
-                                                </td>
-                                                <form action="{{route('delete-register')}}" id="form-delete-{{$key->id}}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="id" value="{{$key->id}}">
-                                                    <input type="hidden" name="label" value="{{$label}}">
-                                                </form>
-                                            </tr>
-                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -753,7 +646,23 @@
    
     <script>
         $('#myTable').DataTable({
-            "oLanguage": {
+            processing: true,
+            serverSide: true,
+            pageLength: 10, // Configuración para paginar de 10 en 10
+            ajax: {
+                url: '{{ route('your.data.route') }}',
+                data: function (d) {
+                    d.label = '{{ $label }}';
+                }
+            },
+            columns: [
+                @foreach ($atributes as $field)
+                    @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
+                        { data: '{{ $field }}' },
+                    @endif
+                @endforeach
+                { data: 'actions', orderable: false, searchable: false },
+            ],"oLanguage": {
                 "sSearch": "{{__('Search')}}",
                 "sEmptyTable": "No hay información para mostrar"
             },"language": {

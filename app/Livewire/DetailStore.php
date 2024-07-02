@@ -90,7 +90,7 @@ class DetailStore extends Component
         $link_product = "";
         if(isset(explode('/', $_SERVER['REQUEST_URI'])[3])){
             $link_product = explode('?', explode('/', $_SERVER['REQUEST_URI'])[3])[0];
-            $this->product_detail = Product::where('link', $link_product)->first();
+            $this->product_detail = Product::with('promotions')->where('name', str_replace('-',' ',$link_product))->first();
             $this->brand = Brand::find($this->product_detail->brands_id)->first()->description;
             $this->product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $this->product_detail->id)->first();
             if($this->product_store == null) return redirect('/tienda/'.str_replace(' ','-', $store->name));
@@ -138,7 +138,7 @@ class DetailStore extends Component
             $query->whereDate('date_init', '<=', $today)
                   ->whereDate('date_end', '>=', $today)
                   ->where('status', true);
-        })->get();
+        })->with('promotions')->get();
 
         $products_total = count(Store::find($this->global_store['id'])->products()->get());
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();

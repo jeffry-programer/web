@@ -212,6 +212,7 @@ p{
     position: relative;
     width: 100%;
     overflow: hidden;
+    height: 26rem !important;
 }
 
 .card-img-top{

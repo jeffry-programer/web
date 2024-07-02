@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SearchUser extends Model
 {
@@ -13,8 +14,11 @@ class SearchUser extends Model
 
     public $table = 'search_users';
 
-    public function productStore()
-    {
-        return $this->belongsTo(ProductStore::class, 'product_stores_id');
+    public function store(){
+        return $this->BelongsTo(Store::class, 'stores_id');
+    }
+
+    public function product(){
+        return $this->BelongsTo(Product::class, 'products_id');
     }
 }

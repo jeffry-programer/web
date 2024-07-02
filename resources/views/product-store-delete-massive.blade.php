@@ -278,7 +278,7 @@
                                                         }
                                                     @endphp
                                                     <tr>
-                                                        <th><input style="margin-top: .75rem;" type="checkbox" class="myCheckbox" data-id="{{$product->id}}"></th>
+                                                        <th><input style="margin-top: .75rem;" type="checkbox" onclick="myCheckbox({{$product->id}})" id="checkbox-{{$product->id}}"></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
                                                             margin-top: .4rem;">{{$product->product->name}}</p></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
@@ -323,118 +323,15 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>  
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        $('#myTable').DataTable({
-            "oLanguage": {
-                "sSearch": "{{__('Search')}}",
-                "sEmptyTable": "No hay información para mostrar"
-            },"language": {
-                "zeroRecords": "{{__('No matching records found')}}",
-                "infoEmpty": "{{__('No records available')}}",
-                "paginate": {
-                    "previous": "{{__('Previous')}}",
-                    "next": "{{__('Next')}}"
-                },
-                "lengthMenu": "{{__('Showing')}} _MENU_ {{__('entries')}}",
-                "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
-                "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
-            },
-            ordering: false // Deshabilitar la ordenación de las columnas
-        });
+        var selectedIds = [];
 
-        $("#menu").click(() => {
-            if($("#menu").attr('class').includes('act')){
-                $("#menu").removeClass('act');
-                $(".item-bd").fadeOut();
-            }else{
-                $("#menu").addClass('act');
-                $(".item-bd").fadeIn();
-            }
-        });
-
-        $("#menu2").click(() => {
-            if($("#menu2").attr('class').includes('act')){
-                $("#menu2").removeClass('act');
-                $(".item-bd2").fadeOut();
-            }else{
-                $("#menu2").addClass('act');
-                $(".item-bd2").fadeIn();
-            }
-        });
-
-        $("#menu3").click(() => {
-            if($("#menu3").attr('class').includes('act')){
-                $("#menu3").removeClass('act');
-                $(".item-bd3").fadeOut();
-            }else{
-                $("#menu3").addClass('act');
-                $(".item-bd3").fadeIn();
-            }
-        });
-
-    var arraySelects = [''];
-    var ultimoValorSeleccionado = [];
-    var reiniciarAutocompletado = [];
-
-
-    arraySelects.forEach((element, index) => { 
-        // Función para reiniciar el autocompletado
-        reiniciarAutocompletado[index] = () => {
-          $(`#myUL${element} li`).show(); // Mostrar todas las opciones
-        }
-      
-        // Mostrar la lista al hacer clic en el input
-        $(`#myInput${element}`).click(function() {
-          $(`#myUL${element}`).show();
-          reiniciarAutocompletado[index](); // Reiniciar autocompletado al hacer clic en el input
-        });
-        
-        // Seleccionar una opción de la lista
-        $(`#myUL${element}`).on("click", "li", function() {
-          var value = $(this).text();
-          $(`#myInput${element}`).val(value); // Colocar el valor seleccionado en el input
-          ultimoValorSeleccionado[index] = value; // Actualizar el último valor seleccionado
-          $(`#myUL${element}`).hide(); // Ocultar la lista después de seleccionar
-        });
-        
-        // Filtrar opciones según la entrada del usuario
-        $(`#myInput${element}`).on("input", function() {
-          reiniciarAutocompletado[index](); // Reiniciar autocompletado al escribir en el input
-          var value = $(this).val().toLowerCase();
-          $(`#myUL${element} li`).each(function() {
-            var text = $(this).text().toLowerCase();
-            if (text.indexOf(value) > -1) {
-              $(this).show();
-            } else {
-              $(this).hide();
-            }
-          });
-        });
-        
-        // Controlar clic fuera del área de autocompletado
-        $(document).click(function(event) {
-          var $target = $(event.target);
-          var inputValue = $(`#myInput${element}`).val();
-          if(!$target.closest('.autocomplete').length) {
-            if (inputValue !== ultimoValorSeleccionado[index]) {
-              $(`#myInput${element}`).val(""); // Vaciar el input si no se seleccionó una opción recientemente
-            }
-            $(`#myUL${element}`).hide(); // Ocultar la lista en cualquier caso
-          }
-        });
-    });
-
-    function seleccionarCiudad(id){
-        $("#store-id").val(id);
-    }
-
-    $(document).ready(function() {
-        // Controlador de eventos para checkboxes individuales
-        $('.myCheckbox').change(function() {
-            var checkboxId = $(this).data('id');
+        function myCheckbox(id){
+            var checkboxId = id;
             var selectedIds = $('#selectedIds').val().split(',');
-
-            if ($(this).is(':checked')) {
+    
+            if ($("#checkbox-"+id).is(':checked')) {
                 selectedIds.push(checkboxId);
             } else {
                 var index = selectedIds.indexOf(checkboxId.toString());
@@ -442,28 +339,175 @@
                     selectedIds.splice(index, 1);
                 }
             }
-
+    
             $('#selectedIds').val(selectedIds.join(','));
+        }
+    
+        $('#myTable').DataTable({
+            "oLanguage": {
+                "sSearch": "{{ __('Search') }}",
+                "sEmptyTable": "No hay información para mostrar"
+            },
+            "language": {
+                "zeroRecords": "{{ __('No matching records found') }}",
+                "infoEmpty": "{{ __('No records available') }}",
+                "paginate": {
+                    "previous": "{{ __('Previous') }}",
+                    "next": "{{ __('Next') }}"
+                },
+                "lengthMenu": "{{ __('Showing') }} _MENU_ {{ __('entries') }}",
+                "infoFiltered": "({{ __('filtered from') }} _TOTAL_ {{ __('total entries') }})",
+                "info": "{{ __('Showing') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+            },
+            ordering: false // Deshabilitar la ordenación de las columnas
         });
-
-        // Controlador de eventos para el checkbox "select all"
-        $('#selectAllCheckbox').change(function() {
-            var isChecked = $(this).is(':checked');
-            // Si se seleccionan todos, vaciar el array de IDs seleccionados
-            if (isChecked) {
-                $('#selectedIds').val('');
+    
+        // Manejar selección/deselección de checkboxes individuales
+        $(document).on('change', '.myCheckbox', function() {
+            var id = $(this).data('id');
+            if (this.checked) {
+                selectedIds.push(id);
+            } else {
+                selectedIds = selectedIds.filter(item => item !== id);
             }
-            $('.myCheckbox').prop('checked', isChecked).change();
         });
-    });
-
-    $(".associate").click(() => {
-        validateData();
-    });
-
-    function validateData(){
-        if($('#selectedIds').val() == ''){
-            Swal.fire({
+    
+        // Manejar selección/deselección del checkbox de "seleccionar todo"
+        $('#selectAllCheckbox').on('change', function() {
+            var isChecked = this.checked;
+            $('.myCheckbox').each(function() {
+                var id = $(this).data('id');
+                if (isChecked) {
+                    $(this).prop('checked', true);
+                    if (!selectedIds.includes(id)) {
+                        selectedIds.push(id);
+                    }
+                } else {
+                    $(this).prop('checked', false);
+                    selectedIds = selectedIds.filter(item => item !== id);
+                }
+            });
+        });
+    
+        // Mantener el estado de los checkboxes al cambiar de página
+        $('#myTable').on('draw.dt', function() {
+            $('.myCheckbox').each(function() {
+                var id = $(this).data('id');
+                if (selectedIds.includes(id)) {
+                    $(this).prop('checked', true);
+                }
+            });
+        });
+    
+        // Mostrar/Ocultar menús
+        $("#menu").click(() => {
+            if ($("#menu").attr('class').includes('act')) {
+                $("#menu").removeClass('act');
+                $(".item-bd").fadeOut();
+            } else {
+                $("#menu").addClass('act');
+                $(".item-bd").fadeIn();
+            }
+        });
+    
+        $("#menu2").click(() => {
+            if ($("#menu2").attr('class').includes('act')) {
+                $("#menu2").removeClass('act');
+                $(".item-bd2").fadeOut();
+            } else {
+                $("#menu2").addClass('act');
+                $(".item-bd2").fadeIn();
+            }
+        });
+    
+        $("#menu3").click(() => {
+            if ($("#menu3").attr('class').includes('act')) {
+                $("#menu3").removeClass('act');
+                $(".item-bd3").fadeOut();
+            } else {
+                $("#menu3").addClass('act');
+                $(".item-bd3").fadeIn();
+            }
+        });
+    
+        // Autocompletado
+        var arraySelects = [''];
+        var ultimoValorSeleccionado = [];
+        var reiniciarAutocompletado = [];
+    
+        arraySelects.forEach((element, index) => {
+            // Función para reiniciar el autocompletado
+            reiniciarAutocompletado[index] = () => {
+                $(`#myUL${element} li`).show(); // Mostrar todas las opciones
+            }
+    
+            // Mostrar la lista al hacer clic en el input
+            $(`#myInput${element}`).click(function() {
+                $(`#myUL${element}`).show();
+                reiniciarAutocompletado[index](); // Reiniciar autocompletado al hacer clic en el input
+            });
+    
+            // Seleccionar una opción de la lista
+            $(`#myUL${element}`).on("click", "li", function() {
+                var value = $(this).text();
+                $(`#myInput${element}`).val(value); // Colocar el valor seleccionado en el input
+                ultimoValorSeleccionado[index] = value; // Actualizar el último valor seleccionado
+                $(`#myUL${element}`).hide(); // Ocultar la lista después de seleccionar
+            });
+    
+            // Filtrar opciones según la entrada del usuario
+            $(`#myInput${element}`).on("input", function() {
+                reiniciarAutocompletado[index](); // Reiniciar autocompletado al escribir en el input
+                var value = $(this).val().toLowerCase();
+                $(`#myUL${element} li`).each(function() {
+                    var text = $(this).text().toLowerCase();
+                    if (text.indexOf(value) > -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+    
+            // Controlar clic fuera del área de autocompletado
+            $(document).click(function(event) {
+                var $target = $(event.target);
+                var inputValue = $(`#myInput${element}`).val();
+                if (!$target.closest('.autocomplete').length) {
+                    if (inputValue !== ultimoValorSeleccionado[index]) {
+                        $(`#myInput${element}`).val(
+                        ""); // Vaciar el input si no se seleccionó una opción recientemente
+                    }
+                    $(`#myUL${element}`).hide(); // Ocultar la lista en cualquier caso
+                }
+            });
+        });
+    
+        // Función para seleccionar ciudad
+        function seleccionarCiudad(id) {
+            $("#store-id").val(id);
+        }
+    
+        // Validar y enviar datos
+        $(document).ready(function() {
+            // Controlador de eventos para el checkbox "select all"
+            $('#selectAllCheckbox').change(function() {
+                var isChecked = $(this).is(':checked');
+                // Si se seleccionan todos, vaciar el array de IDs seleccionados
+                if (isChecked) {
+                    $('#selectedIds').val('');
+                }
+                $('.myCheckbox').prop('checked', isChecked).change();
+            });
+    
+            $(".associate").click(() => {
+                validateData();
+            });
+        });
+    
+        function validateData() {
+            if ($('#selectedIds').val() == '') {
+                Swal.fire({
                     title: "Debes seleccionar por lo menos un producto",
                     icon: "error",
                     timer: 2000,
@@ -472,31 +516,30 @@
                     position: 'top-end',
                     showConfirmButton: false
                 });
-            return false;
-        }
-
-        var array = $('#selectedIds').val().split(',');
-        array.shift();
-
-        deleteData();
-    }
-
-    function deleteData(){
-        Swal.fire({
-            title: "¿Seguro que quieres eliminar estos registros?",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Confirmar",
-            cancelButtonText: `Cancelar`,
-            confirmButtonColor: '#dc3545',        
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $("#form").submit();
+                return false;
             }
-        });
-    }
-
-    </script>
+    
+            var array = $('#selectedIds').val().split(',');
+            array.shift();
+    
+            deleteData();
+        }
+    
+        function deleteData() {
+            Swal.fire({
+                title: "¿Seguro que quieres eliminar estos registros?",
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: `Cancelar`,
+                confirmButtonColor: '#dc3545',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#form").submit();
+                }
+            });
+        }
+    </script>  
 </body>
 
 </html>
