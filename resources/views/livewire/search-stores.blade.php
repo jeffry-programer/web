@@ -26,7 +26,7 @@
         @endif
         @if($locationStores == 'country')
             <div class="alert alert-warning p-3 text-center alert-info-search-stores">
-                No hemos encontrado productos para esta estado, aqui que te mostramos resultados para tu país
+                No hemos encontrado productos para este estado, aqui que te mostramos resultados para tu país
             </div>
             <div class="alert alert-info p-3 text-center alert-info-search-stores">
                 Las siguientes tiendas tienen el repuesto "{{ $search }}", entra a la que desees y contacta al vendedor
