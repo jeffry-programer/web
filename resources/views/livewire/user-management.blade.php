@@ -1028,7 +1028,7 @@
                     $("#row-img-update").html(plantilla);
                     $("#row-img-update").show();
                     setTimeout(() => {
-                        window.location.reload();
+                        //window.location.reload();
                     }, 3000);
 
                     Swal.fire({
