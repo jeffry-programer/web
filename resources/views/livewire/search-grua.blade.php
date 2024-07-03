@@ -26,7 +26,7 @@
             <div class="col-md-3 form-group">
                 <label for="name" class="pb-3">{{ __('Sector') }}</label>
                 <select class="form-select" wire:model="selectedSector" wire:change="changeSector()">
-                    <option selected>Seleccione un sector</option>
+                    <option selected value="">Seleccione un sector</option>
                     <option value="Todos">Todos</option>
                     @foreach ($sectors as $index => $sector)
                         <option value="{{ $sector->id }}">{{ $sector->description }}</option>

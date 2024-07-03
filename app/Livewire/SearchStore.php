@@ -11,7 +11,6 @@ use Livewire\WithPagination;
 
 class SearchStore extends Component
 {
-
     use WithPagination;
 
     public $type_store = 'Tienda';
@@ -59,11 +58,15 @@ class SearchStore extends Component
 
     public function changeMunicipality(){
         $this->sectors = Sector::where('municipalities_id', $this->selectedMunicipality)->orderBy('description', 'asc')->get();
+        $this->disabled = true;
+        $this->selectedSector = "";
     }
 
     public function changeSector(){
         if($this->selectedSector != ''){
             $this->disabled = false;
+        }else{
+            $this->disabled = true;
         }
     }
 
@@ -73,18 +76,22 @@ class SearchStore extends Component
         $this->new_message2 = false;
         $this->new_message3 = false;
         $this->empty_stores = false;
-
         $stores = Store::where('status', true)->whereHas('typeStore', function ($query) use ($type_store) {
             $query->where('description', $type_store);
         });
 
-        if($this->selectedSector != "Todos"){
+        if($this->selectedSector == "Todos"){
+            $sectorIds = Sector::where('municipalities_id', $this->selectedMunicipality)->pluck('id')->toArray();
+            $stores->whereIn('sectors_id', $sectorIds);
+        }else{
             $stores->where('sectors_id', $this->selectedSector);
         }
+
 
         if($this->name_store != ""){
             $stores->whereFullText('name', $this->name_store);
         }
+
         $response = $stores->get();
 
         if(count($response) == 0){

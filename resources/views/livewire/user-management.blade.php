@@ -200,7 +200,7 @@
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody style="border-bottom: solid 0.5px #b2b2b2;">
                                     </tbody>
                                 </table>
                             </div>
@@ -662,6 +662,15 @@
                     @endif
                 @endforeach
                 { data: 'actions', orderable: false, searchable: false },
+            ],
+            columnDefs: [
+                {
+                    targets: -1, // Índice de la columna 'actions' (última columna)
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).css('display', 'flex'); // Aplicar display: flex
+                        $(td).css('border', 'none'); // Quitar borde
+                    }
+                }
             ],"oLanguage": {
                 "sSearch": "{{__('Search')}}",
                 "sEmptyTable": "No hay información para mostrar"
@@ -732,7 +741,7 @@
                     if(key != '' && key.includes('images')){
                         key = key.replaceAll('/storage','storage');
                         nameImg = key;
-                        plantilla += `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1rem;left: 9.25rem;"></a></div>`;
+                        plantilla += `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1.4rem;left: 8.8rem;background: white;border-radius: 100%;top: 0.1rem;"></a></div>`;
                     }
                 });
                 $("#row-img-update").html(plantilla);
@@ -1014,7 +1023,7 @@
                 method: 'POST',
                 success(response){
                     var plantilla = $("#row-img-update").html();
-                    var plantillaRemplazar = `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1rem;left: 9.25rem;"></a></div>`;
+                    var plantillaRemplazar = `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1.4rem;left: 8.8rem;background: white;border-radius: 100%;top: 0.1rem;"></a></div>`;
                     plantilla = plantilla.replaceAll(plantillaRemplazar, '');
                     $("#row-img-update").html(plantilla);
                     $("#row-img-update").show();

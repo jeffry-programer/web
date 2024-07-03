@@ -59,11 +59,15 @@ class SearchTaller extends Component
 
     public function changeMunicipality(){
         $this->sectors = Sector::where('municipalities_id', $this->selectedMunicipality)->orderBy('description', 'asc')->get();
+        $this->disabled = true;
+        $this->selectedSector = "";
     }
 
     public function changeSector(){
         if($this->selectedSector != ''){
             $this->disabled = false;
+        }else{
+            $this->disabled = true;
         }
     }
 
@@ -77,13 +81,18 @@ class SearchTaller extends Component
             $query->where('description', $type_store);
         });
 
-        if($this->selectedSector != "Todos"){
+        if($this->selectedSector == "Todos"){
+            $sectorIds = Sector::where('municipalities_id', $this->selectedMunicipality)->pluck('id')->toArray();
+            $stores->whereIn('sectors_id', $sectorIds);
+        }else{
             $stores->where('sectors_id', $this->selectedSector);
         }
+
 
         if($this->name_store != ""){
             $stores->whereFullText('name', $this->name_store);
         }
+
         $response = $stores->get();
 
         if(count($response) == 0){
