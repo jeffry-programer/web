@@ -1471,7 +1471,7 @@ class MainController extends Controller
         $dataTable = DataTables::of($data);
 
         foreach ($attributes as $field) {
-            if (str_ends_with($field, '_id') && !($name_label == 'Tiendas' && $field == 'states_id')) {
+            if (str_ends_with($field, '_id') && !($name_label == 'Tiendas' && $field == 'states_id') && $field != 'current_team_id') {
                 $relatedTable = str_replace('_id', '', $field);
                 $dataTable->editColumn($field, function ($row) use ($relatedTable, $field) {
                     $related = DB::table($relatedTable)->find($row->$field);
@@ -1495,6 +1495,7 @@ class MainController extends Controller
             }
         }
 
+
         $dataTable->addColumn('actions', function ($row) use ($attributes, $name_label) {
             $arrayExtraFields = [];
             $fieldsStr = "";
@@ -1502,7 +1503,7 @@ class MainController extends Controller
             $count = 0;
 
             foreach ($attributes as $field) {
-                if ($field != 'created_at' && $field != 'updated_at') {
+                if ($field != 'created_at' && $field != 'updated_at' && $field != 'current_team_id') {
                     if ($count == 0) {
                         $fieldsStr .= $field;
                     } else {
@@ -1516,12 +1517,13 @@ class MainController extends Controller
                 }
             }
 
+
             if ($name_label == 'Tiendas') {
                 $fieldsStr .= "|states_id";
             }
 
             foreach ($attributes as $field) {
-                if ($field != 'created_at' && $field != 'updated_at') {
+                if ($field != 'created_at' && $field != 'updated_at' && $field != 'current_team_id') {
                     $valuesStr .= ",'" . $row->$field . "'";
                 }
             }
