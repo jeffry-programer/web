@@ -272,7 +272,7 @@
                                             <tbody>
                                                 @foreach ($products as $product)
                                                     <tr>
-                                                        <th><input style="margin-top: .75rem;" type="checkbox" class="myCheckbox" data-id="{{$product->id}}"></th>
+                                                        <th><input style="margin-top: .75rem;" type="checkbox" onclick="myCheckbox({{$product->id}})" id="checkbox-{{$product->id}}"></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
                                                             margin-top: .4rem;">{{$product->name}}</p></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
@@ -316,6 +316,22 @@
     <script src="//cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>  
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function myCheckbox(id){
+            var checkboxId = id;
+            var selectedIds = $('#selectedIds').val().split(',');
+
+            if ($("#checkbox-"+id).is(':checked')) {
+                selectedIds.push(checkboxId);
+            } else {
+                var index = selectedIds.indexOf(checkboxId.toString());
+                if (index !== -1) {
+                    selectedIds.splice(index, 1);
+                }
+            }
+
+            $('#selectedIds').val(selectedIds.join(','));
+        }
+        
         $('#myTable').DataTable({
             "oLanguage": {
                 "sSearch": "{{__('Search')}}",
@@ -422,23 +438,6 @@
 
 
     $(document).ready(function() {
-        // Controlador de eventos para checkboxes individuales
-        $('.myCheckbox').change(function() {
-            var checkboxId = $(this).data('id');
-            var selectedIds = $('#selectedIds').val().split(',');
-
-            if ($(this).is(':checked')) {
-                selectedIds.push(checkboxId);
-            } else {
-                var index = selectedIds.indexOf(checkboxId.toString());
-                if (index !== -1) {
-                    selectedIds.splice(index, 1);
-                }
-            }
-
-            $('#selectedIds').val(selectedIds.join(','));
-        });
-
         // Controlador de eventos para el checkbox "select all"
         $('#selectAllCheckbox').change(function() {
             var isChecked = $(this).is(':checked');

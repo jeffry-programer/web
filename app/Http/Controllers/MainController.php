@@ -1554,7 +1554,12 @@ class MainController extends Controller
                     </a>
                     <a href="#" onclick="deleteUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user">
                         <i class="cursor-pointer fas fa-trash text-secondary"></i>
-                    </a>';
+                    </a>
+                    <form action="/delete-register" id="form-delete-'.$row->id.'" method="POST">
+                        <input type="hidden" name="_token" value="'.@csrf_token().'">
+                        <input type="hidden" name="id" value="'.$row->id.'">
+                        <input type="hidden" name="label" value="'.$name_label.'">
+                    </form>';
         });
 
         return $dataTable->rawColumns(['actions'])->make(true);

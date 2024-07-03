@@ -215,7 +215,7 @@
                         <div class="row">
                             <div class="col-12 col-lg-8 d-flex justify-content-center" style="position: relative;">
                                 <div class="contenedor-imagen-2">
-                                    <img src="{{ asset($store->image) }}" alt="Imagen" class="imagen">
+                                    <img src="{{ $store->image ? asset($store->image) : asset('images/1.jpg') }}" alt="Imagen" class="imagen">
                                     @if ($condition)
                                         <button id="boton-flotante-2" class="boton-flotante-2"
                                             onclick="mostrarInput2()">
