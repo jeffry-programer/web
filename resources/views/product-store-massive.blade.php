@@ -286,7 +286,7 @@
                                             <tbody>
                                                 @foreach ($products as $product)
                                                     <tr>
-                                                        <th><input style="margin-top: .75rem;" type="checkbox" class="myCheckbox" data-id="{{$product->id}}"></th>
+                                                        <th><input style="margin-top: .75rem;" type="checkbox" onclick="myCheckbox({{$product->id}})" id="checkbox-{{$product->id}}"></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
                                                             margin-top: .4rem;">{{$product->name}}</p></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
@@ -430,31 +430,28 @@
         $("#store-id").val(id);
     }
 
-    $(document).ready(function() {
-        // Agregar un event listener para el cambio de estado de todos los checkboxes con la clase 'myCheckbox' usando jQuery
-        $('.myCheckbox').change(function() {
-            // Obtener el ID del checkbox seleccionado
-            var checkboxId = $(this).data('id');
+    function myCheckbox(id){
+        // Obtener el ID del checkbox seleccionado
+        var checkboxId = id;
+                
+        // Obtener el valor actual del input oculto
+        var selectedIds = $('#selectedIds').val().split(',');
             
-            // Obtener el valor actual del input oculto
-            var selectedIds = $('#selectedIds').val().split(',');
-            
-            // Verificar si el checkbox está seleccionado
-            if ($(this).is(':checked')) {
+        // Verificar si el checkbox está seleccionado
+        if ($("#checkbox-"+id).is(':checked')) {
             // Agregar el ID al arreglo de IDs seleccionados
             selectedIds.push(checkboxId);
-            } else {
-                // Quitar el ID del arreglo de IDs seleccionados
-                var index = selectedIds.indexOf(checkboxId.toString());
-                if (index !== -1) {
-                    selectedIds.splice(index, 1);
-                }
+        } else {
+            // Quitar el ID del arreglo de IDs seleccionados
+            var index = selectedIds.indexOf(checkboxId.toString());
+            if (index !== -1) {
+                selectedIds.splice(index, 1);
             }
+        }
         
-            // Actualizar el valor del input oculto
-            $('#selectedIds').val(selectedIds.join(','));
-        });
-    });
+        // Actualizar el valor del input oculto
+        $('#selectedIds').val(selectedIds.join(','));
+    }
 
     $("#associate").click(() => {
         validateData();

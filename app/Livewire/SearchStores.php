@@ -34,6 +34,7 @@ class SearchStores extends Component
         $product_search = explode('=', $array_data[4])[1];
 
         $search = str_replace('+', ' ', $product_search);
+        $finalSearch = $search;
         $municipalityId = $municipalities_id;
         $locationStores = 'sector';
 
@@ -161,6 +162,6 @@ class SearchStores extends Component
             }
         }
 
-        return view('livewire.search-stores', ['stores' => $stores, 'locationStores' => $locationStores, 'product_search' => $search]);
+        return view('livewire.search-stores', ['stores' => $stores, 'locationStores' => $locationStores, 'product_search' => $finalSearch]);
     }
 }
