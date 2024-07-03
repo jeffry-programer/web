@@ -769,8 +769,12 @@
                         var productos = response.data;
                         if (productos.length > 0) {
                             productos.forEach(function(producto) {
+                                var imageAd = `{{asset('${producto.image}')}}`;
+                                if(imageAd.includes('//storage')){
+                                    imageAd = imageAd.replaceAll('//storage','/storage');
+                                } 
                                 $('#productos-container').append(
-                                    `<div class="col-12 col-md-4 mt-3"><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}"><div class="card card-store" style="height: 100%;"><div class="zoom-container"><img class="zoomed-image" src="{{ asset('${producto.image}') }}"></div><div class="card-body" style="padding-bottom: 4rem;"><h5 class="card-title">${producto.name}</h5><p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">${producto.description}</p><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}" class="btn btn-warning position-absolute bottom-0 end-0" style="margin: .5rem;cursor: pointer;">Ver</a></div></div></a></div>`
+                                    `<div class="col-12 col-md-4 mt-3"><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}"><div class="card card-store" style="height: 100%;"><div class="zoom-container"><img class="zoomed-image" src="${imageAd}"></div><div class="card-body" style="padding-bottom: 4rem;"><h5 class="card-title">${producto.name}</h5><p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">${producto.description}</p><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}" class="btn btn-warning position-absolute bottom-0 end-0" style="margin: .5rem;cursor: pointer;">Ver</a></div></div></a></div>`
                                 );
                             });
                             page++;
