@@ -1,3 +1,12 @@
+<?php
+    function quitar_tildes($string) {
+        $originales = array('á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú');
+        $reemplazos = array('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U');
+        $string = str_replace($originales, $reemplazos, $string);
+        return str_replace(' ', '-', $string);
+    }
+?>
+
 <style>
     .contenedor-imagen {
         position: relative;
@@ -291,7 +300,7 @@
                             @endif
                             @foreach ($products as $product)
                                 <div class="col-12 col-md-4 mt-3">
-                                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
+                                    <a href="/tienda/{{ str_replace(' ', '-', quitar_tildes($store->name)) }}/{{ quitar_tildes($product->name) }}">
                                         <div class="card card-store" style="height: 100%;">
                                             <div class="zoom-container">
                                                 <img class="zoomed-image" src="{{ asset($product->image) }}">
@@ -499,7 +508,7 @@
                         <div class="row">
                             @foreach ($products_promotion as $product)
                                 <div class="col-12 col-md-4 mt-3">
-                                    <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}">
+                                    <a href="/tienda/{{ str_replace(' ', '-', quitar_tildes($store->name)) }}/{{ quitar_tildes($product->name) }}">
                                         <div class="card card-store" style="height: 100%;">
                                             <div class="zoom-container">
                                                 <img class="zoomed-image" src="{{ asset($product->image) }}">
