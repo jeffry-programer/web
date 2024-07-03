@@ -39,15 +39,12 @@
                     <input type="date" name="date_init" class="form-control w-100 my-3">
                     <label for="">Fecha fin</label>
                     <input type="date" name="date_end" class="form-control w-100 mt-3">
-                    <label for="" class="mt-3">Descripción oferta</label>
-                    <textarea class="form-control mt-3 w-100" name="description" rows="5" placeholder="Por favor ingrese una descripción"></textarea>
                 </div>
                 <div class="col-md-4 offset-md-2 form-group">
                     <label >Porcentaje promoción</label>
-                    <input type="number" name="percent_promotion" min="1" max="100" class="form-control w-100 mt-3" placeholder="Por favor ingrese un precio">
-                    <label class="py-3" for="name">{{ __('Imagen') }}</label>
-                    <div class="dropzone" id="myDropzone82"></div>
-                    <input type="hidden" id="id_promotion_save">
+                    <input type="text" name="percent_promotion" class="form-control w-100 mt-3" placeholder="Ejemplo: 25%">
+                    <label for="" class="mt-3">Descripción oferta</label>
+                    <textarea class="form-control mt-3 w-100" name="description" rows="5" placeholder="Por favor ingrese una descripción"></textarea>
                 </div>
                 <div class="col-12 col-md-4 offset-md-6">
                     <button type="button" class="btn btn-primary mt-3 w-100" id="save-promotion">Guardar</button>

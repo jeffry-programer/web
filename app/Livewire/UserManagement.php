@@ -357,7 +357,7 @@ class UserManagement extends Component
         $promotion->description = $request->description;
         $promotion->date_init = $request->date_init;
         $promotion->date_end = $request->date_end;
-        $promotion->price = $product_store->price - ($product_store->price * ($request->percent_promotion * 0.01));
+        $promotion->price = $request->percent_promotion;
         $promotion->status = false;
         $promotion->created_at = Carbon::now();
         $promotion->save();

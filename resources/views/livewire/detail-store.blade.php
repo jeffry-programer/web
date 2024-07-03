@@ -419,6 +419,11 @@
                                                 <p>{{ $this->product_detail->reference }}</p>
                                                 <p>{{ $this->product_detail->detail }}</p>
                                             </div>
+                                            @if($this->product_detail->promotions->first() != null)
+                                                <h5><b style="color: #6495ED">Producto en promoción</b></h5>
+                                                <p>{{ $this->product_detail->promotions->first()->description }}</p>
+                                                <p><b>{{ $this->product_detail->promotions->first()->price }}</b> de descuento</p>
+                                            @endif
                                             <div class="col-12 mt-3">
                                                 <h4 style="color: gray;">Cantidad disponible</h4>
                                                 <input type="number" class="form-control w-25 mt-3"

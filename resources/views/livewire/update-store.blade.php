@@ -373,40 +373,6 @@
         <script>
             var isset_images3 = false;
 
-            var myDropzone3 = new Dropzone("#myDropzone82", {
-                url: "{{ route('imgs-store-data') }}",
-                headers: {
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                },
-                dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: 1)`,
-                dictMaxFilesExceeded: "No puedes subir más archivos",
-                dictCancelUpload: "Cancelar subida",
-                dictInvalidFileType: "No puedes subir archivos de este tipo",
-                dictRemoveFile: "Remover archivo",
-                acceptedFiles: 'image/*',
-                maxFilesize: 2.048,
-                dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido    maxFiles: 2,
-                autoProcessQueue: false,
-                addRemoveLinks: true,
-                parallelUploads: 5,
-                init: function() {
-                    this.on("sending", function(file, xhr, formData) {
-                        formData.append("id", $("#id_promotion_save").val());
-                        formData.append("table", `promotions`);
-                    });
-
-                    this.on("success", function(file, response) {
-                        if (file.status != 'success') {
-                            return false;
-                        }
-                        if (this.getUploadingFiles().length === 0) {
-                            isset_images3 = true;
-                            hideAlertTime();
-                        }
-                    });
-                }
-            });
-
             $("#save-promotion").click(() => {
                 showAlertTime();
                 storePromotion();
@@ -430,7 +396,6 @@
                             return false;
                         }
                         $("#id_promotion_save").val(res.split('-')[1]);
-                        myDropzone3.processQueue();
                         setTimeout(() => {
                             if (isset_images3 == false) {
                                 hideAlertTime();
