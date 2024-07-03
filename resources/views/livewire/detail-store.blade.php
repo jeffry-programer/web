@@ -308,7 +308,7 @@
                                             <div class="card-body" style="padding-bottom: 4rem;">
                                                 <h5 class="card-title">{{ $product->name }}</h5>
                                                 <p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">{{ $product->description }}</p>
-                                                <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}"
+                                                <a href="/tienda/{{ str_replace(' ', '-', quitar_tildes($store->name)) }}/{{ quitar_tildes($product->name) }}"
                                                     class="btn btn-warning position-absolute bottom-0 end-0"
                                                     style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
                                             </div>
@@ -516,7 +516,7 @@
                                             <div class="card-body" style="padding-bottom: 4rem;">
                                                 <h5 class="card-title">{{ $product->name }}</h5>
                                                 <p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">{{ $product->description }}</p>
-                                                <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/{{ $product->link }}"
+                                                <a href="/tienda/{{ str_replace(' ', '-', quitar_tildes($store->name)) }}/{{ quitar_tildes($product->name) }}"
                                                     class="btn btn-warning position-absolute bottom-0 end-0"
                                                     style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
                                             </div>
