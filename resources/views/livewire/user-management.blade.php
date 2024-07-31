@@ -718,7 +718,6 @@
         }
     
         function editUser(array){
-            //console.log(array);
             fields = array[0].split("|");
             array.shift();
             var arrayImagenes = [];
@@ -846,6 +845,7 @@
         function validateDataStore(){
             var data = $("#form").serialize().split('&');
             var boolean = true;
+            var incorrectRif = false;
             data.forEach((key) => {
                 let value = key.split('=')[1];
                 let field = key.split('=')[0];
@@ -854,10 +854,24 @@
                 if(field.includes('capacidad')) return false;
                 if(field.includes('dimensiones')) return false;
                 if(field.includes('tipo')) return false;
+                if(field.includes('RIF') && value.length < 8){
+                    incorrectRif = true;
+                }
                 if(value == null || value == ''){
                     boolean = false;
                 }
             });
+
+            if(incorrectRif){
+                Swal.fire({
+                    title: "Error: El RIF debe tener minimo 8 carácteres",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false;
+            }
 
             if(!boolean){
                 Swal.fire({
@@ -876,17 +890,33 @@
 
         function validateDataUpdate(){
             var data = $("#form-edit").serialize().split('&');
-            //console.log(data);
+            var incorrectRif = false;
             var boolean = true;
             data.forEach((key) => {
                 let value = key.split('=')[1];
                 let field = key.split('=')[0];
+
+                if(field.includes('RIF') && value.length < 8){
+                    incorrectRif = true;
+                }
+
                 if(field != 'password' && field != 'capacidad' && field != 'tipo' && field != 'dimensiones'){
                     if(value == null || value == ''){
                         boolean = false;
                     }
                 }
             });
+
+            if(incorrectRif){
+                Swal.fire({
+                    title: "Error: El RIF debe tener minimo 8 carácteres",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false;
+            }
 
             if(!boolean){
                 Swal.fire({
@@ -960,16 +990,30 @@
                             hideAlertTime();
                         }
                     }, 3000);
-                },error(err){
-                    Swal.fire({
-                        toast: true,
-                        position: 'center',
-                        icon: 'error',
-                        showConfirmButton: false,
-                        title: "Ups ha ocurrido un error",
-                        timer: 3000
-                    });
-                    return false;
+                },error: function(xhr) {
+                    if(xhr.status === 422) {
+                        console.log(xhr);
+                        var error = xhr.responseJSON.error;
+                        Swal.fire({
+                            title: error,
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Hubo un problema al procesar la solicitud",
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    }
                 }
             });
         }

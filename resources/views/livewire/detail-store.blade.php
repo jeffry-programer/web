@@ -91,16 +91,7 @@
 
 <div>
     <?php
-    $condition = Auth::user()->profiles_id == 1 || Auth::user()->profiles_id == 2 || Auth::user()->profiles_id == 4 || Auth::user()->profiles_id == 5;
-    if ($condition) {
-        if (Auth::user()->store != null) {
-            if (Auth::user()->store->id != $store->id) {
-                $condition = false;
-            }
-        } else {
-            $condition = false;
-        }
-    }
+    $condition = Auth::user()->id == $store->users_id;
     $condition2 = $store->typeStore->description == env('TIPO_TALLER') || $store->typeStore->description == env('TIPO_GRUA');
     ?>
     <div>
@@ -141,7 +132,7 @@
         </div>
     </div>
     <div class="scan" id="qrcode" wire:ignore></div>
-    @livewire('subscribe', ['subscribed' => $subscribed, 'store' => $store, 'condition' => $condition, 'condition2' => $condition2, 'categories' => $categories])
+    @livewire('subscribe', ['subscribed' => $subscribed, 'store' => $store, 'condition' => $condition, 'condition2' => $condition2, 'categories' => $categories, 'search' => $search, 'category' => $category])
     <?php
     $link_whatssap = str_replace('04', '4', $store->phone);
     ?>
@@ -320,7 +311,7 @@
                         @if ($products_total > 6)
                             <div class="row mt-3">
                                 <div class="col-12 text-center">
-                                    <button class="btn btn btn-warning" id="load-products">Cargas más..</button>
+                                    <button class="btn btn btn-warning" id="load-products">Cargar más..</button>
                                 </div>
                             </div>
                         @endif

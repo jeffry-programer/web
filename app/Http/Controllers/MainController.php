@@ -420,6 +420,117 @@ class MainController extends Controller
         return response()->json($products);
     }
 
+    public function getMoreStores(Request $request)
+    {
+        $type_store = $request->type;
+        $new_message = false;
+        $new_message2 = false;
+        $new_message3 = false;
+        $empty_stores = false;
+    
+        // Base query for stores
+        $stores = Store::where('status', true)
+            ->whereHas('typeStore', function ($query) use ($type_store) {
+                $query->where('description', $type_store);
+            });
+    
+        // Apply filters based on sector and name_store
+        if ($request->selectedSector == "Todos") {
+            $sectorIds = Sector::where('municipalities_id', $request->selectedMunicipality)->pluck('id')->toArray();
+            $stores->whereIn('sectors_id', $sectorIds);
+        } else {
+            $stores->where('sectors_id', $request->selectedSector);
+        }
+    
+        if ($request->name_store != "") {
+            $stores->whereFullText('name', $request->name_store);
+        }
+    
+        // Get the total count of stores before pagination
+        $totalStores = $stores->count();
+    
+        // Paginate the stores
+        $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
+    
+        if ($response->isEmpty()) {
+            $new_message = true;
+            $stores = Store::where('status', true)
+                ->where('municipalities_id', $request->selectedMunicipality)
+                ->whereHas('typeStore', function ($query) use ($type_store) {
+                    $query->where('description', $type_store);
+                });
+    
+            if ($request->name_store != "") {
+                $stores->whereFullText('name', $request->name_store);
+            }
+    
+            $totalStores = $stores->count(); // Update total stores after applying the new filters
+    
+            $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
+    
+            if ($response->isEmpty()) {
+                $new_message = false;
+                $new_message2 = true;
+                $selected_state = $request->selectedState;
+                $stores = Store::where('status', true)
+                    ->whereHas('municipality', function ($query) use ($selected_state) {
+                        $query->where('states_id', $selected_state);
+                    })->whereHas('typeStore', function ($query) use ($type_store) {
+                        $query->where('description', $type_store);
+                    });
+    
+                if ($request->name_store != "") {
+                    $stores->whereFullText('name', $request->name_store);
+                }
+    
+                $totalStores = $stores->count(); // Update total stores after applying the new filters
+    
+                $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
+    
+                if ($response->isEmpty()) {
+                    $new_message2 = false;
+                    $new_message3 = true;
+                    $stores = Store::where('status', true)
+                        ->whereHas('typeStore', function ($query) use ($type_store) {
+                            $query->where('description', $type_store);
+                        });
+    
+                    if ($request->name_store != "") {
+                        $stores->whereFullText('name', $request->name_store);
+                    }
+    
+                    $totalStores = $stores->count(); // Update total stores after applying the new filters
+    
+                    $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
+    
+                    if ($response->isEmpty()) {
+                        $new_message3 = false;
+                        $empty_stores = true;
+                    }
+                }
+            }
+        }
+    
+        // Check if there are more stores to load
+        $hasMoreStores = ($response->currentPage() * $response->perPage()) < $totalStores;
+    
+        // Prepare the response array
+        $array_response = [
+            'stores' => $response,
+            'new_message' => $new_message,
+            'new_message2' => $new_message2,
+            'new_message3' => $new_message3,
+            'empty_stores' => $empty_stores,
+            'count_stores' => $totalStores,
+            'has_more_stores' => $hasMoreStores
+        ];
+    
+        // Return the response as JSON
+        return response()->json($array_response);
+    }
+    
+
+
     public function uploadImageStore(Request $request)
     {
         if ($request->hasFile('file')) {
@@ -1460,11 +1571,11 @@ class MainController extends Controller
     {
         $name_label = urldecode(str_replace("_", " ", $request->label));
         $name_table = Table::where('label', $name_label)->value('name');
-        
+
         if (!$name_table) {
             return response()->json(['error' => 'Table not found'], 404);
         }
-        
+
         $attributes = Schema::getColumnListing($name_table);
         $data = DB::table($name_table)->get();
 
@@ -1518,7 +1629,7 @@ class MainController extends Controller
             }
 
 
-            if ($name_label == 'Tiendas') {
+            if ($name_label == 'Tiendas' || $name_label == 'Usuarios') {
                 $fieldsStr .= "|states_id";
             }
 
@@ -1540,7 +1651,7 @@ class MainController extends Controller
                 $valuesStr .= "'";
             }
 
-            if ($name_label == 'Tiendas') {
+            if ($name_label == 'Tiendas' || $name_label == 'Usuarios') {
                 $municipality = Municipality::find($row->municipalities_id);
                 if ($municipality) {
                     $valuesStr .= ",'" . $municipality->states_id . "'";
@@ -1549,16 +1660,16 @@ class MainController extends Controller
 
             $editUserParams = "['$fieldsStr'$valuesStr]";
 
-            return '<a onclick="editUser('.$editUserParams.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer">
+            return '<a onclick="editUser(' . $editUserParams . ')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer">
                         <i class="fas fa-user-edit text-secondary"></i>
                     </a>
-                    <a href="#" onclick="deleteUser('.$row->id.')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user">
+                    <a href="#" onclick="deleteUser(' . $row->id . ')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user">
                         <i class="cursor-pointer fas fa-trash text-secondary"></i>
                     </a>
-                    <form action="/delete-register" id="form-delete-'.$row->id.'" method="POST">
-                        <input type="hidden" name="_token" value="'.@csrf_token().'">
-                        <input type="hidden" name="id" value="'.$row->id.'">
-                        <input type="hidden" name="label" value="'.$name_label.'">
+                    <form action="/delete-register" id="form-delete-' . $row->id . '" method="POST">
+                        <input type="hidden" name="_token" value="' . @csrf_token() . '">
+                        <input type="hidden" name="id" value="' . $row->id . '">
+                        <input type="hidden" name="label" value="' . $name_label . '">
                     </form>';
         });
 
@@ -1587,13 +1698,18 @@ class MainController extends Controller
                 $attributes = [
                     'id',
                     'name',
+                    'description',
+                    'code',
+                    'image',
+                    'reference',
+                    'detail',
                     'sub_categories_id',
                     'brands_id',
                     'models_id',
                     'created_at',
                     'aditionalPictures', // Suponiendo que esto es una relación o atributo de imágenes adicionales
                 ];
-            
+
                 // Construir el array de campos y valores para editar usuario
                 $fieldsStr = implode('|', $attributes);
                 $valuesStr = implode("','", array_map(function ($field) use ($row) {
@@ -1606,10 +1722,10 @@ class MainController extends Controller
                     }
                     return $row->$field ?? '';
                 }, $attributes));
-            
+
                 // Generar el enlace de editar usuario
                 $editUserParams = "['$fieldsStr','$valuesStr']";
-            
+
                 return '<a onclick="editUser(' . $editUserParams . ')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit user" style="cursor: pointer">
                             <i class="fas fa-user-edit text-secondary"></i>
                         </a>

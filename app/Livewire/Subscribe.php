@@ -16,6 +16,13 @@ class Subscribe extends Component
     public $condition;
     public $condition2;
     public $categories;
+    public $search;
+    public $category;
+
+    public function mount($subscribed, $store, $condition, $condition2, $categories, $search, $category){
+        $this->search = $search;
+        $this->category = $category;
+    }
 
     public function render()
     {

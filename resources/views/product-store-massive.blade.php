@@ -266,7 +266,7 @@
                                         <input type="hidden" name="prices[]" id="prices">
                                         <input type="hidden" name="store_id" id="store-id">
                                         <div class="col-md-2 text-center">
-                                            <button class="btn btn-primary w-100" type="button" id="associate">{{__('Asociar')}}</button>
+                                            <button class="btn btn-primary w-100 associate" type="button">{{__('Asociar')}}</button>
                                         </div>
                                         </form>
                                     </div>
@@ -291,12 +291,15 @@
                                                             margin-top: .4rem;">{{$product->name}}</p></th>
                                                         <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
                                                             margin-top: .4rem;">{{$product->brand->description}}</p></th>
-                                                        <th><input type="number" id="amount-{{$product->id}}" class="form-control"></th>
-                                                        <th><input type="number" id="price-{{$product->id}}" class="form-control"></th>
+                                                        <th><input type="number" min="1" id="amount-{{$product->id}}" class="form-control"></th>
+                                                        <th><input type="number" min="1" id="price-{{$product->id}}" class="form-control"></th>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div class="col-md-2 col-offset-8 text-center" style="float: right;margin-top: 1rem;">
+                                        <button class="btn btn-primary w-100 associate" type="button">{{__('Asociar')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -453,7 +456,7 @@
         $('#selectedIds').val(selectedIds.join(','));
     }
 
-    $("#associate").click(() => {
+    $(".associate").click(() => {
         validateData();
     });
 

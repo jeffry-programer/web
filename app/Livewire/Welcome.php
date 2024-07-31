@@ -7,7 +7,6 @@ use App\Models\SearchUser;
 use App\Models\Store;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Welcome extends Component
@@ -19,30 +18,64 @@ class Welcome extends Component
             $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
         })->take(6)->get();
 
-        if(!isset(Auth::user()->id)){
-            // Últimas tiendas más buscadas
-            $stores2 = [];
+        $stores2 = collect();
+        $stores3 = collect();
 
-            // Últimos productos más buscados por el usuario actual
-            $finalArrayProducts = [];
-        }else{
-            $userId = Auth::user()->id;
-            // Últimas tiendas más buscadas
-            $stores2 = SearchUser::where('users_id', $userId)->with(['store', 'store.municipality'])->limit(9)->get();            
-            $stores3 = SearchUser::where('users_id', $userId)->with(['product', 'store'])->limit(9)->get();  
+        if (!Auth::check()) {
+            $stores2 = SearchUser::with(['store', 'store.municipality'])
+                                ->limit(9)
+                                ->get();
 
-            $ids = [];
-            $finalArrayProducts = [];
-            
-            foreach($stores3 as $search){
-                if(!in_array($search->product->id, $ids)){
-                    $ids[] = $search->product->id;
-                    $finalArrayProducts[] = $search;
-                }
+            $stores3 = SearchUser::with(['product', 'store'])
+                                ->limit(9)
+                                ->get();
+        } else {
+            $userId = Auth::id();
+
+            $stores2 = SearchUser::where('users_id', $userId)
+                                ->with(['store', 'store.municipality'])
+                                ->limit(9)
+                                ->get();
+
+            $stores3 = SearchUser::where('users_id', $userId)
+                                ->with(['product', 'store'])
+                                ->limit(9)
+                                ->get();
+        }
+
+        $array_stores = [];
+        $array_stores_final = [];
+        $array_products = [];
+        $array_products_final = [];
+
+        foreach ($stores2 as $store) {
+            $store_id = $store->store->id; // Asegúrate de que 'store' y 'id' son correctos
+            if (!in_array($store_id, $array_stores)) {
+                $array_stores[] = $store_id;
+                $array_stores_final[] = $store;
             }
         }
 
-        $publicities = Publicy::where('date_end', '>', $date)->where('status', true)->inRandomOrder()->take(8)->get();
-        return view('livewire.welcome', ['stores' => $stores, 'stores2' => $stores2, 'stores3' => $finalArrayProducts, 'publicities' => $publicities]);
+        foreach ($stores3 as $product) {
+            $product_id = $product->product->id; // Asegúrate de que 'product' y 'id' son correctos
+            if (!in_array($product_id, $array_products)) {
+                $array_products[] = $product_id;
+                $array_products_final[] = $product;
+            }
+        }
+
+
+        $publicities = Publicy::where('date_end', '>', $date)
+                            ->where('status', true)
+                            ->inRandomOrder()
+                            ->take(8)
+                            ->get();
+
+        return view('livewire.welcome', [
+            'stores' => $stores,
+            'stores2' => $array_stores_final,
+            'stores3' => $array_products_final,
+            'publicities' => $publicities
+        ]);
     }
 }

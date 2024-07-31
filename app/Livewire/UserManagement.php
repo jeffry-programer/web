@@ -61,7 +61,7 @@ class UserManagement extends Component
         $name_label = str_replace("%20", " ", $name_label);
         $name_label = str_replace("%C3%B1", "ñ", $name_label);
         $name_table = Table::where('label', $name_label)->first()->name;
-        if($name_table == 'stores'){
+        if($name_table == 'stores' || $name_table == 'users'){
             $states = State::all();
         }
         if($name_table == 'products'){
@@ -132,7 +132,7 @@ class UserManagement extends Component
 
     public function validateExist(Request $request, $name_table){
         $error = false;
-        if(isset($request->name)){
+        if(isset($request->name) && $name_table != 'users'){
             if($name_table == 'sub_categories'){
                 if(count(DB::table($name_table)->where('name',$request->name)->where('categories_id',$request->categories_id)->get()) > 0){
                     $error = true;
@@ -141,8 +141,6 @@ class UserManagement extends Component
                 if(count(DB::table($name_table)->where('name',$request->name)->where('states_id',$request->states_id)->get()) > 0){
                     $error = true;
                 }
-            }else if($name_table == 'users'){
-                $error = true;
             }else if(count(DB::table($name_table)->where('name',$request->name)->get()) > 0){
                 $error = true;
             }
@@ -162,6 +160,19 @@ class UserManagement extends Component
                 }
             }
         }
+            
+        if($name_table == 'users'){
+            if(count(DB::table($name_table)->where('email',$request->email)->get()) > 0){
+                $error = true;
+            }
+        }
+
+        if($name_table == 'stores'){
+            if(count(DB::table($name_table)->where('email',$request->email)->get()) > 0){
+                $error = true;
+            }
+        }
+
         if($name_table == 'product_stores'){
             if(count(ProductStore::where('products_id', $request->products_id)->where('stores_id', $request->stores_id)->get()) > 0){
                 $error = true;
@@ -232,11 +243,11 @@ class UserManagement extends Component
         $name_table = Table::where('label', $request->label)->first()->name;
         $validate = $this->validateRequest($request, $name_table);
         if($validate){
-            abort(404);
+            return response()->json(['error' => 'Datos incorrectos'], 422);
         }
         $validate =  $this->validateExist($request, $name_table);
         if($validate){
-            abort(404);
+            return response()->json(['error' => 'Este registro ya existe'], 422);
         }
         $atributes = Schema::getColumnListing($name_table);
         $data = $request->all();

@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductStore;
+use App\Models\Promotion;
 use App\Models\Publicity;
 use App\Models\Store;
 use App\Models\SubCategory;
@@ -108,29 +109,28 @@ class DetailStore extends Component
         if(isset($product)){
             if($category != 'Categoria'){
                 $id_sub_category = SubCategory::where('categories_id', $category)->select('id')->first()->id;
-                $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
+                $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->where('products.name', 'like', '%'.$product.'%')->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
             }else{
-                $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product)->paginate($this->paginate);
-            }
-
-            if(count($products) == 0){
-                if($category != 'Categoria'){
-                    $id_sub_category = SubCategory::where('categories_id', $category)->select('id')->first()->id;
-                    $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product.'s')->where('products.sub_categories_id', $id_sub_category)->paginate($this->paginate);
-                }else{
-                    $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->whereFullText('products.name', $product.'s')->paginate($this->paginate);
-                }
+                $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->where('products.name', 'like', '%'.$product.'%')->paginate($this->paginate);
             }
 
             if(count($products) == 0){
                 $products = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->paginate($this->paginate);
+                $products_total = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->count();
                 $this->showMessageNotFoundProducts = true;
+            }else{
+                if($category != 'Categoria'){
+                    $id_sub_category = SubCategory::where('categories_id', $category)->select('id')->first()->id;
+                    $products_total = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->where('products.name', 'like', '%'.$product.'%')->where('products.sub_categories_id', $id_sub_category)->count();
+                }else{
+                    $products_total = ProductStore::join('products','product_stores.products_id','=','products.id')->where('stores_id', $store->id)->where('products.name', 'like', '%'.$product.'%')->count();
+                }
             }
 
             $this->search_products = true;
-
         }else{
             $products = Store::find($this->global_store['id'])->products()->paginate($this->paginate);
+            $products_total = Store::find($this->global_store['id'])->products()->count();
         }
 
         $products_promotion = $store->products()->whereHas('promotions', function ($query) {
@@ -140,9 +140,19 @@ class DetailStore extends Component
                   ->where('status', true);
         })->with('promotions')->get();
 
-        $products_total = count(Store::find($this->global_store['id'])->products()->get());
         $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(8)->get();
 
+        if(isset($_GET['product'])){
+            $search = $_GET['product'];
+        }else{
+            $search = '';
+        }
+
+        if(isset($_GET['tBGZall1t5CCeUqrQOkM'])){
+            $category = $_GET['tBGZall1t5CCeUqrQOkM'];
+        }else{
+            $category = '';
+        }
 
         $array_data = [
             'store' => $store, 
@@ -150,7 +160,9 @@ class DetailStore extends Component
             'products' => $products,
             'publicities' => $publicities,
             'products_total' => $products_total,
-            'products_promotion' => $products_promotion
+            'products_promotion' => $products_promotion,
+            'search' => $search,
+            'category' => $category
         ];
         
         return view('livewire.detail-store', $array_data);

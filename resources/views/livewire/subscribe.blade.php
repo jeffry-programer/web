@@ -72,16 +72,20 @@
                     box-shadow: 1px 0px 6px 2px rgba(39,39,39,0.16);">
                     <div class="col-4 col-md-3 d-none d-md-flex align-items-center justify-content-center">
                         <select id="select-search-categories" name="tBGZall1t5CCeUqrQOkM" class="select-search">
-                            <option selected>Categoria</option>
+                            <option selected value="Categoria">Categoria</option>
                             @foreach ($categories as $key)
-                                <option value="{{ $key->id }}">{{ $key->name }}</option>
+                                @if($category != 'Categoria' && $key->id == $category)
+                                    <option value="{{ $key->id }}" selected>{{ $key->name }}</option>
+                                @else
+                                    <option value="{{ $key->id }}">{{ $key->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
                     <div class="col-10 col-md-7 d-flex align-items-center justify-content-center">
                         <div class="autocomplete">
                             <input class="input-search" name="product" id="myInput97" placeholder="Busca en esta tienda"
-                                type="text">
+                                type="text" value="{{ $search }}">
                             <ul id="myUL97">
                             </ul>
                         </div>
