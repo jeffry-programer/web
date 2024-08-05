@@ -1,6 +1,6 @@
 <x-app-layout>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light d-none d-md-block">
         <div class="container">
           <style>
             .active > a {
@@ -37,7 +37,7 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-12">
-            <div class="p-4" style="margin-left: 100px;">
+            <div class="p-4">
                 <h2 class="text-justify mt-5">Al usar en nuestra plataforma, depositas tu confianza en nosotros. Reconocemos la gran responsabilidad que ello implica y nos 
                     comprometemos a proteger tu información con el máximo cuidado</h2>            
                 <p class="text-justify mt-10">Como usuario, puedes acceder a una variedad de servicios ofrecidos por la plataforma Tulobuscas. Puedes realizar consultas sobre repuestos y comunicarte directamente con las tiendas. Es importante tener en cuenta que, para acceder a varios de estos servicios, es necesario estar registrado en la plataforma. Del mismo modo, el registro es requisito indispensable para disfrutar de otros servicios disponibles.</p>             

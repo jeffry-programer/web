@@ -47,4 +47,8 @@ class Store extends Model
     public function municipality(){
         return $this->belongsTo(Municipality::class, 'municipalities_id');
     }
+
+    public function sector(){
+        return $this->belongsTo(Sector::class, 'sectors_id');
+    }
 }

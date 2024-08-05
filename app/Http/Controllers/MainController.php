@@ -427,13 +427,13 @@ class MainController extends Controller
         $new_message2 = false;
         $new_message3 = false;
         $empty_stores = false;
-    
+
         // Base query for stores
         $stores = Store::where('status', true)
             ->whereHas('typeStore', function ($query) use ($type_store) {
                 $query->where('description', $type_store);
             });
-    
+
         // Apply filters based on sector and name_store
         if ($request->selectedSector == "Todos") {
             $sectorIds = Sector::where('municipalities_id', $request->selectedMunicipality)->pluck('id')->toArray();
@@ -441,17 +441,17 @@ class MainController extends Controller
         } else {
             $stores->where('sectors_id', $request->selectedSector);
         }
-    
+
         if ($request->name_store != "") {
             $stores->whereFullText('name', $request->name_store);
         }
-    
+
         // Get the total count of stores before pagination
         $totalStores = $stores->count();
-    
+
         // Paginate the stores
-        $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
-    
+        $response = $stores->with('municipality')->with('sector')->paginate(6, ['*'], 'page', $request->page);
+
         if ($response->isEmpty()) {
             $new_message = true;
             $stores = Store::where('status', true)
@@ -459,15 +459,15 @@ class MainController extends Controller
                 ->whereHas('typeStore', function ($query) use ($type_store) {
                     $query->where('description', $type_store);
                 });
-    
+
             if ($request->name_store != "") {
                 $stores->whereFullText('name', $request->name_store);
             }
-    
+
             $totalStores = $stores->count(); // Update total stores after applying the new filters
-    
-            $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
-    
+
+            $response = $stores->with('municipality')->with('sector')->paginate(6, ['*'], 'page', $request->page);
+
             if ($response->isEmpty()) {
                 $new_message = false;
                 $new_message2 = true;
@@ -478,15 +478,15 @@ class MainController extends Controller
                     })->whereHas('typeStore', function ($query) use ($type_store) {
                         $query->where('description', $type_store);
                     });
-    
+
                 if ($request->name_store != "") {
                     $stores->whereFullText('name', $request->name_store);
                 }
-    
+
                 $totalStores = $stores->count(); // Update total stores after applying the new filters
-    
-                $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
-    
+
+                $response = $stores->with('municipality')->with('sector')->paginate(6, ['*'], 'page', $request->page);
+
                 if ($response->isEmpty()) {
                     $new_message2 = false;
                     $new_message3 = true;
@@ -494,15 +494,15 @@ class MainController extends Controller
                         ->whereHas('typeStore', function ($query) use ($type_store) {
                             $query->where('description', $type_store);
                         });
-    
+
                     if ($request->name_store != "") {
                         $stores->whereFullText('name', $request->name_store);
                     }
-    
+
                     $totalStores = $stores->count(); // Update total stores after applying the new filters
-    
-                    $response = $stores->with('municipality')->paginate(6, ['*'], 'page', $request->page);
-    
+
+                    $response = $stores->with('municipality')->with('sector')->paginate(6, ['*'], 'page', $request->page);
+
                     if ($response->isEmpty()) {
                         $new_message3 = false;
                         $empty_stores = true;
@@ -510,10 +510,10 @@ class MainController extends Controller
                 }
             }
         }
-    
+
         // Check if there are more stores to load
         $hasMoreStores = ($response->currentPage() * $response->perPage()) < $totalStores;
-    
+
         // Prepare the response array
         $array_response = [
             'stores' => $response,
@@ -524,11 +524,11 @@ class MainController extends Controller
             'count_stores' => $totalStores,
             'has_more_stores' => $hasMoreStores
         ];
-    
+
         // Return the response as JSON
         return response()->json($array_response);
     }
-    
+
 
 
     public function uploadImageStore(Request $request)
@@ -1175,50 +1175,69 @@ class MainController extends Controller
 
     public function getInfoHome($userId)
     {
-        // Últimas tiendas más buscadas
-        $mostSearchedStores = SearchUser::select('stores_id', DB::raw('COUNT(*) as search_count'))
-            ->whereNotNull('stores_id')
-            ->groupBy('stores_id')
-            ->orderBy('id', 'desc')
-            ->limit(10)
-            ->get();
+        $date = Carbon::now();
+        $stores = Store::where('status', true)->whereHas('promotions', function ($query) use ($date) {
+            $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
+        })->take(6)->get();
 
-        // Obtener información de las tiendas ordenadas por la búsqueda más reciente
-        $lastStores = [];
-        foreach ($mostSearchedStores as $searchedStore) {
-            $store = Store::with('municipality')
-                ->where('id', $searchedStore->stores_id)
-                ->orderByDesc('created_at') // Ordena por la fecha de creación más reciente
-                ->first();
+        $stores2 = collect();
+        $stores3 = collect();
 
-            if ($store) {
-                $lastStores[] = $store;
+        if (!Auth::check()) {
+            $stores2 = SearchUser::with(['store', 'store.municipality'])
+                                ->limit(9)
+                                ->get();
+
+            $stores3 = SearchUser::with(['product', 'store'])
+                                ->limit(9)
+                                ->get();
+        } else {
+            $userId = Auth::id();
+
+            $stores2 = SearchUser::where('users_id', $userId)
+                                ->with(['store', 'store.municipality'])
+                                ->limit(9)
+                                ->get();
+
+            $stores3 = SearchUser::where('users_id', $userId)
+                                ->with(['product', 'store'])
+                                ->limit(9)
+                                ->get();
+        }
+
+        $array_stores = [];
+        $array_stores_final = [];
+        $array_products = [];
+        $array_products_final = [];
+
+        foreach ($stores2 as $store) {
+            $store_id = $store->store->id; // Asegúrate de que 'store' y 'id' son correctos
+            if (!in_array($store_id, $array_stores)) {
+                $array_stores[] = $store_id;
+                $array_stores_final[] = $store;
             }
         }
 
-        // Últimos productos más buscados por el usuario actual
-        $lastSearch = DB::select("
-            SELECT DISTINCT products.*
-            FROM search_users
-            JOIN product_stores ON search_users.product_stores_id = product_stores.id
-            JOIN products ON product_stores.products_id = products.id
-            WHERE search_users.users_id = :userId
-            AND search_users.product_stores_id IS NOT NULL
-            ORDER BY search_users.id DESC
-            LIMIT 10;", ['userId' => $userId]);
+        foreach ($stores3 as $product) {
+            $product_id = $product->product->id; // Asegúrate de que 'product' y 'id' son correctos
+            if (!in_array($product_id, $array_products)) {
+                $array_products[] = $product_id;
+                $array_products_final[] = $product;
+            }
+        }
 
-        $lastSearch = [];
 
-        $publicities = Publicity::where('date_end', '>', Carbon::now())->where('status', true)->inRandomOrder()->limit(10)->get();
-        $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
-            $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
-        })->with('municipality')->orderByDesc('created_at')->limit(10)->get();
+        $publicities = Publicity::where('date_end', '>', $date)
+                            ->where('status', true)
+                            ->inRandomOrder()
+                            ->take(8)
+                            ->get();
 
         return response()->json([
             'publicities' => $publicities,
             'stores' => $stores,
-            'lastStores' => $lastStores,
-            'lastSearch' => $lastSearch
+            'lastStores' => $array_stores_final,
+            'lastSearch' => $array_products_final
         ]);
     }
 
@@ -1731,7 +1750,12 @@ class MainController extends Controller
                         </a>
                         <a href="#" onclick="deleteUser(' . $row->id . ')" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Delete user">
                             <i class="cursor-pointer fas fa-trash text-secondary"></i>
-                        </a>';
+                        </a>
+                        <form action="/delete-register" id="form-delete-' . $row->id . '" method="POST">
+                            <input type="hidden" name="_token" value="' . @csrf_token() . '">
+                            <input type="hidden" name="id" value="' . $row->id . '">
+                            <input type="hidden" name="label" value="Productos">
+                        </form>';
             })->rawColumns(['actions'])
             ->make(true);
     }

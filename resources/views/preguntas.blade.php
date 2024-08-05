@@ -1,6 +1,6 @@
 <x-app-layout>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light d-none d-md-block">
         <div class="container">
           <style>
             .active > a {
@@ -37,7 +37,7 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-12">
-            <div class="p-4" style="margin-left: 100px;">
+            <div class="p-4">
                 <h2 class="text-justify mt-5">¿Que es <span class="texto-azul">Tulo</span>buscas?</h2>            
                 <p class="text-justify mt-10">Tulobuscas es una plataforma útil diseñada para facilitar la búsqueda de una amplia variedad de repuestos para vehículos, motocicletas y camiones. Nuestra plataforma te permite explorar un extenso listado de tiendas que ofrecen los productos que necesitas, simplificando así tu proceso de compra. Además, Tulobuscas establece un eficiente canal de comunicación entre la tienda y el usuario que realiza la búsqueda, asegurando una experiencia fluida y satisfactoria para ambas partes</p>
 

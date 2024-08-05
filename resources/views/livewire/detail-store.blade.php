@@ -245,7 +245,7 @@
                                             <p><b>Dirección:</b></p>
                                             <p><i
                                                     class="fa-solid fa-location-dot me-2"></i>{{ $store->municipality->state->name }}
-                                                - {{ $store->municipality->name }} - {{ $store->address }}</p>
+                                                - {{ $store->municipality->name }} - {{ $store->sector->description }} - {{ $store->address }}</p>
                                             <p><b>Correo electrónico:</b></p>
                                             <p>{{ $store->email }}</p>
                                             <p><b>Número de contacto:</b></p>
@@ -298,7 +298,7 @@
                                             </div>
                                             <div class="card-body" style="padding-bottom: 4rem;">
                                                 <h5 class="card-title">{{ $product->name }}</h5>
-                                                <p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">{{ $product->description }}</p>
+                                                <p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">{{ $product->description }}</p>
                                                 <a href="/tienda/{{ str_replace(' ', '-', quitar_tildes($store->name)) }}/{{ quitar_tildes($product->name) }}"
                                                     class="btn btn-warning position-absolute bottom-0 end-0"
                                                     style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
@@ -410,10 +410,10 @@
                                                 <p>{{ $this->product_detail->reference }}</p>
                                                 <p>{{ $this->product_detail->detail }}</p>
                                             </div>
-                                            @if($this->product_detail->promotions->first() != null)
+                                            @if(isset($this->product_detail->promotion))
                                                 <h5><b style="color: #6495ED">Producto en promoción</b></h5>
-                                                <p>{{ $this->product_detail->promotions->first()->description }}</p>
-                                                <p><b>{{ $this->product_detail->promotions->first()->price }}</b> de descuento</p>
+                                                <p>{{ $this->product_detail->promotion->description }}</p>
+                                                <p><b>{{ $this->product_detail->promotion->price }}</b> de descuento</p>
                                             @endif
                                             <div class="col-12 mt-3">
                                                 <h4 style="color: gray;">Cantidad disponible</h4>
@@ -511,7 +511,7 @@
                                             </div>
                                             <div class="card-body" style="padding-bottom: 4rem;">
                                                 <h5 class="card-title">{{ $product->name }}</h5>
-                                                <p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">{{ $product->description }}</p>
+                                                <p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">{{ $product->description }}</p>
                                                 <a href="/tienda/{{ str_replace(' ', '-', quitar_tildes($store->name)) }}/{{ quitar_tildes($product->name) }}"
                                                     class="btn btn-warning position-absolute bottom-0 end-0"
                                                     style="/*! padding: ; */margin: .5rem;cursor: pointer;">Ver</a>
@@ -765,7 +765,7 @@
                                     imageAd = imageAd.replaceAll('//storage','/storage');
                                 } 
                                 $('#productos-container').append(
-                                    `<div class="col-12 col-md-4 mt-3"><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}"><div class="card card-store" style="height: 100%;"><div class="zoom-container"><img class="zoomed-image" src="${imageAd}"></div><div class="card-body" style="padding-bottom: 4rem;"><h5 class="card-title">${producto.name}</h5><p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">${producto.description}</p><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}" class="btn btn-warning position-absolute bottom-0 end-0" style="margin: .5rem;cursor: pointer;">Ver</a></div></div></a></div>`
+                                    `<div class="col-12 col-md-4 mt-3"><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}"><div class="card card-store" style="height: 100%;"><div class="zoom-container"><img class="zoomed-image" src="${imageAd}"></div><div class="card-body" style="padding-bottom: 4rem;"><h5 class="card-title">${producto.name}</h5><p class="card-text" style="width: 80%;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis;white-space: normal;">${producto.description}</p><a href="/tienda/{{ str_replace(' ', '-', $store->name) }}/${producto.link}" class="btn btn-warning position-absolute bottom-0 end-0" style="margin: .5rem;cursor: pointer;">Ver</a></div></div></a></div>`
                                 );
                             });
                             page++;

@@ -636,12 +636,15 @@ class UserManagement extends Component
                 $error = true;
             }
         }
-        
+
         if($error){
             session()->flash('message', 'Este registro tiene sub-registros asociados, debe eliminarlos primero');
-            return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+            if($name_table == 'products'){
+                return redirect('/admin/products');
+            }else{
+                return redirect('/admin/table-management/'.str_replace(' ','_', $request->label));
+            }
         }
-
         
         return $this->finalDelete($request, $name_table);
     }

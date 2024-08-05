@@ -154,6 +154,18 @@ class DetailStore extends Component
             $category = '';
         }
 
+        $today = Carbon::now()->toDateString();
+
+        if(isset($this->product_detail->id)){
+            $promotion = Promotion::where('stores_id', $this->global_store->id)->where('products_id', $this->product_detail->id)->whereDate('date_init', '<=', $today)->whereDate('date_end', '>=', $today)->where('status', true)->first();
+        }else{
+            $promotion = null;
+        }
+
+        if($promotion != null){
+            $this->product_detail->promotion = $promotion;
+        }
+
         $array_data = [
             'store' => $store, 
             'categories' => $categories,

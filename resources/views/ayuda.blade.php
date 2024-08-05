@@ -1,6 +1,6 @@
 <x-app-layout>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light d-none d-md-block">
         <div class="container">
           <style>
             .active > a {
@@ -45,7 +45,7 @@
       <div class="container justify-content-center">
             <div class="row justify-content-center">
                 <div class="col-md-12">
-                    <div class="p-4" style="margin-left: 100px;">
+                    <div class="p-4">
                         <h2 class="text-justify mt-5">¿Como buscar repuestos en  <span class="texto-azul">Tulo</span>buscas? Ahorra tiempo y dinero </h2>            
                         <p class="text-justify mt-10">Descubre en solo 3 pasos las tiendas que ofrecen los repuestos que necesitas<br><br>
                                                     <li> Localiza el repuesto que necesitas a través de nuestro buscador principal.</li><br>

@@ -200,3 +200,16 @@ function magnificar(elemento) {
       lupa.style.backgroundPosition = `${backgroundPosX}% ${backgroundPosY}%`;
     });
 }
+
+function togglePassword(){
+  var passwordInput = document.getElementById('password');
+  var eyeIcon = document.getElementById('eye-icon');
+
+  if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.innerHTML = '<path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm-5-5a5 5 0 0110 0 5 5 0 01-10 0z"/>'; // icono de ojo abierto
+  } else {
+      passwordInput.type = 'password';
+      eyeIcon.innerHTML = '<path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>'; // icono de ojo cerrado
+  }
+}
