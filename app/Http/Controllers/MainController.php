@@ -1023,12 +1023,12 @@ class MainController extends Controller
                     ->where('stores_id', $store->id)
                     ->first();
                 if ($product_store != null) {
-                    $searches = SearchUser::where('product_stores_id', $product_store->id)->where('users_id', $request->userId)->get();
+                    $searches = SearchUser::where('products_id', $product_store->products_id)->where('stores_id', $store->id)->get();
                     if ($searches->isEmpty()) {
                         $search = new SearchUser();
-                        $search->users_id = $request->userId;
+                        $search->users_id = Auth::user()->id;
                         $search->stores_id = $store->id;
-                        $search->product_stores_id = $product_store->id;
+                        $search->products_id = $product_store->products_id;
                         $search->created_at = now();
                         $search->save();
                     }
