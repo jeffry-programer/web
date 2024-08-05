@@ -128,7 +128,7 @@
                         if (stores.length > 0) {
                             var $html = "";
                             stores.forEach(function(store) {
-                                if(store.image == null){
+                                if(store.image == null || store.image == ''){
                                     var imageAd = `{{asset('/images/1.jpg')}}`;
                                 }else{
                                     var imageAd = `{{asset('${store.image}')}}`;
