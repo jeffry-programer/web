@@ -1214,7 +1214,7 @@ class MainController extends Controller
             $store_id = $store->store->id; // Asegúrate de que 'store' y 'id' son correctos
             if (!in_array($store_id, $array_stores)) {
                 $array_stores[] = $store_id;
-                $array_stores_final[] = $store;
+                $array_stores_final[] = $store->store;
             }
         }
 
@@ -1222,7 +1222,7 @@ class MainController extends Controller
             $product_id = $product->product->id; // Asegúrate de que 'product' y 'id' son correctos
             if (!in_array($product_id, $array_products)) {
                 $array_products[] = $product_id;
-                $array_products_final[] = $product;
+                $array_products_final[] = $product->product;
             }
         }
 
