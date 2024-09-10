@@ -1026,7 +1026,7 @@ class MainController extends Controller
                     $searches = SearchUser::where('products_id', $product_store->products_id)->where('stores_id', $store->id)->get();
                     if ($searches->isEmpty()) {
                         $search = new SearchUser();
-                        $search->users_id = Auth::user()->id;
+                        $search->users_id = $request->userId;
                         $search->stores_id = $store->id;
                         $search->products_id = $product_store->products_id;
                         $search->created_at = now();
