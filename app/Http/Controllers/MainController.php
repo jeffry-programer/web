@@ -1185,24 +1185,24 @@ class MainController extends Controller
 
         if (!Auth::check()) {
             $stores2 = SearchUser::with(['store', 'store.municipality'])
-                                ->limit(9)
-                                ->get();
+                ->limit(9)
+                ->get();
 
             $stores3 = SearchUser::with(['product', 'store'])
-                                ->limit(9)
-                                ->get();
+                ->limit(9)
+                ->get();
         } else {
             $userId = Auth::id();
 
             $stores2 = SearchUser::where('users_id', $userId)
-                                ->with(['store', 'store.municipality'])
-                                ->limit(9)
-                                ->get();
+                ->with(['store', 'store.municipality'])
+                ->limit(9)
+                ->get();
 
             $stores3 = SearchUser::where('users_id', $userId)
-                                ->with(['product', 'store'])
-                                ->limit(9)
-                                ->get();
+                ->with(['product', 'store'])
+                ->limit(9)
+                ->get();
         }
 
         $array_stores = [];
@@ -1228,10 +1228,10 @@ class MainController extends Controller
 
 
         $publicities = Publicity::where('date_end', '>', $date)
-                            ->where('status', true)
-                            ->inRandomOrder()
-                            ->take(8)
-                            ->get();
+            ->where('status', true)
+            ->inRandomOrder()
+            ->take(8)
+            ->get();
 
         return response()->json([
             'publicities' => $publicities,
@@ -1285,6 +1285,7 @@ class MainController extends Controller
         if ($request->typeStore == 'Grua') {
             $store->tipo = $request->tipo;
             $store->dimensiones = $request->dimensiones;
+            $store->capacidad = $request->capacidad;
         }
 
         $store->save();
@@ -1359,30 +1360,24 @@ class MainController extends Controller
 
     public function savePromotion(Request $request)
     {
-        if ($request->hasFile('selectedImage')) {
-            $store = Store::where('users_id', $request->user_id)->first();
-            $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $request->products_id)->first();
-            $promotion = new Promotion();
-            $promotion->products_id = $request->products_id;
-            $promotion->stores_id = $store->id;
-            $promotion->date_init = $request->date_init;
-            $promotion->date_end = $request->date_end;
-            $promotion->price = $product_store->price - ($product_store->price * ($request->percent_promotion * 0.01));
-            $promotion->image = '';
-            $promotion->status = false;
-            $promotion->description = $request->description;
-            $promotion->created_at = Carbon::now();
-            $promotion->save();
+        $store = Store::where('users_id', $request->user_id)->first();
+        $product_store = ProductStore::where('stores_id', $store->id)->where('products_id', $request->products_id)->first();
 
-            $route_image = $request->file('selectedImage')->store('public/images-promotion/' . $promotion->id);
-            $url = Storage::url($route_image);
-            $promotion->image = $url;
-            $promotion->save();
+        $promotion = new Promotion();
+        $promotion->products_id = $request->products_id;
+        $promotion->stores_id = $store->id;
 
-            return response()->json(['success' => 'Promotion created successfully'], 200);
-        } else {
-            return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
-        }
+        // Convertir el formato de fecha
+        $promotion->date_init = Carbon::parse($request->date_init)->format('Y-m-d H:i:s');
+        $promotion->date_end = Carbon::parse($request->date_end)->format('Y-m-d H:i:s');
+
+        $promotion->price = $product_store->price - ($product_store->price * ($request->percent_promotion * 0.01));
+        $promotion->status = false;
+        $promotion->description = $request->description;
+        $promotion->created_at = Carbon::now();
+        $promotion->save();
+
+        return response()->json(['success' => 'Promotion created successfully'], 200);
     }
 
     public function getMunicipalities()
