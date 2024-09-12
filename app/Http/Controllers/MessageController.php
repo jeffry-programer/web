@@ -8,6 +8,8 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
 
 class MessageController extends Controller
 {
@@ -18,13 +20,13 @@ class MessageController extends Controller
 
         $store = User::find($conversation->stores_id)->store;
 
-        if($userEmail == User::find($conversation->users_id)->email){
+        if ($userEmail == User::find($conversation->users_id)->email) {
             $user = User::find($conversation->stores_id);
-        }else{
+        } else {
             $user = User::find($conversation->users_id);
         }
 
-        if($user->store){
+        if ($user->store) {
             $user->name = $user->store->name;
             $user->image = $user->store->image;
         }
@@ -32,7 +34,7 @@ class MessageController extends Controller
         if ($user->image == null || $user->image == '') {
             $letter = strtoupper($user->name[0]);
             $user->image = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-        }else{
+        } else {
             $user->image = $user->image;
         }
 
@@ -82,16 +84,29 @@ class MessageController extends Controller
         }
 
         if (strlen($token) > 10) {
-            fcm()->to([$token])->priority('high')->timeToLive(0)->notification([
-                'title' => $name,
-                'body' => $content
-            ])->data([
-                'click_action' => 'OPEN_URL',
-                'url' => '/chat/' . $request->id,
-                'android' => [
-                    'priority' => 'high'
-                ]
-            ])->send();
+            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+
+            // Obtener el servicio de mensajería
+            $messaging = $firebase->createMessaging();
+
+            // Crear el mensaje
+            $message = CloudMessage::fromArray([
+                'token' => $token,  // El token del dispositivo que recibirá la notificación
+                'notification' => [
+                    'title' => $name,
+                    'body' => $content,
+                ],
+                'data' => [ // Datos adicionales para manejar la redirección
+                    'click_action' => 'OPEN_URL',
+                    'url' => '/chat/' . $request->id,  // Ruta donde quieres redirigir al usuario
+                    'android' => [
+                        'priority' => 'high',
+                    ],
+                ],
+            ]);
+
+            // Enviar el mensaje
+            $messaging->send($message);
         }
 
         return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito']);
@@ -120,4 +135,3 @@ class MessageController extends Controller
         return response()->json(['message' => 'Message deleted']);
     }
 }
-

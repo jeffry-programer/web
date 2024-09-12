@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Schema;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
 
 class MainController extends Controller
 {
@@ -1416,16 +1418,29 @@ class MainController extends Controller
             $signal->created_at = Carbon::now();
             $signal->save();
 
-            fcm()->to([$store->token])->priority('high')->timeToLive(0)->notification([
-                'title' => $name,
-                'body' => 'Requiero auxilio vial'
-            ])->data([
-                'click_action' => 'OPEN_URL',
-                'url' => '/signals-aux',
-                'android' => [
-                    'priority' => 'high'
-                ]
-            ])->send();
+            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+
+            // Obtener el servicio de mensajería
+            $messaging = $firebase->createMessaging();
+
+            // Crear el mensaje
+            $message = CloudMessage::fromArray([
+                'token' => $store->token,  // El token del dispositivo que recibirá la notificación
+                'notification' => [
+                    'title' => $name,
+                    'body' => 'Requiero auxilio vial',
+                ],
+                'data' => [ // Datos adicionales para manejar la redirección
+                    'click_action' => 'OPEN_URL',
+                    'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
+                    'android' => [
+                        'priority' => 'high',
+                    ],
+                ],
+            ]);
+
+            // Enviar el mensaje
+            $messaging->send($message);
         }
 
         return response()->json($stores, 200);
