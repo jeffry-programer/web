@@ -1433,9 +1433,9 @@ class MainController extends Controller
                 'data' => [ // Datos adicionales para manejar la redirección
                     'click_action' => 'OPEN_URL',
                     'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
-                    'android' => [
-                        'priority' => 'high',
-                    ],
+                ],
+                'android' => [  // Mover el bloque de Android fuera de 'data'
+                    'priority' => 'high',
                 ],
             ]);
 

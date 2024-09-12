@@ -99,9 +99,9 @@ class MessageController extends Controller
                 'data' => [ // Datos adicionales para manejar la redirección
                     'click_action' => 'OPEN_URL',
                     'url' => '/chat/' . $request->id,  // Ruta donde quieres redirigir al usuario
-                    'android' => [
-                        'priority' => 'high',
-                    ],
+                ],
+                'android' => [  // Mover el bloque de Android fuera de 'data'
+                    'priority' => 'high',
                 ],
             ]);
 
@@ -109,7 +109,7 @@ class MessageController extends Controller
             $messaging->send($message);
         }
 
-        return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito']);
+        return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito', 'name' => $name, 'content' => $content]);
     }
 
     public function changeStatusMessage(Request $request)
