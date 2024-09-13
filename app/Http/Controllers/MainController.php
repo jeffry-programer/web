@@ -1180,7 +1180,7 @@ class MainController extends Controller
         $date = Carbon::now();
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) use ($date) {
             $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
-        })->take(6)->get();
+        })->with('municipality')->take(6)->get();
 
         $stores2 = collect();
         $stores3 = collect();

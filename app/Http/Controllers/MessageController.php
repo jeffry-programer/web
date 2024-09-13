@@ -108,8 +108,8 @@ class MessageController extends Controller
             // Enviar el mensaje
             $messaging->send($message);
         }
-
-        return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito', 'name' => $name, 'content' => $content]);
+        
+        return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito', 'name' => $name, 'content' => $content, 'status' => $message->status]);
     }
 
     public function changeStatusMessage(Request $request)
