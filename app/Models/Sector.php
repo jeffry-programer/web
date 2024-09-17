@@ -12,4 +12,9 @@ class Sector extends Model
     protected $fillable = ['cities_id', 'description', 'created_at'];
 
     public $table = 'sectors';
+
+    public function municipality()
+    {
+        return $this->belongsTo(Municipality::class, 'municipalities_id');
+    }
 }

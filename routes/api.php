@@ -31,6 +31,7 @@ Route::post('subscribe_store', [MainController::class, 'SubscribeStore']);
 Route::post('publicity', [MainController::class, 'publicityDetail']);
 Route::post('publicities', [MainController::class, 'pubilicitiesDetail']);
 Route::post('updateData', [MainController::class, 'updateDataApi']);
+Route::post('updateDataStore', [MainController::class, 'updateDataStoreApi']);
 Route::post('upload-image', [MainController::class, 'uploadImageApi']);
 Route::post('upload-image-store', [MainController::class, 'uploadImageApi2']);
 Route::get('countries', [MainController::class, 'getCountriesApi']);

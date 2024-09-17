@@ -50,7 +50,7 @@ class MessageController extends Controller
             $message->content = Crypt::decryptString($message->content);
         }
 
-        return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user]);
+        return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user, 'userEmail' => $userEmail]);
     }
 
     public function store(Request $request)

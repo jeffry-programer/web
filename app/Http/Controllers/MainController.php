@@ -723,8 +723,20 @@ class MainController extends Controller
 
     public function storeDetail(Request $request)
     {
-        $store = Store::find($request->store_id);
-        $conversation = Conversation::where('stores_id', $store->user->id)->where('users_id', $request->user_id)->first();
+        // Encuentra la tienda por el ID y carga sus relaciones
+        $store = Store::with('sector.municipality.state')->find($request->store_id);
+    
+        // Si no encuentra la tienda, devolver un error 404
+        if (!$store) {
+            return response()->json(['message' => 'Store not found'], 404);
+        }
+    
+        // Busca si existe una conversación entre el usuario y la tienda
+        $conversation = Conversation::where('stores_id', $store->users_id)
+                                    ->where('users_id', $request->user_id)
+                                    ->first();
+    
+        // Si no existe conversación y los IDs no coinciden, crea una nueva
         if ($conversation == null && $store->users_id != $request->user_id) {
             $conversation = new Conversation();
             $conversation->users_id = $request->user_id;
@@ -732,9 +744,39 @@ class MainController extends Controller
             $conversation->created_at = Carbon::now();
             $conversation->save();
         }
-        $subscription = count(Subscription::where('stores_id', $request->store_id)->where('users_id', $request->user_id)->get()) > 0;
-        return response()->json(['store' => $store, 'subscription' => $subscription, 'conversation' => $conversation], 200);
+    
+        // Verifica si el usuario tiene una suscripción a la tienda
+        $subscription = Subscription::where('stores_id', $request->store_id)
+                                    ->where('users_id', $request->user_id)
+                                    ->exists();
+    
+        // Obtén los datos de la tienda, sector, ciudad y estado
+        $sector = $store->sector;
+        $municipality = $sector ? $sector->municipality : null;
+        $state = $municipality ? $municipality->state : null;
+    
+        // Agrega los datos de sector, ciudad y estado al objeto 'store' antes de enviarlo en la respuesta
+        $storeData = $store->toArray();  // Convertimos la tienda a un array
+        $storeData['sector'] = $sector ? $sector->description : null;
+        $storeData['municipality'] = $municipality ? $municipality->name : null;
+        $storeData['state'] = $state ? $state->name : null;
+
+        $municipality = Municipality::find($storeData['municipalities_id']);
+        $municipalities = Municipality::where('states_id', $municipality->states_id)->get();
+
+        $sector = Sector::find($storeData['sectors_id']);
+        $sectors = Sector::where('municipalities_id', $sector->municipalities_id)->get();
+    
+        // Retorna la respuesta con la tienda, suscripción y conversación
+        return response()->json([
+            'store' => $storeData,
+            'subscription' => $subscription,
+            'conversation' => $conversation,
+            'municipalities' => $municipalities,
+            'sectors' => $sectors
+        ], 200);
     }
+    
 
     public function ProductStoreDetail(Request $request)
     {
@@ -839,6 +881,20 @@ class MainController extends Controller
         $user->save();
 
         return response()->json(['user' => $user], 200);
+    }
+
+    public function updateDataStoreApi(Request $request){
+        $store = Store::find($request->id);
+        $store->name = $request->name;
+        $store->description = $request->description;
+        $store->email = $request->email;
+        $store->address = $request->address;
+        $store->phone = $request->phone;
+        $store->municipalities_id = $request->municipalities_id;
+        $store->sectors_id = $request->sectors_id;
+        $store->save();
+
+        return response()->json(['user' => $store], 200);
     }
 
     public function uploadImageApi(Request $request)
