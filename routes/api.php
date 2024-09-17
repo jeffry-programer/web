@@ -21,6 +21,8 @@ Route::post('register',  [MainController::class, 'registerApi']);
 Route::post('login', [MainController::class, 'loginApi']);
 Route::post('verifiedApi', [MainController::class, 'verifiedApi']);
 Route::post('subscriptions', [MainController::class, 'subscriptionsApi']);
+Route::post('my-publicities', [MainController::class, 'myPublicitiesApi']);
+Route::post('my-promotions', [MainController::class, 'myPromotionsApi']);
 Route::post('sendVerifiedEmailApi', [MainController::class, 'sendVerifiedEmailApi']);
 Route::post('nullSubscription', [MainController::class, 'nullSubscription']);
 Route::post('nullSubscription2', [MainController::class, 'nullSubscription2']);

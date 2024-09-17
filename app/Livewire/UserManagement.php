@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
 
 class UserManagement extends Component
 {
@@ -797,6 +799,45 @@ class UserManagement extends Component
             if($status1 == false && $status2 == true){
                 $publicity = Publicity::find($request->id);
                 $this->sendEmails($publicity->stores_id, $publicity->link);
+            }
+        }
+
+        if($name_table == 'promotions' || $name_table == 'publicities'){
+            $store = Store::find($request->stores_id);
+            $token = $store->user->token;
+            $type_notification = $name_table == 'promotions' ? 'Promoción' : 'Publicidad';
+            $type_notification2 = $name_table == 'promotions' ? 'promoción' : 'publicidad';
+
+            if($name_table == 'promotions'){
+                $url = '/detail-product/' . $request->products_id . '/' . $request->stores_id;
+            }else{
+                $url = '/detail-publicity/' . $request->id;
+            }
+
+            if (strlen($token) > 10) {
+                $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+    
+                // Obtener el servicio de mensajería
+                $messaging = $firebase->createMessaging();
+    
+                // Crear el mensaje
+                $message = CloudMessage::fromArray([
+                    'token' => $token,  // El token del dispositivo que recibirá la notificación
+                    'notification' => [
+                        'title' => 'Nueva ' . $type_notification,
+                        'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
+                    ],
+                    'data' => [ // Datos adicionales para manejar la redirección
+                        'click_action' => 'OPEN_URL',
+                        'url' => $url,  // Ruta donde quieres redirigir al usuario
+                    ],
+                    'android' => [  // Mover el bloque de Android fuera de 'data'
+                        'priority' => 'high',
+                    ],
+                ]);
+    
+                // Enviar el mensaje
+                $messaging->send($message);
             }
         }
 

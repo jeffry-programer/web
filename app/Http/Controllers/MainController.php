@@ -707,6 +707,19 @@ class MainController extends Controller
         return response()->json($array_subscriptions, 200);
     }
 
+    public function myPublicitiesApi(Request $request)
+    {
+        $store = Store::find($request->id);
+        $publicities = Publicity::where('stores_id', $store->id)->get();
+        return response()->json($publicities, 200);
+    }
+
+    public function myPromotionsApi(Request $request){
+        $store = Store::find($request->id);
+        $promotions = Promotion::where('stores_id', $store->id)->get();
+        return response()->json($promotions, 200);
+    }
+
     public function nullSubscription(Request $request)
     {
         $subscription = Subscription::find($request->id);
