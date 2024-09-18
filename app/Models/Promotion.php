@@ -12,4 +12,8 @@ class Promotion extends Model
     public function store(){
         return $this->belongsTo(Store::class);
     }
+
+    public function product(){
+        return $this->belongsTo(Product::class, 'products_id');
+    }
 }

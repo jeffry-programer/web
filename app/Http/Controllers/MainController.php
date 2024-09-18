@@ -717,7 +717,12 @@ class MainController extends Controller
     public function myPromotionsApi(Request $request){
         $store = Store::find($request->id);
         $promotions = Promotion::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
-        return response()->json($promotions, 200);
+        $promotions_final = [];
+        foreach($promotions as $promotion){
+            $promotion->image = $promotion->product->image;
+            $promotions_final[] = $promotion;
+        }
+        return response()->json($promotions_final, 200);
     }
 
     public function nullSubscription(Request $request)
@@ -1156,7 +1161,8 @@ class MainController extends Controller
                 if ($stores->isEmpty()) {
                     $locationStores = 'country';
                     $municipalities = Municipality::pluck('id');
-                    $stores = Store::where('status', true)->whereIn('municipalities_id', $municipalities)->with('municipality');
+                    $stores = Store::where('status', true)->whereIn('municipalities_id', $municipalities)->where('type_stores_id', $request->type)->with('municipality');
+
                     if ($query !== '') {
                         $stores->where('name', 'like', '%' . $query . '%');
                     }
