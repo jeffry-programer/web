@@ -734,7 +734,71 @@ class UserManagement extends Component
             }
         }
         $query .= "where id = $request->id";
+
+
+        if ($name_table == 'promotions') {
+            $status1 = Promotion::find($request->id)->status;
+        }
+        
         DB::update($query);
+
+        if ($name_table == 'promotions') {
+            $status2 = Promotion::find($request->id)->status;
+            if ($status1 == false && $status2 == true) {
+                $promotion = Promotion::find($request->id);
+                $store = Store::find($promotion->stores_id);
+                $product = Product::find($promotion->products_id);
+                $link = asset('tienda/' . str_replace(' ', '-', $store->name) . '/' . str_replace(' ', '-', $product->name));
+                $this->sendEmails($promotion->stores_id, $link);
+            }
+        }
+
+        if ($name_table == 'promotions') {
+            $store = Store::find($request->stores_id);
+            $type_notification = 'Promoción';
+            $type_notification2 = 'promoción';
+            $checkApprove = true;
+
+            $url = '/detail-product/' . $request->products_id . '/' . $request->stores_id;
+            $checkApprove = Promotion::find($request->id)->status == true ? true : false;
+
+            if(!$checkApprove){
+                session()->flash('message', 'Registro editado exitosamente!!');
+                return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
+            }
+
+            foreach ($store->subscriptions as $suscriptor) {
+                if ($suscriptor->user != null) {
+                    $token = $suscriptor->user->token;
+                    if (strlen($token) > 10) {
+                        $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+
+                        // Obtener el servicio de mensajería
+                        $messaging = $firebase->createMessaging();
+
+                        // Crear el mensaje
+                        $message = CloudMessage::fromArray([
+                            'token' => $token,  // El token del dispositivo que recibirá la notificación
+                            'notification' => [
+                                'title' => 'Nueva ' . $type_notification,
+                                'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
+                            ],
+                            'data' => [ // Datos adicionales para manejar la redirección
+                                'click_action' => 'OPEN_URL',
+                                'url' => $url,  // Ruta donde quieres redirigir al usuario
+                            ],
+                            'android' => [  // Mover el bloque de Android fuera de 'data'
+                                'priority' => 'high',
+                            ],
+                        ]);
+
+                        // Enviar el mensaje
+                        $messaging->send($message);
+                    }
+                }
+            }
+        }
+
         session()->flash('message', 'Registro editado exitosamente!!');
         return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
     }
@@ -764,10 +828,6 @@ class UserManagement extends Component
         }
         $atributes = Schema::getColumnListing($name_table);
         $data = $request->all();
-
-        if ($name_table == 'promotions') {
-            $status1 = Promotion::find($request->id)->status;
-        }
 
         if ($name_table == 'publicities') {
             $status1 = Publicity::find($request->id)->status;
@@ -800,17 +860,6 @@ class UserManagement extends Component
         $query .= "where id = $request->id";
         DB::update($query);
 
-        if ($name_table == 'promotions') {
-            $status2 = Promotion::find($request->id)->status;
-            if ($status1 == false && $status2 == true) {
-                $promotion = Promotion::find($request->id);
-                $store = Store::find($promotion->stores_id);
-                $product = Product::find($promotion->products_id);
-                $link = asset('tienda/' . str_replace(' ', '-', $store->name) . '/' . str_replace(' ', '-', $product->name));
-                $this->sendEmails($promotion->stores_id, $link);
-            }
-        }
-
         if ($name_table == 'publicities') {
             $status2 = Publicity::find($request->id)->status;
             if ($status1 == false && $status2 == true) {
@@ -819,19 +868,14 @@ class UserManagement extends Component
             }
         }
 
-        if ($name_table == 'promotions' || $name_table == 'publicities') {
+        if ($name_table == 'publicities') {
             $store = Store::find($request->stores_id);
-            $type_notification = $name_table == 'promotions' ? 'Promoción' : 'Publicidad';
-            $type_notification2 = $name_table == 'promotions' ? 'promoción' : 'publicidad';
+            $type_notification = 'Publicidad';
+            $type_notification2 = 'publicidad';
             $checkApprove = true;
 
-            if ($name_table == 'promotions') {
-                $url = '/detail-product/' . $request->products_id . '/' . $request->stores_id;
-                $checkApprove = Promotion::find($request->id)->status == true ? true : false;
-            } else {
-                $url = '/detail-publicity/' . $request->id;
-                $checkApprove = Publicity::find($request->id)->status == true ? true : false;
-            }
+            $url = '/detail-publicity/' . $request->id;
+            $checkApprove = Publicity::find($request->id)->status == true ? true : false;
 
             if(!$checkApprove){
                 return json_encode($name_table . '-' . $request->id);

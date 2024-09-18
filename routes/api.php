@@ -45,6 +45,7 @@ Route::get('search-stores', [MainController::class, 'getStoreSearch']);
 Route::get('search-stores2', [MainController::class, 'getStoreSearch2']);
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
 Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
+Route::get('search-products3/{query}', [MainController::class, 'getProductsSearch3']);
 Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 'index']);
 Route::get('/chats/{userId}', [MainController::class, 'getChats']);
 Route::post('/messages', [MessageController::class, 'store']);
@@ -63,5 +64,9 @@ Route::post('/quality-signal', [MainController::class, 'qualitySignal']);
 Route::post('/change-status-message', [MessageController::class, 'changeStatusMessage']);
 Route::post('/reset-password', [MainController::class, 'resetPassword']);
 Route::post('/change-password', [MainController::class, 'changePassword']);
+Route::post('/save-product', [MainController::class, 'saveProduct']);
+
+
+
 
 

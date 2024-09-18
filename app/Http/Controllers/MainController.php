@@ -1181,7 +1181,7 @@ class MainController extends Controller
         $string = $query;
         $products = Product::whereHas('stores', function ($query) {
             $query->where('status', 1); // Filtra tiendas activas
-        })->where('name', 'like',  '%' . $string . '%')->get();
+        })->where('name', 'like',  '%' . $string . '%')->limit(5)->get();
 
         return response()->json($products);
     }
@@ -1191,7 +1191,14 @@ class MainController extends Controller
         $string = $query;
         $products = Product::whereHas('stores', function ($query) use ($id) {
             $query->where('stores.id', $id);   // Filtra tiendas activas
-        })->where('name', 'like', '%' . $string . '%')->get();
+        })->where('name', 'like', '%' . $string . '%')->limit(5)->get();
+        return response()->json($products);
+    }
+
+    public function getProductsSearch3($query){
+        $string = $query;
+        $products = Product::where('name', 'like',  '%' . $string . '%')->limit(5)->get();
+
         return response()->json($products);
     }
 
@@ -1843,5 +1850,24 @@ class MainController extends Controller
                         </form>';
             })->rawColumns(['actions'])
             ->make(true);
+    }
+
+
+    public function saveProduct(Request $request){
+        $product_store = ProductStore::where('products_id', $request->productId)->where('stores_id', $request->storeId)->first();
+        if($product_store != null){
+            return response()->json(['message' => 'exist'], 200);
+        }
+
+        $product_store = new ProductStore();
+        $product_store->products_id = $request->productId;
+        $product_store->stores_id = $request->storeId;
+        $product_store->amount = $request->amount;
+        $product_store->price = $request->price;
+        $product_store->created_at = Carbon::now();
+
+        $product_store->save();
+
+        return response()->json(['product' => $product_store], 200);
     }
 }
