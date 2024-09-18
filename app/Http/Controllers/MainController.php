@@ -710,13 +710,13 @@ class MainController extends Controller
     public function myPublicitiesApi(Request $request)
     {
         $store = Store::find($request->id);
-        $publicities = Publicity::where('stores_id', $store->id)->get();
+        $publicities = Publicity::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
         return response()->json($publicities, 200);
     }
 
     public function myPromotionsApi(Request $request){
         $store = Store::find($request->id);
-        $promotions = Promotion::where('stores_id', $store->id)->get();
+        $promotions = Promotion::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
         return response()->json($promotions, 200);
     }
 
