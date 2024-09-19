@@ -766,44 +766,40 @@ class UserManagement extends Component
                 session()->flash('message', 'Registro editado exitosamente!!');
                 return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
             }
-
-            $token_latest = '';
+            
 
             foreach ($store->subscriptions as $suscriptor) {
                 if ($suscriptor->user != null) {
                     $token = $suscriptor->user->token;
-                    if($token_latest != $token){
-                        $token_latest = $token;
-                        if (strlen($token) > 10) {
-                            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+                    if (strlen($token) > 10) {
+                        $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
 
-                            // Obtener el servicio de mensajería
-                            $messaging = $firebase->createMessaging();
+                        // Obtener el servicio de mensajería
+                        $messaging = $firebase->createMessaging();
 
-                            // Crear el mensaje
-                            $message = CloudMessage::fromArray([
-                                'token' => $token,  // El token del dispositivo que recibirá la notificación
-                                'notification' => [
-                                    'title' => 'Nueva ' . $type_notification,
-                                    'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
-                                ],
-                                'data' => [ // Datos adicionales para manejar la redirección
-                                    'click_action' => 'OPEN_URL',
-                                    'url' => $url,  // Ruta donde quieres redirigir al usuario
-                                ],
-                                'android' => [  // Mover el bloque de Android fuera de 'data'
-                                    'priority' => 'high',
-                                ],
-                            ]);
+                        // Crear el mensaje
+                        $message = CloudMessage::fromArray([
+                            'token' => $token,  // El token del dispositivo que recibirá la notificación
+                            'notification' => [
+                                'title' => 'Nueva ' . $type_notification,
+                                'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
+                            ],
+                            'data' => [ // Datos adicionales para manejar la redirección
+                                'click_action' => 'OPEN_URL',
+                                'url' => $url,  // Ruta donde quieres redirigir al usuario
+                            ],
+                            'android' => [  // Mover el bloque de Android fuera de 'data'
+                                'priority' => 'high',
+                            ],
+                          ]);
 
-                            // Enviar el mensaje
-                            $messaging->send($message);
-                        }
+                        // Enviar el mensaje
+                        $messaging->send($message);
                     }
                 }
             }
         }
-
+        
         session()->flash('message', 'Registro editado exitosamente!!');
         return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
     }
@@ -891,33 +887,30 @@ class UserManagement extends Component
             foreach ($store->subscriptions as $suscriptor) {
                 if ($suscriptor->user != null) {
                     $token = $suscriptor->user->token;
-                    if($token_latest != $token){
-                        $token_latest = $token;
-                        if (strlen($token) > 10) {
-                            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+                    if (strlen($token) > 10) {
+                        $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
 
-                            // Obtener el servicio de mensajería
-                            $messaging = $firebase->createMessaging();
+                        // Obtener el servicio de mensajería
+                        $messaging = $firebase->createMessaging();
 
-                            // Crear el mensaje
-                            $message = CloudMessage::fromArray([
-                                'token' => $token,  // El token del dispositivo que recibirá la notificación
-                                'notification' => [
-                                    'title' => 'Nueva ' . $type_notification,
-                                    'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
-                                ],
-                                'data' => [ // Datos adicionales para manejar la redirección
-                                    'click_action' => 'OPEN_URL',
-                                    'url' => $url,  // Ruta donde quieres redirigir al usuario
-                                ],
-                                'android' => [  // Mover el bloque de Android fuera de 'data'
-                                    'priority' => 'high',
-                                ],
-                            ]);
+                        // Crear el mensaje
+                        $message = CloudMessage::fromArray([
+                            'token' => $token,  // El token del dispositivo que recibirá la notificación
+                            'notification' => [
+                                'title' => 'Nueva ' . $type_notification,
+                                'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
+                            ],
+                            'data' => [ // Datos adicionales para manejar la redirección
+                                'click_action' => 'OPEN_URL',
+                                'url' => $url,  // Ruta donde quieres redirigir al usuario
+                            ],
+                            'android' => [  // Mover el bloque de Android fuera de 'data'
+                                'priority' => 'high',
+                            ],
+                          ]);
 
-                            // Enviar el mensaje
-                            $messaging->send($message);
-                        }
+                        // Enviar el mensaje
+                        $messaging->send($message);
                     }
                 }
             }
