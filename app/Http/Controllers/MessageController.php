@@ -68,7 +68,7 @@ class MessageController extends Controller
 
         $message->content = $content;
 
-        event(new NewMessage($message));
+        //event(new NewMessage($message));
 
         $conversation = Conversation::find($conversationId);
         $user1 = User::find($conversation->users_id);
