@@ -15,43 +15,37 @@ class MessageController extends Controller
 {
     public function index($conversationId, $userEmail)
     {
-        $conversation = Conversation::find($conversationId);
-        $messages = Message::where('conversations_id', $conversation->id)->orderBy('created_at', 'asc')->get();
+        // Cargar la conversación con los mensajes y el store relacionado
+        $conversation = Conversation::with(['messages', 'store'])->findOrFail($conversationId);
 
-        $store = User::find($conversation->stores_id)->store;
+        // Determinar el usuario que está en la conversación
+        $user = User::with('store')->findOrFail(
+            ($userEmail == User::find($conversation->users_id)->email)
+                ? $conversation->stores_id
+                : $conversation->users_id
+        );
 
-        if ($userEmail == User::find($conversation->users_id)->email) {
-            $user = User::find($conversation->stores_id);
-        } else {
-            $user = User::find($conversation->users_id);
-        }
+        // Asignar el nombre e imagen del store al usuario
+        $user->name = $user->store->name ?? $user->name; // Mantener el nombre si no hay store
+        $user->image = $user->store->image ?? 'https://ui-avatars.com/api/?name=' . strtoupper($user->name[0]) . '&color=7F9CF5&background=EBF4FF';
 
-        if ($user->store) {
-            $user->name = $user->store->name;
-            $user->image = $user->store->image;
-        }
-
-        if ($user->image == null || $user->image == '') {
-            $letter = strtoupper($user->name[0]);
-            $user->image = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-        } else {
-            $user->image = $user->image;
-        }
-
-        $messages = $conversation->messages;
-
-        // Iterar sobre los mensajes y actualizar su estado a true
-        foreach ($messages as $message) {
-            if ($message->from != $userEmail) {
+        // Actualizar el estado de los mensajes y desencriptar el contenido
+        foreach ($conversation->messages as $message) {
+            if ($message->from !== $userEmail) {
                 $message->status = true;
-                $message->save();
+                $message->saveQuietly(); // Evitar eventos y validaciones innecesarias
             }
-
             $message->content = Crypt::decryptString($message->content);
         }
 
-        return response()->json(['messages' => $messages, 'store' => $store, 'user' => $user, 'userEmail' => $userEmail]);
+        return response()->json([
+            'messages' => $conversation->messages,
+            'store' => $conversation->store,
+            'user' => $user,
+            'userEmail' => $userEmail,
+        ]);
     }
+
 
     public function store(Request $request)
     {
@@ -68,7 +62,7 @@ class MessageController extends Controller
 
         $message->content = $content;
 
-        //event(new NewMessage($message));
+        event(new NewMessage($message));
 
         $conversation = Conversation::find($conversationId);
         $user1 = User::find($conversation->users_id);
@@ -108,7 +102,7 @@ class MessageController extends Controller
             // Enviar el mensaje
             $messaging->send($message);
         }
-        
+
         return response()->json(['success' => true, 'message' => 'Notificación enviada con éxito', 'name' => $name, 'content' => $content]);
     }
 

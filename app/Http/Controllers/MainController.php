@@ -632,6 +632,11 @@ class MainController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
+        $user = User::where('email', $request->email)->first();
+        if($user == null){
+            return response()->json(['error' => 'Usuario no registrado'], 422);
+        }
+
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = User::where('email', $request->email)->first();
