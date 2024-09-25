@@ -30,18 +30,20 @@ class MessageController extends Controller
 
         // Actualizar el estado de los mensajes y desencriptar el contenido
         foreach ($conversation->messages as $message) {
+            if($message->from != $user->email){
+                $message->status = true;
+                $message->save();
+            }
             $message->content = Crypt::decryptString($message->content);
             $message->from = Crypt::decryptString($message->from);
         }
 
         $store = $user->store ?? null;
 
-        Message::where('conversations_id', $conversationId)->where('from', Crypt::encryptString($user->email))->update(['status' => true]);        
-
         return response()->json([
             'messages' => $conversation->messages,
             'store' => $store,
-            'user' => $user,
+            'user' => $user
         ]);
     }
 
