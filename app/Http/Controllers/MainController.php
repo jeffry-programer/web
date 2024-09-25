@@ -633,7 +633,7 @@ class MainController extends Controller
         }
 
         $user = User::where('email', $request->email)->first();
-        if($user == null){
+        if ($user == null) {
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
 
@@ -719,11 +719,12 @@ class MainController extends Controller
         return response()->json($publicities, 200);
     }
 
-    public function myPromotionsApi(Request $request){
+    public function myPromotionsApi(Request $request)
+    {
         $store = Store::find($request->id);
         $promotions = Promotion::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
         $promotions_final = [];
-        foreach($promotions as $promotion){
+        foreach ($promotions as $promotion) {
             $promotion->image = $promotion->product->image;
             $promotions_final[] = $promotion;
         }
@@ -748,17 +749,17 @@ class MainController extends Controller
     {
         // Encuentra la tienda por el ID y carga sus relaciones
         $store = Store::with('sector.municipality.state')->find($request->store_id);
-    
+
         // Si no encuentra la tienda, devolver un error 404
         if (!$store) {
             return response()->json(['message' => 'Store not found'], 404);
         }
-    
+
         // Busca si existe una conversación entre el usuario y la tienda
         $conversation = Conversation::where('stores_id', $store->users_id)
-                                    ->where('users_id', $request->user_id)
-                                    ->first();
-    
+            ->where('users_id', $request->user_id)
+            ->first();
+
         // Si no existe conversación y los IDs no coinciden, crea una nueva
         if ($conversation == null && $store->users_id != $request->user_id) {
             $conversation = new Conversation();
@@ -767,17 +768,17 @@ class MainController extends Controller
             $conversation->created_at = Carbon::now();
             $conversation->save();
         }
-    
+
         // Verifica si el usuario tiene una suscripción a la tienda
         $subscription = Subscription::where('stores_id', $request->store_id)
-                                    ->where('users_id', $request->user_id)
-                                    ->exists();
-    
+            ->where('users_id', $request->user_id)
+            ->exists();
+
         // Obtén los datos de la tienda, sector, ciudad y estado
         $sector = $store->sector;
         $municipality = $sector ? $sector->municipality : null;
         $state = $municipality ? $municipality->state : null;
-    
+
         // Agrega los datos de sector, ciudad y estado al objeto 'store' antes de enviarlo en la respuesta
         $storeData = $store->toArray();  // Convertimos la tienda a un array
         $storeData['sector'] = $sector ? $sector->description : null;
@@ -789,7 +790,7 @@ class MainController extends Controller
 
         $sector = Sector::find($storeData['sectors_id']);
         $sectors = Sector::where('municipalities_id', $sector->municipalities_id)->get();
-    
+
         // Retorna la respuesta con la tienda, suscripción y conversación
         return response()->json([
             'store' => $storeData,
@@ -799,7 +800,7 @@ class MainController extends Controller
             'sectors' => $sectors
         ], 200);
     }
-    
+
 
     public function ProductStoreDetail(Request $request)
     {
@@ -906,7 +907,8 @@ class MainController extends Controller
         return response()->json(['user' => $user], 200);
     }
 
-    public function updateDataStoreApi(Request $request){
+    public function updateDataStoreApi(Request $request)
+    {
         $store = Store::find($request->id);
         $store->name = $request->name;
         $store->description = $request->description;
@@ -1009,6 +1011,12 @@ class MainController extends Controller
             'image' => $product->image,
             'amount' => $product_store->amount,
             'price' => $product_store->price,
+            'promotion' => Promotion::where('products_id', $productId)
+                ->where('stores_id', $idStore) // Suponiendo que esta es la columna correcta para el id de la tienda
+                ->where('status', true) // Asegurar que el estado sea true
+                ->whereDate('date_init', '<=', now()) // La fecha de inicio debe ser menor o igual a hoy
+                ->whereDate('date_end', '>=', now())  // La fecha de fin debe ser mayor o igual a hoy
+                ->first()
         ];
 
         $store = Store::find($idStore);
@@ -1200,7 +1208,8 @@ class MainController extends Controller
         return response()->json($products);
     }
 
-    public function getProductsSearch3($query){
+    public function getProductsSearch3($query)
+    {
         $string = $query;
         $products = Product::where('name', 'like',  '%' . $string . '%')->limit(5)->get();
 
@@ -1254,7 +1263,7 @@ class MainController extends Controller
                 $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
                 $final_array[$key]['last_message_time'] = $lastMessage->created_at;
                 $final_array[$key]['last_message_status'] = $lastMessage->status;
-                $final_array[$key]['last_message_from'] = $lastMessage->from;
+                $final_array[$key]['last_message_from'] = Crypt::decryptString($lastMessage->from);
                 $final_array[$key]['id'] = $conversation->id;
             }
         }
@@ -1858,9 +1867,10 @@ class MainController extends Controller
     }
 
 
-    public function saveProduct(Request $request){
+    public function saveProduct(Request $request)
+    {
         $product_store = ProductStore::where('products_id', $request->productId)->where('stores_id', $request->storeId)->first();
-        if($product_store != null){
+        if ($product_store != null) {
             return response()->json(['message' => 'exist'], 200);
         }
 

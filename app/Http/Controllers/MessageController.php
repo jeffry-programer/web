@@ -13,16 +13,15 @@ use Kreait\Firebase\Messaging\CloudMessage;
 
 class MessageController extends Controller
 {
-    public function index($conversationId, $userEmail)
+    public function index($conversationId, $userId)
     {
         // Cargar la conversación con los mensajes y el store relacionado
         $conversation = Conversation::with(['messages', 'store'])->findOrFail($conversationId);
 
         // Determinar el usuario que está en la conversación
-        $user = User::with('store')->findOrFail(
-            ($userEmail == User::find($conversation->users_id)->email)
-                ? $conversation->stores_id
-                : $conversation->users_id
+        $user = User::with('store')->findOrFail(($userId == User::find($conversation->users_id)->id)
+            ? $conversation->stores_id
+            : $conversation->users_id
         );
 
         // Asignar el nombre e imagen del store al usuario
@@ -31,18 +30,18 @@ class MessageController extends Controller
 
         // Actualizar el estado de los mensajes y desencriptar el contenido
         foreach ($conversation->messages as $message) {
-            if ($message->from !== $userEmail) {
-                $message->status = true;
-                $message->saveQuietly(); // Evitar eventos y validaciones innecesarias
-            }
             $message->content = Crypt::decryptString($message->content);
+            $message->from = Crypt::decryptString($message->from);
         }
+
+        $store = $user->store ?? null;
+
+        Message::where('conversations_id', $conversationId)->where('from', Crypt::encryptString($user->email))->update(['status' => true]);        
 
         return response()->json([
             'messages' => $conversation->messages,
-            'store' => $conversation->store,
+            'store' => $store,
             'user' => $user,
-            'userEmail' => $userEmail,
         ]);
     }
 
@@ -52,15 +51,17 @@ class MessageController extends Controller
         $user = User::find($request->userId);
         $conversationId = $request->id;
         $content = $request->content;
+        $from = $user->email;
 
         $message = new Message();
         $message->conversations_id = $conversationId;
         $message->content = Crypt::encryptString($content);
-        $message->from = $user->email;
+        $message->from = Crypt::encryptString($user->email);
         $message->status = false;
         $message->save();
 
         $message->content = $content;
+        $message->from = $from;
 
         event(new NewMessage($message));
 
