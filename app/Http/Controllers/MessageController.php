@@ -92,6 +92,7 @@ class MessageController extends Controller
                 'notification' => [
                     'title' => $name,
                     'body' => $content,
+                    'image' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
                 ],
                 'data' => [ // Datos adicionales para manejar la redirección
                     'click_action' => 'OPEN_URL',

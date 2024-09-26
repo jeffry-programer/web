@@ -783,6 +783,7 @@ class UserManagement extends Component
                             'notification' => [
                                 'title' => 'Nueva ' . $type_notification,
                                 'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
+                                'image' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
                             ],
                             'data' => [ // Datos adicionales para manejar la redirección
                                 'click_action' => 'OPEN_URL',
@@ -899,6 +900,7 @@ class UserManagement extends Component
                             'notification' => [
                                 'title' => 'Nueva ' . $type_notification,
                                 'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
+                                'image' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
                             ],
                             'data' => [ // Datos adicionales para manejar la redirección
                                 'click_action' => 'OPEN_URL',

@@ -1525,6 +1525,7 @@ class MainController extends Controller
                 'notification' => [
                     'title' => $name,
                     'body' => 'Requiero auxilio vial',
+                    'image' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
                 ],
                 'data' => [ // Datos adicionales para manejar la redirección
                     'click_action' => 'OPEN_URL',
