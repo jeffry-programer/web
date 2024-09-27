@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/get-stores-promotion', [MainController::class, 'getAllStoresPromotion']);
 Route::get('/get-info-home/{userId}', [MainController::class, 'getInfoHome']);
 Route::post('register',  [MainController::class, 'registerApi']);
+Route::post('/login-or-register-google', [MainController::class, 'loginOrRegisterWithGoogle']);
 Route::post('login', [MainController::class, 'loginApi']);
 Route::post('verifiedApi', [MainController::class, 'verifiedApi']);
 Route::post('subscriptions', [MainController::class, 'subscriptionsApi']);

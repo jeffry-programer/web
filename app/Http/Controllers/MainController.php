@@ -612,6 +612,37 @@ class MainController extends Controller
         return response()->json(['message' => 'Usuario registrado exitosamente'], 201);
     }
 
+    public function loginOrRegisterWithGoogle(Request $request)
+    {
+        // Valida que el correo esté presente
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+            'name' => 'required|string|max:255', // Nombre recibido de Google
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+    
+        // Buscar usuario por correo
+        $user = User::where('email', $request->email)->first();
+    
+        if (!$user) {
+            // Si el usuario no existe, lo creamos con una contraseña vacía
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => '', // Contraseña vacía ya que está utilizando Google Login
+                'profiles_id' => 3, // O el perfil que necesites
+            ]);
+        }
+    
+        // Retornar la información del usuario y el token
+        return response()->json([
+            'user' => $user,
+        ], 200);
+    }
+
     public function sendVerifiedEmailApi(Request $request)
     {
         $user = User::where('email', $request->email)->first();
