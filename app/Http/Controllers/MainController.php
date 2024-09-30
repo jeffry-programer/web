@@ -619,14 +619,14 @@ class MainController extends Controller
             'email' => 'required|string|email|max:255',
             'name' => 'required|string|max:255', // Nombre recibido de Google
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-    
+
         // Buscar usuario por correo
         $user = User::where('email', $request->email)->first();
-    
+
         if (!$user) {
             // Si el usuario no existe, lo creamos con una contraseña vacía
             $user = User::create([
@@ -636,7 +636,7 @@ class MainController extends Controller
                 'profiles_id' => 3, // O el perfil que necesites
             ]);
         }
-    
+
         // Retornar la información del usuario y el token
         return response()->json([
             'user' => $user,
@@ -735,9 +735,17 @@ class MainController extends Controller
                 'id' => $key->id,
                 'id_store' => $key->stores_id,
                 'name' => $key->store->name,
-                'image' => $key->store->image,
+                'user_img' => $key->store->image,
                 'conversation' => $conversation
             ];
+
+            if ($store['user_img'] == null || $store['user_img'] == '') {
+                $letter = strtoupper($store['name'][0]);
+                $store['user_img'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+            } else {
+                $store['user_img'] = $store['user_img'];
+            }
+
             $array_subscriptions[] = $store;
         }
         return response()->json($array_subscriptions, 200);
@@ -791,10 +799,10 @@ class MainController extends Controller
             ->where('users_id', $request->user_id)
             ->first();
 
-        if($conversation == null){
+        if ($conversation == null) {
             $conversation = Conversation::where('stores_id', $request->user_id)
-            ->where('users_id', $store->users_id)
-            ->first();
+                ->where('users_id', $store->users_id)
+                ->first();
         }
 
         // Si no existe conversación y los IDs no coinciden, crea una nueva
@@ -922,13 +930,24 @@ class MainController extends Controller
 
     public function publicityDetail(Request $request)
     {
-        $publicity = Publicity::find($request->id);
+        $publicity = Publicity::findOrFail($request->id);
+        // Incrementar el contador de vistas
+        $publicity->increment('views');
         return response()->json(['publicity' => $publicity], 200);
     }
 
     public function pubilicitiesDetail(Request $request)
     {
-        $publicities = Publicity::where('id', '!=', $request->id)->get();
+        // Obtener la fecha actual
+        $currentDate = Carbon::now()->toDateString(); // Formato: 'YYYY-MM-DD'
+
+        // Obtener las publicidades que cumplan con las condiciones
+        $publicities = Publicity::where('id', '!=', $request->id)
+            ->where('status', true) // Solo donde status es true
+            ->whereDate('date_init', '<=', $currentDate) // date_init menor o igual a la fecha actual
+            ->whereDate('date_end', '>=', $currentDate) // date_end mayor o igual a la fecha actual
+            ->get();
+
         return response()->json(['publicities' => $publicities], 200);
     }
 
@@ -1308,66 +1327,81 @@ class MainController extends Controller
         return response()->json(array_values($final_array));
     }
 
-    public function getInfoHome($userId)
+    public function getInfoHome($userId, $municipalityId)
     {
         $date = Carbon::now();
-        $stores = Store::where('status', true)->whereHas('promotions', function ($query) use ($date) {
-            $query->where('status', true)->where('date_init', '<=', $date)->where('date_end', '>=', $date);
-        })->with('municipality')->take(6)->get();
-
+    
+        // Obtener la ciudad del usuario
+        $userCityId = $municipalityId;
+    
+        // Obtener las tiendas en promoción, primero las que están en la misma ciudad
+        $storesQuery = Store::where('status', true)
+            ->whereHas('promotions', function ($query) use ($date) {
+                $query->where('status', true)
+                    ->where('date_init', '<=', $date)
+                    ->where('date_end', '>=', $date);
+            })
+            ->with('municipality');
+    
+        // Si el usuario tiene una ciudad, priorizar las tiendas de su misma ciudad
+        if ($userCityId) {
+            $storesQuery = $storesQuery->orderByRaw("IF(municipalities_id = ?, 0, 1)", [$userCityId]);
+        }
+    
+        $stores = $storesQuery->take(6)->get();
+    
         $stores2 = collect();
         $stores3 = collect();
-
+    
         if (!Auth::check()) {
             $stores2 = SearchUser::with(['store', 'store.municipality'])
                 ->limit(9)
                 ->get();
-
+    
             $stores3 = SearchUser::with(['product', 'store'])
                 ->limit(9)
                 ->get();
         } else {
             $userId = Auth::id();
-
+    
             $stores2 = SearchUser::where('users_id', $userId)
                 ->with(['store', 'store.municipality'])
                 ->limit(9)
                 ->get();
-
+    
             $stores3 = SearchUser::where('users_id', $userId)
                 ->with(['product', 'store'])
                 ->limit(9)
                 ->get();
         }
-
+    
         $array_stores = [];
         $array_stores_final = [];
         $array_products = [];
         $array_products_final = [];
-
+    
         foreach ($stores2 as $store) {
-            $store_id = $store->store->id; // Asegúrate de que 'store' y 'id' son correctos
+            $store_id = $store->store->id;
             if (!in_array($store_id, $array_stores)) {
                 $array_stores[] = $store_id;
                 $array_stores_final[] = $store->store;
             }
         }
-
+    
         foreach ($stores3 as $product) {
-            $product_id = $product->product->id; // Asegúrate de que 'product' y 'id' son correctos
+            $product_id = $product->product->id;
             if (!in_array($product_id, $array_products)) {
                 $array_products[] = $product_id;
                 $array_products_final[] = $product->product;
             }
         }
-
-
+    
         $publicities = Publicity::where('date_end', '>', $date)
             ->where('status', true)
             ->inRandomOrder()
             ->take(8)
             ->get();
-
+    
         return response()->json([
             'publicities' => $publicities,
             'stores' => $stores,
@@ -1375,6 +1409,7 @@ class MainController extends Controller
             'lastSearch' => $array_products_final
         ]);
     }
+    
 
     public function getAllStoresPromotion(Request $request)
     {
