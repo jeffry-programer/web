@@ -94,3 +94,6 @@ Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->gro
     Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');
 });
+
+//Route::get('/test', [MainController::class, 'test'])->name('/test');
+

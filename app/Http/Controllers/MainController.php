@@ -1330,10 +1330,10 @@ class MainController extends Controller
     public function getInfoHome($userId, $municipalityId)
     {
         $date = Carbon::now();
-    
+
         // Obtener la ciudad del usuario
         $userCityId = $municipalityId;
-    
+
         // Obtener las tiendas en promoción, primero las que están en la misma ciudad
         $storesQuery = Store::where('status', true)
             ->whereHas('promotions', function ($query) use ($date) {
@@ -1342,44 +1342,44 @@ class MainController extends Controller
                     ->where('date_end', '>=', $date);
             })
             ->with('municipality');
-    
+
         // Si el usuario tiene una ciudad, priorizar las tiendas de su misma ciudad
         if ($userCityId) {
             $storesQuery = $storesQuery->orderByRaw("IF(municipalities_id = ?, 0, 1)", [$userCityId]);
         }
-    
+
         $stores = $storesQuery->take(6)->get();
-    
+
         $stores2 = collect();
         $stores3 = collect();
-    
+
         if (!Auth::check()) {
             $stores2 = SearchUser::with(['store', 'store.municipality'])
                 ->limit(9)
                 ->get();
-    
+
             $stores3 = SearchUser::with(['product', 'store'])
                 ->limit(9)
                 ->get();
         } else {
             $userId = Auth::id();
-    
+
             $stores2 = SearchUser::where('users_id', $userId)
                 ->with(['store', 'store.municipality'])
                 ->limit(9)
                 ->get();
-    
+
             $stores3 = SearchUser::where('users_id', $userId)
                 ->with(['product', 'store'])
                 ->limit(9)
                 ->get();
         }
-    
+
         $array_stores = [];
         $array_stores_final = [];
         $array_products = [];
         $array_products_final = [];
-    
+
         foreach ($stores2 as $store) {
             $store_id = $store->store->id;
             if (!in_array($store_id, $array_stores)) {
@@ -1387,7 +1387,7 @@ class MainController extends Controller
                 $array_stores_final[] = $store->store;
             }
         }
-    
+
         foreach ($stores3 as $product) {
             $product_id = $product->product->id;
             if (!in_array($product_id, $array_products)) {
@@ -1395,13 +1395,13 @@ class MainController extends Controller
                 $array_products_final[] = $product->product;
             }
         }
-    
+
         $publicities = Publicity::where('date_end', '>', $date)
             ->where('status', true)
             ->inRandomOrder()
             ->take(8)
             ->get();
-    
+
         return response()->json([
             'publicities' => $publicities,
             'stores' => $stores,
@@ -1409,7 +1409,7 @@ class MainController extends Controller
             'lastSearch' => $array_products_final
         ]);
     }
-    
+
 
     public function getAllStoresPromotion(Request $request)
     {
@@ -1564,11 +1564,9 @@ class MainController extends Controller
         $name = $user->name;
 
         //Encontrando tiendas que se encuentran en esa ciudad, que son ese tipo de tienda y que estan activas
-        $stores = Store::whereHas('typeStore', function ($query) use ($request) {
-            $query->where('description', $request->type);
-        })->where('status', true)->where('municipalities_id', $request->city);
+        $stores = Store::where('type_stores_id', $request->type)->where('status', true)->where('municipalities_id', $request->municipality);
 
-        if ($request->sector) {
+        if ($request->sector != 'Todos') {
             $stores->where('sectors_id', $request->sector)->get();
         }
 
@@ -1586,33 +1584,37 @@ class MainController extends Controller
             $signal->created_at = Carbon::now();
             $signal->save();
 
-            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+            $token = $store->user->token;
 
-            // Obtener el servicio de mensajería
-            $messaging = $firebase->createMessaging();
+            if (strlen($token) > 10) {
+                $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
 
-            // Crear el mensaje
-            $message = CloudMessage::fromArray([
-                'token' => $store->token,  // El token del dispositivo que recibirá la notificación
-                'notification' => [
-                    'title' => $name,
-                    'body' => 'Requiero auxilio vial',
-                    'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
-                ],
-                'data' => [ // Datos adicionales para manejar la redirección
-                    'click_action' => 'OPEN_URL',
-                    'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
-                ],
-                'android' => [  // Mover el bloque de Android fuera de 'data'
-                    'priority' => 'high',
-                ],
-            ]);
+                // Obtener el servicio de mensajería
+                $messaging = $firebase->createMessaging();
 
-            // Enviar el mensaje
-            $messaging->send($message);
+                // Crear el mensaje
+                $message = CloudMessage::fromArray([
+                    'token' => $token,  // El token del dispositivo que recibirá la notificación
+                    'notification' => [
+                        'title' => $name,
+                        'body' => 'Requiero auxilio vial',
+                        'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
+                    ],
+                    'data' => [ // Datos adicionales para manejar la redirección
+                        'click_action' => 'OPEN_URL',
+                        'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
+                    ],
+                    'android' => [  // Mover el bloque de Android fuera de 'data'
+                        'priority' => 'high',
+                    ],
+                ]);
+
+                // Enviar el mensaje
+                $messaging->send($message);
+            }
         }
 
-        return response()->json($stores, 200);
+        return response()->json(['stores' => $stores], 200);
     }
 
     public function sectors(Request $request)
@@ -1636,7 +1638,12 @@ class MainController extends Controller
             $user = User::find($signal->stores_id);
             $array_data[$key]['id'] = $signal->id;
             $array_data[$key]['name'] = $user->store->name;
-            $array_data[$key]['image'] = $user->store->image;
+            if ($user->store->image == null || $user->store->image == '') {
+                $letter = strtoupper($user->store->name[0]);
+                $array_data[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+            } else {
+                $array_data[$key]['image'] = $user->store->image;
+            }
             $array_data[$key]['created_at'] = $signal->created_at;
             $array_data[$key]['detail'] = $signal->detail;
             $array_data[$key]['status'] = $signal->status;
@@ -1650,7 +1657,12 @@ class MainController extends Controller
             if ($user->store) {
                 $array_data2[$key]['id'] = $signal->id;
                 $array_data2[$key]['name'] = $user->store->name;
-                $array_data2[$key]['image'] = $user->store->image;
+                if ($user->store->image == null || $user->store->image == '') {
+                    $letter = strtoupper($user->store->name[0]);
+                    $array_data2[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+                } else {
+                    $array_data2[$key]['image'] = $user->store->image;
+                }
                 $array_data2[$key]['created_at'] = $signal->created_at;
                 $array_data2[$key]['detail'] = $signal->detail;
                 $array_data2[$key]['status'] = $signal->status;
@@ -1659,7 +1671,12 @@ class MainController extends Controller
             } else {
                 $array_data2[$key]['id'] = $signal->id;
                 $array_data2[$key]['name'] = $user->name;
-                $array_data2[$key]['image'] = $user->image;
+                if ($user->image == null || $user->image == '') {
+                    $letter = strtoupper($user->name[0]);
+                    $array_data2[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+                } else {
+                    $array_data2[$key]['image'] = $user->image;
+                }
                 $array_data2[$key]['created_at'] = $signal->created_at;
                 $array_data2[$key]['detail'] = $signal->detail;
                 $array_data2[$key]['status'] = $signal->status;
@@ -1958,4 +1975,45 @@ class MainController extends Controller
 
         return response()->json(['product' => $product_store], 200);
     }
+
+    public function test()
+    {
+        /*$token = 'dXB8MWUySKOcvUlLQs5xO0:APA91bE1e_IUCs42Lv7dgp0FhpQ475B4AyrMLY8UMJ2l9w0PYvumdK9fYzVWJrh1cs7_5sE3wFjP5ChVNbAYUpXfTvdPdK71QVvCq_xTvhZ_SF_syet3HTbPfbegbrqZQEtRev9RPjIG';
+    
+        $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+    
+        // Crear el mensaje
+        $message = CloudMessage::fromArray([
+            'token' => $token,
+            'notification' => [
+                'title' => 'Jeffry Avellaneda',
+                'body' => 'Requiero auxilio vial',
+                'icon' => 'https://tulobuscas.app/images/tulobuscas2.png',
+            ],
+            'data' => [
+                'url' => '/signals-aux',
+                'action' => 'request_help',
+                'request_type' => 'vial_assistance', // Un nuevo campo para identificar el tipo de ayuda
+            ],
+            'android' => [
+                'priority' => 'high',
+                'notification' => [
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK', // Necesario para abrir la app
+                ],
+            ],
+            'apns' => [
+                'payload' => [
+                    'aps' => [
+                        'mutable-content' => 1,
+                        'category' => 'AUXILIO_VIAL' // Categoría para las acciones
+                    ],
+                ],
+            ],
+        ]);
+    
+        $messaging = $firebase->createMessaging();
+        $messaging->send($message);
+    
+        return response()->json(['notification sent successfully'], 200);*/
+    } 
 }
