@@ -1657,7 +1657,7 @@ class MainController extends Controller
             $array_data[$key]['status2'] = $signal->status2;
             $array_data[$key]['read'] = $signal->read;
         }
-        $signals_aux2 = SignalAux::where('stores_id', $user_id)->get();
+        $signals_aux2 = SignalAux::where('stores_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data2 = [];
         foreach ($signals_aux2 as $key => $signal) {
             $user = User::find($signal->users_id);
