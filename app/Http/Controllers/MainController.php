@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewMessage;
+use App\Events\NewMessage2;
 use App\Models\AditionalPicturesProduct;
 use App\Models\Box;
 use App\Models\Brand;
@@ -9,6 +11,7 @@ use App\Models\Category;
 use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
+use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductStore;
 use App\Models\Promotion;
@@ -1614,6 +1617,10 @@ class MainController extends Controller
             }
         }
 
+        if($stores->count() > 0){
+            event(new NewMessage2());
+        }
+
         return response()->json(['stores' => $stores], 200);
     }
 
@@ -1632,7 +1639,7 @@ class MainController extends Controller
     public function getSignalsAux(Request $request)
     {
         $user_id = $request->userId;
-        $signals_aux = SignalAux::where('users_id', $user_id)->get();
+        $signals_aux = SignalAux::where('users_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data = [];
         foreach ($signals_aux as $key => $signal) {
             $user = User::find($signal->stores_id);
@@ -1702,7 +1709,7 @@ class MainController extends Controller
             ->where('id', '!=', $signal->id)
             ->delete();
 
-        $conversation = Conversation::where('users_id', $signal->users_id)->first();
+        $conversation = Conversation::where('users_id', $signal->users_id)->where('stores_id', $signal->stores_id)->first();
         if ($conversation == null) {
             $conversation = new Conversation();
             $conversation->users_id = $signal->users_id;
@@ -1710,6 +1717,8 @@ class MainController extends Controller
             $conversation->created_at = Carbon::now();
             $conversation->save();
         }
+
+        event(new NewMessage2());
 
         return response()->json(['id' => $conversation->id], 200);
     }
@@ -1728,6 +1737,7 @@ class MainController extends Controller
         $signal = SignalAux::find($request->id);
         $signal->read = true;
         $signal->save();
+        event(new NewMessage2());
         return response()->json('ok', 200);
     }
 
