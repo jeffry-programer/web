@@ -1562,67 +1562,78 @@ class MainController extends Controller
 
     public function sendSignalAux(Request $request)
     {
-        //Encontrar usuario que envia el auxilio vial
+        // Encontrar usuario que envía el auxilio vial
         $user = User::find($request->userId);
         $name = $user->name;
-
-        //Encontrando tiendas que se encuentran en esa ciudad, que son ese tipo de tienda y que estan activas
-        $stores = Store::where('type_stores_id', $request->type)->where('status', true)->where('municipalities_id', $request->municipality);
-
+    
+        // Encontrando tiendas que se encuentran en esa ciudad, que son de ese tipo y que están activas
+        $stores = Store::where('type_stores_id', $request->type)
+            ->where('status', true)
+            ->where('municipalities_id', $request->municipality);
+    
         if ($request->sector != 'Todos') {
-            $stores->where('sectors_id', $request->sector)->get();
+            $stores->where('sectors_id', $request->sector);
         }
-
+    
         $stores = $stores->get();
-
-        //Recorriendo las tiendas para enviar la notificacion a cada una de ellas
+    
+        // Recorriendo las tiendas para enviar la notificación a cada una de ellas
         foreach ($stores as $store) {
-            $signal = new SignalAux();
-            $signal->users_id = $user->id;
-            $signal->stores_id = $store->user->id;
-            $signal->detail = $request->description;
-            $signal->status = false;
-            $signal->status2 = false;
-            $signal->read = false;
-            $signal->created_at = Carbon::now();
-            $signal->save();
-
-            $token = $store->user->token;
-
-            if (strlen($token) > 10) {
-                $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
-
-                // Obtener el servicio de mensajería
-                $messaging = $firebase->createMessaging();
-
-                // Crear el mensaje
-                $message = CloudMessage::fromArray([
-                    'token' => $token,  // El token del dispositivo que recibirá la notificación
-                    'notification' => [
-                        'title' => $name,
-                        'body' => 'Requiero auxilio vial',
-                        'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
-                    ],
-                    'data' => [ // Datos adicionales para manejar la redirección
-                        'click_action' => 'OPEN_URL',
-                        'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
-                    ],
-                    'android' => [  // Mover el bloque de Android fuera de 'data'
-                        'priority' => 'high',
-                    ],
-                ]);
-
-                // Enviar el mensaje
-                $messaging->send($message);
+            // Verificar si la tienda ya tiene una señal activa
+            $hasActiveSignal = SignalAux::where('stores_id', $store->user->id)
+                ->where('status', true) // Cambia esto si tu lógica de "activo" es diferente
+                ->exists();
+    
+            // Si la tienda no tiene señales activas, enviar la nueva señal
+            if (!$hasActiveSignal) {
+                $signal = new SignalAux();
+                $signal->users_id = $user->id;
+                $signal->stores_id = $store->user->id;
+                $signal->detail = $request->description;
+                $signal->status = false;
+                $signal->status2 = false;
+                $signal->read = false;
+                $signal->created_at = Carbon::now();
+                $signal->save();
+    
+                $token = $store->user->token;
+    
+                if (strlen($token) > 10) {
+                    $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+    
+                    // Obtener el servicio de mensajería
+                    $messaging = $firebase->createMessaging();
+    
+                    // Crear el mensaje
+                    $message = CloudMessage::fromArray([
+                        'token' => $token,  // El token del dispositivo que recibirá la notificación
+                        'notification' => [
+                            'title' => $name,
+                            'body' => 'Requiero auxilio vial',
+                            'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
+                        ],
+                        'data' => [ // Datos adicionales para manejar la redirección
+                            'click_action' => 'OPEN_URL',
+                            'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
+                        ],
+                        'android' => [  // Mover el bloque de Android fuera de 'data'
+                            'priority' => 'high',
+                        ],
+                    ]);
+    
+                    // Enviar el mensaje
+                    $messaging->send($message);
+                }
             }
         }
-
+    
         if($stores->count() > 0){
             event(new NewMessage2());
         }
-
+    
         return response()->json(['stores' => $stores], 200);
     }
+    
 
     public function sectors(Request $request)
     {
