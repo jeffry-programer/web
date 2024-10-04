@@ -1565,25 +1565,25 @@ class MainController extends Controller
         // Encontrar usuario que envía el auxilio vial
         $user = User::find($request->userId);
         $name = $user->name;
-    
+
         // Encontrando tiendas que se encuentran en esa ciudad, que son de ese tipo y que están activas
         $stores = Store::where('type_stores_id', $request->type)
             ->where('status', true)
             ->where('municipalities_id', $request->municipality);
-    
+
         if ($request->sector != 'Todos') {
             $stores->where('sectors_id', $request->sector);
         }
-    
+
         $stores = $stores->get();
-    
+
         // Recorriendo las tiendas para enviar la notificación a cada una de ellas
         foreach ($stores as $store) {
             // Verificar si la tienda ya tiene una señal activa
             $hasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true) // Cambia esto si tu lógica de "activo" es diferente
                 ->exists();
-    
+
             // Si la tienda no tiene señales activas, enviar la nueva señal
             if (!$hasActiveSignal) {
                 $signal = new SignalAux();
@@ -1595,15 +1595,15 @@ class MainController extends Controller
                 $signal->read = false;
                 $signal->created_at = Carbon::now();
                 $signal->save();
-    
+
                 $token = $store->user->token;
-    
+
                 if (strlen($token) > 10) {
                     $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
-    
+
                     // Obtener el servicio de mensajería
                     $messaging = $firebase->createMessaging();
-    
+
                     // Crear el mensaje
                     $message = CloudMessage::fromArray([
                         'token' => $token,  // El token del dispositivo que recibirá la notificación
@@ -1620,20 +1620,20 @@ class MainController extends Controller
                             'priority' => 'high',
                         ],
                     ]);
-    
+
                     // Enviar el mensaje
                     $messaging->send($message);
                 }
             }
         }
-    
-        if($stores->count() > 0){
+
+        if ($stores->count() > 0) {
             event(new NewMessage2());
         }
-    
+
         return response()->json(['stores' => $stores], 200);
     }
-    
+
 
     public function sectors(Request $request)
     {
@@ -1718,6 +1718,7 @@ class MainController extends Controller
         // Eliminar todas las filas relacionadas con el usuario excepto la actual
         SignalAux::where('users_id', $signal->users_id)
             ->where('id', '!=', $signal->id)
+            ->where('status', '!=', true)
             ->delete();
 
         $conversation = Conversation::where('users_id', $signal->users_id)->where('stores_id', $signal->stores_id)->first();
@@ -1999,42 +2000,30 @@ class MainController extends Controller
 
     public function test()
     {
-        /*$token = 'dXB8MWUySKOcvUlLQs5xO0:APA91bE1e_IUCs42Lv7dgp0FhpQ475B4AyrMLY8UMJ2l9w0PYvumdK9fYzVWJrh1cs7_5sE3wFjP5ChVNbAYUpXfTvdPdK71QVvCq_xTvhZ_SF_syet3HTbPfbegbrqZQEtRev9RPjIG';
-    
+        $token = 'f2CfHUlYTM2fSeSNYDZUxg:APA91bFBVEj58r5MwxPnLGEfuDpm6cWgcvC7I9rI-881lYYvlVDTKNRxfSc_YZGhStrozHrfqaXim95_2vN00wD0fBBfePp0GR6_GF3nSilReGo_38an5_YtzgXFszGSUe2QQc9MkNTP';
+
         $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
-    
+
         // Crear el mensaje
         $message = CloudMessage::fromArray([
-            'token' => $token,
+            'token' => $token,  // El token del dispositivo que recibirá la notificación
             'notification' => [
                 'title' => 'Jeffry Avellaneda',
                 'body' => 'Requiero auxilio vial',
-                'icon' => 'https://tulobuscas.app/images/tulobuscas2.png',
+                'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
             ],
-            'data' => [
-                'url' => '/signals-aux',
-                'action' => 'request_help',
-                'request_type' => 'vial_assistance', // Un nuevo campo para identificar el tipo de ayuda
+            'data' => [ // Datos adicionales para manejar la redirección
+                'click_action' => 'OPEN_URL',
+                'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
             ],
-            'android' => [
+            'android' => [  // Mover el bloque de Android fuera de 'data'
                 'priority' => 'high',
-                'notification' => [
-                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK', // Necesario para abrir la app
-                ],
-            ],
-            'apns' => [
-                'payload' => [
-                    'aps' => [
-                        'mutable-content' => 1,
-                        'category' => 'AUXILIO_VIAL' // Categoría para las acciones
-                    ],
-                ],
             ],
         ]);
-    
+
         $messaging = $firebase->createMessaging();
         $messaging->send($message);
-    
-        return response()->json(['notification sent successfully'], 200);*/
-    } 
+
+        return response()->json(['notification sent successfully'], 200);
+    }
 }
