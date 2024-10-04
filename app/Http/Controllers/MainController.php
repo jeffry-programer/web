@@ -1581,7 +1581,8 @@ class MainController extends Controller
         foreach ($stores as $store) {
             // Verificar si la tienda ya tiene una señal activa
             $hasActiveSignal = SignalAux::where('stores_id', $store->user->id)
-                ->where('status', true) // Cambia esto si tu lógica de "activo" es diferente
+                ->where('status', true)
+                ->where('read', false)
                 ->exists();
 
             // Si la tienda no tiene señales activas, enviar la nueva señal
