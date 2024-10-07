@@ -1668,6 +1668,7 @@ class MainController extends Controller
             $array_data[$key]['status'] = $signal->status;
             $array_data[$key]['status2'] = $signal->status2;
             $array_data[$key]['read'] = $signal->read;
+            $array_data[$key]['idStore'] = $user->store->id;
         }
         $signals_aux2 = SignalAux::where('stores_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data2 = [];
@@ -1997,34 +1998,5 @@ class MainController extends Controller
         $product_store->save();
 
         return response()->json(['product' => $product_store], 200);
-    }
-
-    public function test()
-    {
-        $token = 'f2CfHUlYTM2fSeSNYDZUxg:APA91bFBVEj58r5MwxPnLGEfuDpm6cWgcvC7I9rI-881lYYvlVDTKNRxfSc_YZGhStrozHrfqaXim95_2vN00wD0fBBfePp0GR6_GF3nSilReGo_38an5_YtzgXFszGSUe2QQc9MkNTP';
-
-        $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
-
-        // Crear el mensaje
-        $message = CloudMessage::fromArray([
-            'token' => $token,  // El token del dispositivo que recibirá la notificación
-            'notification' => [
-                'title' => 'Jeffry Avellaneda',
-                'body' => 'Requiero auxilio vial',
-                'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
-            ],
-            'data' => [ // Datos adicionales para manejar la redirección
-                'click_action' => 'OPEN_URL',
-                'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
-            ],
-            'android' => [  // Mover el bloque de Android fuera de 'data'
-                'priority' => 'high',
-            ],
-        ]);
-
-        $messaging = $firebase->createMessaging();
-        $messaging->send($message);
-
-        return response()->json(['notification sent successfully'], 200);
     }
 }
