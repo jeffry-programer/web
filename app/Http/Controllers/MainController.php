@@ -1563,78 +1563,84 @@ class MainController extends Controller
     public function sendSignalAux(Request $request)
     {
         // Encontrar usuario que envía el auxilio vial
-        $user = User::find($request->userId);
+        $user = User::findOrFail($request->userId);
         $name = $user->name;
-
-        // Encontrando tiendas que se encuentran en esa ciudad, que son de ese tipo y que están activas
-        $stores = Store::where('type_stores_id', $request->type)
+    
+        // Verificar si el usuario ya tiene una señal activa del mismo tipo de tienda
+        $existingSignal = SignalAux::where('users_id', $user->id)
+            ->where('read', false)
+            ->whereHas('store', function ($query) use ($request) {
+                $query->where('type_stores_id', $request->type);
+            })
+            ->exists();
+    
+        if ($existingSignal) {
+            return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
+        }
+    
+        // Encontrar tiendas en la ciudad, del tipo y activas
+        $storesQuery = Store::where('type_stores_id', $request->type)
             ->where('status', true)
             ->where('municipalities_id', $request->municipality);
-
-        if ($request->sector != 'Todos') {
-            $stores->where('sectors_id', $request->sector);
+    
+        if ($request->sector !== 'Todos') {
+            $storesQuery->where('sectors_id', $request->sector);
         }
-
-        $stores = $stores->get();
-
-        // Recorriendo las tiendas para enviar la notificación a cada una de ellas
+    
+        $stores = $storesQuery->get();
+    
+        // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
-            // Verificar si la tienda ya tiene una señal activa
-            $hasActiveSignal = SignalAux::where('stores_id', $store->user->id)
+            $storeHasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true)
                 ->where('read', false)
                 ->exists();
-
-            // Si la tienda no tiene señales activas, enviar la nueva señal
-            if (!$hasActiveSignal) {
-                $signal = new SignalAux();
-                $signal->users_id = $user->id;
-                $signal->stores_id = $store->user->id;
-                $signal->detail = $request->description;
-                $signal->status = false;
-                $signal->status2 = false;
-                $signal->read = false;
-                $signal->created_at = Carbon::now();
-                $signal->save();
-
+    
+            if (!$storeHasActiveSignal) {
+                SignalAux::create([
+                    'users_id' => $user->id,
+                    'stores_id' => $store->user->id,
+                    'detail' => $request->description,
+                    'status' => false,  // Marcamos como abierta (esperando)
+                    'status2' => false,
+                    'read' => false,
+                    'created_at' => now(),
+                ]);
+    
+                // Enviar notificación via Firebase si el token es válido
                 $token = $store->user->token;
-
                 if (strlen($token) > 10) {
                     $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
-
-                    // Obtener el servicio de mensajería
                     $messaging = $firebase->createMessaging();
-
-                    // Crear el mensaje
+    
                     $message = CloudMessage::fromArray([
-                        'token' => $token,  // El token del dispositivo que recibirá la notificación
+                        'token' => $token,
                         'notification' => [
                             'title' => $name,
                             'body' => 'Requiero auxilio vial',
-                            'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
                         ],
-                        'data' => [ // Datos adicionales para manejar la redirección
+                        'data' => [
                             'click_action' => 'OPEN_URL',
-                            'url' => '/signals-aux',  // Ruta donde quieres redirigir al usuario
+                            'url' => '/signals-aux',
                         ],
-                        'android' => [  // Mover el bloque de Android fuera de 'data'
+                        'android' => [
                             'priority' => 'high',
                         ],
                     ]);
-
-                    // Enviar el mensaje
+    
                     $messaging->send($message);
                 }
             }
         }
-
-        if ($stores->count() > 0) {
+    
+        // Disparar evento si se enviaron señales a tiendas
+        if ($stores->isNotEmpty()) {
             event(new NewMessage2());
         }
-
+    
         return response()->json(['stores' => $stores], 200);
     }
-
+    
 
     public function sectors(Request $request)
     {
@@ -1651,62 +1657,83 @@ class MainController extends Controller
     public function getSignalsAux(Request $request)
     {
         $user_id = $request->userId;
+        
+        // Obtener señales recibidas
         $signals_aux = SignalAux::where('users_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data = [];
-        foreach ($signals_aux as $key => $signal) {
+        
+        foreach ($signals_aux as $signal) {
             $user = User::find($signal->stores_id);
-            $array_data[$key]['id'] = $signal->id;
-            $array_data[$key]['name'] = $user->store->name;
-            if ($user->store->image == null || $user->store->image == '') {
-                $letter = strtoupper($user->store->name[0]);
-                $array_data[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-            } else {
-                $array_data[$key]['image'] = $user->store->image;
+            $typeStore = $user->store->type_stores_id; // Obtener tipo de tienda
+            $typeStoreString = '';
+
+            if($typeStore == env('TIPO_TALLER_ID')){
+                $typeStoreString = 'taller';
+            }else if($typeStore == env('TIPO_GRUA_ID')){
+                $typeStoreString = 'grúa';
+            }else if($typeStore == env('TIPO_CAUCHERA_ID')){
+                $typeStoreString = 'cauchera';
             }
-            $array_data[$key]['created_at'] = $signal->created_at;
-            $array_data[$key]['detail'] = $signal->detail;
-            $array_data[$key]['status'] = $signal->status;
-            $array_data[$key]['status2'] = $signal->status2;
-            $array_data[$key]['read'] = $signal->read;
-            $array_data[$key]['idStore'] = $user->store->id;
+            
+            // Solo agregar una señal por tipo de tienda
+            if (!isset($array_data[$typeStore])) {
+                $array_data[$typeStore] = [
+                    'id' => $signal->id,
+                    'name' => $user->store->name,
+                    'image' => $user->store->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->store->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
+                    'created_at' => $signal->created_at,
+                    'detail' => $signal->detail,
+                    'status' => $signal->status,
+                    'status2' => $signal->status2,
+                    'read' => $signal->read,
+                    'idStore' => $user->store->id,
+                    'typeStore' => $typeStore,
+                    'typeStoreString' => $typeStoreString
+                ];
+            }
         }
+        
+        // Obtener señales enviadas
         $signals_aux2 = SignalAux::where('stores_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data2 = [];
-        foreach ($signals_aux2 as $key => $signal) {
+        
+        foreach ($signals_aux2 as $signal) {
             $user = User::find($signal->users_id);
-            if ($user->store) {
-                $array_data2[$key]['id'] = $signal->id;
-                $array_data2[$key]['name'] = $user->store->name;
-                if ($user->store->image == null || $user->store->image == '') {
-                    $letter = strtoupper($user->store->name[0]);
-                    $array_data2[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-                } else {
-                    $array_data2[$key]['image'] = $user->store->image;
-                }
-                $array_data2[$key]['created_at'] = $signal->created_at;
-                $array_data2[$key]['detail'] = $signal->detail;
-                $array_data2[$key]['status'] = $signal->status;
-                $array_data2[$key]['status2'] = $signal->status2;
-                $array_data2[$key]['read'] = $signal->read;
-            } else {
-                $array_data2[$key]['id'] = $signal->id;
-                $array_data2[$key]['name'] = $user->name;
-                if ($user->image == null || $user->image == '') {
-                    $letter = strtoupper($user->name[0]);
-                    $array_data2[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-                } else {
-                    $array_data2[$key]['image'] = $user->image;
-                }
-                $array_data2[$key]['created_at'] = $signal->created_at;
-                $array_data2[$key]['detail'] = $signal->detail;
-                $array_data2[$key]['status'] = $signal->status;
-                $array_data2[$key]['status2'] = $signal->status2;
-                $array_data2[$key]['read'] = $signal->read;
+            $typeStore = $user->store ? $user->store->type_stores_id : null; // Obtener tipo de tienda
+            
+            // Solo agregar una señal por tipo de tienda
+            if ($user->store && !isset($array_data2[$typeStore])) {
+                $array_data2[$typeStore] = [
+                    'id' => $signal->id,
+                    'name' => $user->store->name,
+                    'image' => $user->store->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->store->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
+                    'created_at' => $signal->created_at,
+                    'detail' => $signal->detail,
+                    'status' => $signal->status,
+                    'status2' => $signal->status2,
+                    'read' => $signal->read,
+                ];
+            } elseif (!$user->store && !isset($array_data2['unknown'])) {
+                $array_data2['unknown'] = [
+                    'id' => $signal->id,
+                    'name' => $user->name,
+                    'image' => $user->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
+                    'created_at' => $signal->created_at,
+                    'detail' => $signal->detail,
+                    'status' => $signal->status,
+                    'status2' => $signal->status2,
+                    'read' => $signal->read,
+                ];
             }
         }
-
+    
+        // Convertir los arrays agrupados a un array numérico
+        $array_data = array_values($array_data);
+        $array_data2 = array_values($array_data2);
+    
         return response()->json(['array_send' => $array_data, 'array_recive' => $array_data2], 200);
     }
+    
 
     public function changeStatusSignalsAux(Request $request)
     {

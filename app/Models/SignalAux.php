@@ -9,7 +9,12 @@ class SignalAux extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['users_id', 'stores_id', 'detail', 'created_at'];
+    protected $fillable = ['users_id', 'stores_id', 'status', 'status2', 'read', 'detail', 'created_at'];
 
     public $table = 'signals_aux';
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'stores_id', 'users_id');
+    }
 }
