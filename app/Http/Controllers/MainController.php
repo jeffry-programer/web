@@ -655,6 +655,16 @@ class MainController extends Controller
         $user->notify(new VerifiedEmailApi($user, $request->token));
     }
 
+    public function logoutApi(Request $request){
+        $user = User::find($request->userId);
+        if($user != false){
+            $user->session_active = false;
+            $user->save();
+        }
+
+        return response()->json(['user' => $user], 200);
+    }
+
     public function loginApi(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -674,10 +684,15 @@ class MainController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = User::where('email', $request->email)->first();
+            if ($user->session_active == true) {
+                return response()->json(['error' => 'Ya tienes una cuenta abierta por favor cierrala para continuar'], 422);
+            }
+
             if ($user->email_verified_at == null) {
                 return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
             }
 
+            $user->session_active = true;
             $user->token = $request->token_fcm;
             $user->save();
 
@@ -700,12 +715,6 @@ class MainController extends Controller
             $user->email_verified_at = Carbon::now();
         $user->save();
         return response()->json(['user' => $user], 200);
-    }
-
-    public function logoutApi(Request $request)
-    {
-        $request->user()->token()->revoke();
-        return response()->json(['message' => 'Successfully logged out'], 200);
     }
 
     public function current(Request $request)
@@ -1565,7 +1574,7 @@ class MainController extends Controller
         // Encontrar usuario que envía el auxilio vial
         $user = User::findOrFail($request->userId);
         $name = $user->name;
-    
+
         // Verificar si el usuario ya tiene una señal activa del mismo tipo de tienda
         $existingSignal = SignalAux::where('users_id', $user->id)
             ->where('read', false)
@@ -1573,29 +1582,31 @@ class MainController extends Controller
                 $query->where('type_stores_id', $request->type);
             })
             ->exists();
-    
+
         if ($existingSignal) {
             return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
         }
-    
+
         // Encontrar tiendas en la ciudad, del tipo y activas
         $storesQuery = Store::where('type_stores_id', $request->type)
             ->where('status', true)
             ->where('municipalities_id', $request->municipality);
-    
+
         if ($request->sector !== 'Todos') {
             $storesQuery->where('sectors_id', $request->sector);
         }
-    
+
         $stores = $storesQuery->get();
-    
+
+        $storesSendSignalAux = [];
+
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
             $storeHasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true)
                 ->where('read', false)
                 ->exists();
-    
+
             if (!$storeHasActiveSignal) {
                 SignalAux::create([
                     'users_id' => $user->id,
@@ -1606,13 +1617,15 @@ class MainController extends Controller
                     'read' => false,
                     'created_at' => now(),
                 ]);
-    
+
+                $storesSendSignalAux[] = $store;
+
                 // Enviar notificación via Firebase si el token es válido
                 $token = $store->user->token;
                 if (strlen($token) > 10) {
                     $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
                     $messaging = $firebase->createMessaging();
-    
+
                     $message = CloudMessage::fromArray([
                         'token' => $token,
                         'notification' => [
@@ -1627,20 +1640,20 @@ class MainController extends Controller
                             'priority' => 'high',
                         ],
                     ]);
-    
+
                     $messaging->send($message);
                 }
             }
         }
-    
+
         // Disparar evento si se enviaron señales a tiendas
-        if ($stores->isNotEmpty()) {
+        if (count($storesSendSignalAux) > 0) {
             event(new NewMessage2());
         }
-    
-        return response()->json(['stores' => $stores], 200);
+
+        return response()->json(['stores' => $storesSendSignalAux], 200);
     }
-    
+
 
     public function sectors(Request $request)
     {
@@ -1657,27 +1670,42 @@ class MainController extends Controller
     public function getSignalsAux(Request $request)
     {
         $user_id = $request->userId;
-        
+
         // Obtener señales recibidas
         $signals_aux = SignalAux::where('users_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data = [];
-        
+
         foreach ($signals_aux as $signal) {
             $user = User::find($signal->stores_id);
             $typeStore = $user->store->type_stores_id; // Obtener tipo de tienda
             $typeStoreString = '';
-
-            if($typeStore == env('TIPO_TALLER_ID')){
+        
+            if ($typeStore == env('TIPO_TALLER_ID')) {
                 $typeStoreString = 'taller';
-            }else if($typeStore == env('TIPO_GRUA_ID')){
+            } else if ($typeStore == env('TIPO_GRUA_ID')) {
                 $typeStoreString = 'grúa';
-            }else if($typeStore == env('TIPO_CAUCHERA_ID')){
+            } else if ($typeStore == env('TIPO_CAUCHERA_ID')) {
                 $typeStoreString = 'cauchera';
             }
-            
-            // Solo agregar una señal por tipo de tienda
-            if (!isset($array_data[$typeStore])) {
+        
+            // Si el status es false y aún no hemos agregado una señal de este tipo de tienda, se agrupa
+            if ($signal->status == false && !isset($array_data[$typeStore])) {
                 $array_data[$typeStore] = [
+                    'id' => $signal->id,
+                    'name' => $user->store->name,
+                    'image' => $user->store->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->store->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
+                    'created_at' => $signal->created_at,
+                    'detail' => $signal->detail,
+                    'status' => $signal->status,
+                    'status2' => $signal->status2,
+                    'read' => $signal->read,
+                    'idStore' => $user->store->id,
+                    'typeStore' => $typeStore,
+                    'typeStoreString' => $typeStoreString
+                ];
+            } elseif ($signal->status != false) {
+                // Aquí se agregan todas las señales que no cumplen la condición de agrupar por tipo de tienda
+                $array_data[] = [
                     'id' => $signal->id,
                     'name' => $user->store->name,
                     'image' => $user->store->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->store->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
@@ -1693,47 +1721,50 @@ class MainController extends Controller
             }
         }
         
+
         // Obtener señales enviadas
         $signals_aux2 = SignalAux::where('stores_id', $user_id)->orderBy('id', 'desc')->get();
         $array_data2 = [];
-        
-        foreach ($signals_aux2 as $signal) {
+
+        foreach ($signals_aux2 as $key => $signal) {
             $user = User::find($signal->users_id);
-            $typeStore = $user->store ? $user->store->type_stores_id : null; // Obtener tipo de tienda
-            
-            // Solo agregar una señal por tipo de tienda
-            if ($user->store && !isset($array_data2[$typeStore])) {
-                $array_data2[$typeStore] = [
-                    'id' => $signal->id,
-                    'name' => $user->store->name,
-                    'image' => $user->store->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->store->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
-                    'created_at' => $signal->created_at,
-                    'detail' => $signal->detail,
-                    'status' => $signal->status,
-                    'status2' => $signal->status2,
-                    'read' => $signal->read,
-                ];
-            } elseif (!$user->store && !isset($array_data2['unknown'])) {
-                $array_data2['unknown'] = [
-                    'id' => $signal->id,
-                    'name' => $user->name,
-                    'image' => $user->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->name[0]) . '&amp;color=7F9CF5&amp;background=EBF4FF',
-                    'created_at' => $signal->created_at,
-                    'detail' => $signal->detail,
-                    'status' => $signal->status,
-                    'status2' => $signal->status2,
-                    'read' => $signal->read,
-                ];
+            if ($user->store) {
+                $array_data2[$key]['id'] = $signal->id;
+                $array_data2[$key]['name'] = $user->store->name;
+                if ($user->store->image == null || $user->store->image == '') {
+                    $letter = strtoupper($user->store->name[0]);
+                    $array_data2[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+                } else {
+                    $array_data2[$key]['image'] = $user->store->image;
+                }
+                $array_data2[$key]['created_at'] = $signal->created_at;
+                $array_data2[$key]['detail'] = $signal->detail;
+                $array_data2[$key]['status'] = $signal->status;
+                $array_data2[$key]['status2'] = $signal->status2;
+                $array_data2[$key]['read'] = $signal->read;
+            } else {
+                $array_data2[$key]['id'] = $signal->id;
+                $array_data2[$key]['name'] = $user->name;
+                if ($user->image == null || $user->image == '') {
+                    $letter = strtoupper($user->name[0]);
+                    $array_data2[$key]['image'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
+                } else {
+                    $array_data2[$key]['image'] = $user->image;
+                }
+                $array_data2[$key]['created_at'] = $signal->created_at;
+                $array_data2[$key]['detail'] = $signal->detail;
+                $array_data2[$key]['status'] = $signal->status;
+                $array_data2[$key]['status2'] = $signal->status2;
+                $array_data2[$key]['read'] = $signal->read;
             }
         }
-    
+
         // Convertir los arrays agrupados a un array numérico
         $array_data = array_values($array_data);
         $array_data2 = array_values($array_data2);
-    
+
         return response()->json(['array_send' => $array_data, 'array_recive' => $array_data2], 200);
     }
-    
 
     public function changeStatusSignalsAux(Request $request)
     {
@@ -1759,18 +1790,40 @@ class MainController extends Controller
             $conversation->save();
         }
 
-        event(new NewMessage2());
+        $array_data = [
+            'status' => 'approve',
+            'userId' =>  $signal->users_id
+        ];
+
+        event(new NewMessage2($array_data));
 
         return response()->json(['id' => $conversation->id], 200);
     }
 
-    public function removeSignalsAux(Request $request)
+    public function removeSignalAux(Request $request)
     {
         $signal = SignalAux::find($request->id);
         if ($signal != null) {
             $signal->delete();
         }
         return response()->json('ok', 200);
+    }
+
+    public function removeSignalsAux(Request $request)
+    {
+        $userId = $request->userId;
+
+        // Definir el tiempo límite de un minuto y medio (70 segundos) en el pasado
+        $timeLimit = Carbon::now()->subSeconds(70);
+
+        // Eliminar solo las señales creadas dentro del último minuto y medio
+        $signals = SignalAux::where('users_id', $userId)
+            ->where('created_at', '>=', $timeLimit)
+            ->delete();
+
+        event(new NewMessage2());
+
+        return response()->json(['signals' => $signals], 200);
     }
 
     public function closeSignalsAux(Request $request)

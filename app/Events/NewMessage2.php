@@ -11,15 +11,16 @@ class NewMessage2
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+    public $data;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($data = [])
     {
+        $this->data = is_array($data) ? $data : [];
     }
 
     public function broadcastOn()

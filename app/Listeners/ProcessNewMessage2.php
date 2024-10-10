@@ -10,15 +10,16 @@ class ProcessNewMessage2
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Handle the event.
      */
     public function handle(NewMessage2 $event): void
     {
+        // Obtiene el mensaje del evento
+        $data = $event->data;
+
         // Configuración de Pusher
         $options = array(
             'cluster' => 'sa1',
@@ -36,9 +37,6 @@ class ProcessNewMessage2
         // Canal y evento para Pusher
         $channel = 'chat-channel';
         $event = 'new-message2';
-
-        // Datos que se enviarán al cliente
-        $data = [];
 
         // Emite el evento a Pusher
         $pusher->trigger($channel, $event, $data);

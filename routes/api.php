@@ -20,6 +20,7 @@ Route::get('/get-info-home/{userId}-{municipalityId}', [MainController::class, '
 Route::post('register',  [MainController::class, 'registerApi']);
 Route::post('/login-or-register-google', [MainController::class, 'loginOrRegisterWithGoogle']);
 Route::post('login', [MainController::class, 'loginApi']);
+Route::post('logout', [MainController::class, 'logoutApi']);
 Route::post('verifiedApi', [MainController::class, 'verifiedApi']);
 Route::post('subscriptions', [MainController::class, 'subscriptionsApi']);
 Route::post('my-publicities', [MainController::class, 'myPublicitiesApi']);
@@ -59,7 +60,8 @@ Route::get('/states', [MainController::class, 'getStates']);
 Route::post('/send-signal-aux', [MainController::class, 'sendSignalAux']);
 Route::get('/get-signals-aux', [MainController::class, 'getSignalsAux']);
 Route::post('/change-status-signal', [MainController::class, 'changeStatusSignalsAux']);
-Route::post('/remove-status-signal', [MainController::class, 'removeSignalsAux']);
+Route::post('/remove-status-signal', [MainController::class, 'removeSignalAux']);
+Route::post('/remove-signals', [MainController::class, 'removeSignalsAux']);
 Route::post('/close-status-signal', [MainController::class, 'closeSignalsAux']);
 Route::post('/quality-signal', [MainController::class, 'qualitySignal']);
 Route::post('/change-status-message', [MessageController::class, 'changeStatusMessage']);
