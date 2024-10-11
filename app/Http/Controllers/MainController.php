@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
+use App\Models\ExchangeRate;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductStore;
@@ -24,6 +25,7 @@ use App\Models\Modell;
 use App\Models\Municipality;
 use App\Models\Plan;
 use App\Models\PlanContracting;
+use App\Models\Renovation;
 use App\Models\SearchUser;
 use App\Models\Sector;
 use App\Models\SignalAux;
@@ -35,6 +37,7 @@ use App\Models\User;
 use App\Notifications\ResetPasswordApi;
 use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +47,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Schema;
+use IntlDateFormatter;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 
@@ -655,9 +659,10 @@ class MainController extends Controller
         $user->notify(new VerifiedEmailApi($user, $request->token));
     }
 
-    public function logoutApi(Request $request){
+    public function logoutApi(Request $request)
+    {
         $user = User::find($request->userId);
-        if($user != false){
+        if ($user != false) {
             $user->session_active = false;
             $user->save();
         }
@@ -796,6 +801,42 @@ class MainController extends Controller
         return response()->json('Subscripcion eliminada exitosamente', 200);
     }
 
+    public function renewPlan(Request $request)
+    {
+        // Validación de los datos
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'store_id' => 'required|exists:stores,id', // Asegúrate de validar el store_id
+            'comentary' => 'nullable|string|max:255', // Opcional, si quieres permitir comentarios
+        ]);
+    
+        // Verifica si ya existe una renovación para esta tienda
+        $existingRenovation = Renovation::where('stores_id', $request->store_id)->first();
+        if ($existingRenovation) {
+            return response()->json(['error' => 'Este negocio ya tiene una renovación pendiente'], 422);
+        }
+    
+        // Manejar la imagen
+        if ($request->hasFile('image')) {
+            $route_image = $request->file('image')->store('public/images-renovation');
+            $url = Storage::url($route_image);
+        } else {
+            return response()->json(['message' => 'No se ha subido ninguna imagen'], 400);
+        }
+    
+        // Lógica para renovar el plan
+        $renovation = new Renovation(); // Asegúrate de tener el modelo Renovation importado
+        $renovation->stores_id = $request->store_id; // Asigna el store_id
+        $renovation->plans_id = $request->plan_id; // Asigna el plan_id
+        $renovation->image = $url; // Asigna la ruta de la imagen
+        $renovation->comentary = $request->comentary; // Asigna el comentario (puede ser null)
+        $renovation->status = false; // O asigna el estado que consideres necesario
+        $renovation->save(); // Guarda la entrada en la base de datos
+    
+        return response()->json(['message' => 'Plan renovado exitosamente!', 'renovation' => $renovation], 200);
+    }
+    
     public function storeDetail(Request $request)
     {
         // Encuentra la tienda por el ID y carga sus relaciones
@@ -835,12 +876,28 @@ class MainController extends Controller
         $sector = $store->sector;
         $municipality = $sector ? $sector->municipality : null;
         $state = $municipality ? $municipality->state : null;
+        $plan_contracting = PlanContracting::where('stores_id', $store->id)->first();
+
+        if ($plan_contracting != false) {
+            $plan = $plan_contracting->plan->description;
+            $fmt = new IntlDateFormatter('es_ES', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+            $fmt->setPattern('dd MMM yyyy');
+
+            $date_init = $fmt->format(new DateTime($plan_contracting->date_init));
+            $date_end = $fmt->format(new DateTime($plan_contracting->date_end));
+
+            $date_range = $date_init . ' - ' . $date_end;
+        } else {
+            $plan = null;
+            $date_range = null;
+        }
 
         // Agrega los datos de sector, ciudad y estado al objeto 'store' antes de enviarlo en la respuesta
         $storeData = $store->toArray();  // Convertimos la tienda a un array
         $storeData['sector'] = $sector ? $sector->description : null;
         $storeData['municipality'] = $municipality ? $municipality->name : null;
         $storeData['state'] = $state ? $state->name : null;
+        $storeData['plan_contracting'] = $plan . ' (' . $date_range . ')';
 
         $municipality = Municipality::find($storeData['municipalities_id']);
         $municipalities = Municipality::where('states_id', $municipality->states_id)->get();
@@ -848,14 +905,45 @@ class MainController extends Controller
         $sector = Sector::find($storeData['sectors_id']);
         $sectors = Sector::where('municipalities_id', $sector->municipalities_id)->get();
 
+        // Obtener la tasa de cambio
+        $exchangeRate = $this->getExchangeRate();
+
+        // Obtener los planes y convertir precios a bolívares
+        $plans = Plan::all()->map(function ($plan) use ($exchangeRate) {
+            $plan->convertedPrice = $plan->price * $exchangeRate; // Conversión a VES
+            return $plan;
+        });
+
         // Retorna la respuesta con la tienda, suscripción y conversación
         return response()->json([
             'store' => $storeData,
+            'plans' => $plans,
             'subscription' => $subscription,
             'conversation' => $conversation,
             'municipalities' => $municipalities,
             'sectors' => $sectors
         ], 200);
+    }
+
+    private function getExchangeRate()
+    {
+        // Intenta obtener el último tipo de cambio
+        $exchangeRate = ExchangeRate::latest()->first();
+
+        // Si no hay registro o el último cambio es más viejo que 24 horas
+        if (!$exchangeRate || $exchangeRate->updated_at < now()->subDay()) {
+            // Obtener la tasa de cambio de la API
+            $response = file_get_contents('https://api.exchangerate-api.com/v4/latest/USD');
+            $data = json_decode($response, true);
+
+            // Almacenar la nueva tasa de cambio
+            $exchangeRate = new ExchangeRate();
+            $exchangeRate->rate = $data['rates']['VES'];
+            $exchangeRate->updated_at = now();
+            $exchangeRate->save();
+        }
+
+        return $exchangeRate->rate;
     }
 
 
@@ -1679,7 +1767,7 @@ class MainController extends Controller
             $user = User::find($signal->stores_id);
             $typeStore = $user->store->type_stores_id; // Obtener tipo de tienda
             $typeStoreString = '';
-        
+
             if ($typeStore == env('TIPO_TALLER_ID')) {
                 $typeStoreString = 'taller';
             } else if ($typeStore == env('TIPO_GRUA_ID')) {
@@ -1687,7 +1775,7 @@ class MainController extends Controller
             } else if ($typeStore == env('TIPO_CAUCHERA_ID')) {
                 $typeStoreString = 'cauchera';
             }
-        
+
             // Si el status es false y aún no hemos agregado una señal de este tipo de tienda, se agrupa
             if ($signal->status == false && !isset($array_data[$typeStore])) {
                 $array_data[$typeStore] = [
@@ -1720,7 +1808,7 @@ class MainController extends Controller
                 ];
             }
         }
-        
+
 
         // Obtener señales enviadas
         $signals_aux2 = SignalAux::where('stores_id', $user_id)->orderBy('id', 'desc')->get();
@@ -2078,5 +2166,28 @@ class MainController extends Controller
         $product_store->save();
 
         return response()->json(['product' => $product_store], 200);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'products' => 'required|array',
+            'store_id' => 'required|integer',
+        ]);
+
+        foreach ($data['products'] as $product) {
+            ProductStore::updateOrCreate(
+                [
+                    'products' => $product['id'],
+                    'stores_id' => $data['store_id']
+                ],
+                [
+                    'amount' => $product['amount'],
+                    'price' => $product['price']
+                ]
+            );
+        }
+
+        return response()->json(['message' => 'Products updated successfully']);
     }
 }

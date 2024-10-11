@@ -29,6 +29,7 @@ Route::post('sendVerifiedEmailApi', [MainController::class, 'sendVerifiedEmailAp
 Route::post('nullSubscription', [MainController::class, 'nullSubscription']);
 Route::post('nullSubscription2', [MainController::class, 'nullSubscription2']);
 Route::post('store_detail', [MainController::class, 'storeDetail']);
+Route::post('/renew-plan', [MainController::class, 'renewPlan']);
 Route::post('products_store_detail', [MainController::class, 'ProductStoreDetail']);
 Route::post('products_store_details', [MainController::class, 'ProductStoreDetails']);
 Route::post('subscribe_store', [MainController::class, 'SubscribeStore']);
@@ -68,6 +69,7 @@ Route::post('/change-status-message', [MessageController::class, 'changeStatusMe
 Route::post('/reset-password', [MainController::class, 'resetPassword']);
 Route::post('/change-password', [MainController::class, 'changePassword']);
 Route::post('/save-product', [MainController::class, 'saveProduct']);
+Route::post('/store-products', [MainController::class, 'store']);
 
 
 
