@@ -810,13 +810,13 @@ class MainController extends Controller
             'store_id' => 'required|exists:stores,id', // Asegúrate de validar el store_id
             'comentary' => 'nullable|string|max:255', // Opcional, si quieres permitir comentarios
         ]);
-    
+
         // Verifica si ya existe una renovación para esta tienda
         $existingRenovation = Renovation::where('stores_id', $request->store_id)->first();
         if ($existingRenovation) {
             return response()->json(['error' => 'Este negocio ya tiene una renovación pendiente'], 422);
         }
-    
+
         // Manejar la imagen
         if ($request->hasFile('image')) {
             $route_image = $request->file('image')->store('public/images-renovation');
@@ -824,7 +824,7 @@ class MainController extends Controller
         } else {
             return response()->json(['message' => 'No se ha subido ninguna imagen'], 400);
         }
-    
+
         // Lógica para renovar el plan
         $renovation = new Renovation(); // Asegúrate de tener el modelo Renovation importado
         $renovation->stores_id = $request->store_id; // Asigna el store_id
@@ -833,10 +833,10 @@ class MainController extends Controller
         $renovation->comentary = $request->comentary; // Asigna el comentario (puede ser null)
         $renovation->status = false; // O asigna el estado que consideres necesario
         $renovation->save(); // Guarda la entrada en la base de datos
-    
+
         return response()->json(['message' => 'Plan renovado exitosamente!', 'renovation' => $renovation], 200);
     }
-    
+
     public function storeDetail(Request $request)
     {
         // Encuentra la tienda por el ID y carga sus relaciones

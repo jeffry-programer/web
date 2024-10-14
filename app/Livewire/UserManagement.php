@@ -766,7 +766,6 @@ class UserManagement extends Component
                 session()->flash('message', 'Registro editado exitosamente!!');
                 return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
             }
-            
 
             foreach ($store->subscriptions as $suscriptor) {
                 if ($suscriptor->user != null) {
@@ -783,7 +782,6 @@ class UserManagement extends Component
                             'notification' => [
                                 'title' => 'Nueva ' . $type_notification,
                                 'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
-                                'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
                             ],
                             'data' => [ // Datos adicionales para manejar la redirección
                                 'click_action' => 'OPEN_URL',
@@ -883,8 +881,6 @@ class UserManagement extends Component
                 return json_encode($name_table . '-' . $request->id);
             }
 
-            $token_latest = '';
-
             foreach ($store->subscriptions as $suscriptor) {
                 if ($suscriptor->user != null) {
                     $token = $suscriptor->user->token;
@@ -899,8 +895,7 @@ class UserManagement extends Component
                             'token' => $token,  // El token del dispositivo que recibirá la notificación
                             'notification' => [
                                 'title' => 'Nueva ' . $type_notification,
-                                'body' => $store->name . ' ha creado una nueva ' . $type_notification2,
-                                'icon' => 'https://tulobuscas.app/images/tulobuscas2.png', // URL de la imagen del ícono de la notificación
+                                'body' => $store->name . ' ha creado una nueva ' . $type_notification2
                             ],
                             'data' => [ // Datos adicionales para manejar la redirección
                                 'click_action' => 'OPEN_URL',
