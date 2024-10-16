@@ -1347,27 +1347,34 @@ class MainController extends Controller
 
     public function getProductsSearch($query)
     {
-        $string = $query;
-        $products = Product::whereHas('stores', function ($query) {
-            $query->where('status', 1); // Filtra tiendas activas
-        })->where('name', 'like',  '%' . $string . '%')->limit(5)->get();
+        $products = Product::whereHas('stores', function ($q) {
+            $q->where('status', 1);  // Filtra tiendas activas
+        })
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])  // Búsqueda de texto completo
+            ->limit(5)
+            ->get();
 
         return response()->json($products);
     }
 
     public function getProductsSearch2($query, $id)
     {
-        $string = $query;
-        $products = Product::whereHas('stores', function ($query) use ($id) {
-            $query->where('stores.id', $id);   // Filtra tiendas activas
-        })->where('name', 'like', '%' . $string . '%')->limit(5)->get();
+        // Usar full-text search en lugar de 'LIKE' para buscar en el campo 'name'
+        $products = Product::whereHas('stores', function ($q) use ($id) {
+            $q->where('stores.id', $id);   // Filtrar por tienda
+        })
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])  // Búsqueda de texto completo
+            ->limit(5)
+            ->get();
+
         return response()->json($products);
     }
 
     public function getProductsSearch3($query)
     {
-        $string = $query;
-        $products = Product::where('name', 'like',  '%' . $string . '%')->limit(5)->get();
+        $products = Product::whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])
+            ->limit(5)
+            ->get();
 
         return response()->json($products);
     }
@@ -2189,5 +2196,56 @@ class MainController extends Controller
         }
 
         return response()->json(['message' => 'Products updated successfully']);
+    }
+
+    // Método para agregar o actualizar productos en una tienda
+    public function addProductToStore(Request $request, $storeId)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'id' => 'required|exists:products,id',
+            'amount' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0.01',
+        ]);
+
+        // Buscamos si el producto ya está asociado con la tienda
+        $storeProduct = ProductStore::where('stores_id', $storeId)
+            ->where('products_id', $validated['id'])
+            ->first();
+
+        if ($storeProduct) {
+            // Si el producto ya está en la tienda, actualizamos cantidad y precio
+            $storeProduct->update([
+                'amount' => $storeProduct->amount + $validated['amount'],
+                'price' => $validated['price'],
+            ]);
+        } else {
+            // Si no está, lo agregamos
+            ProductStore::create([
+                'stores_id' => $storeId,
+                'products_id' => $validated['id'],
+                'amount' => $validated['amount'],
+                'price' => $validated['price'],
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Producto agregado/actualizado exitosamente en la tienda.',
+        ], 200);
+    }
+
+    // Método opcional para eliminar un producto de la tienda
+    public function removeProductFromStore($storeId, $productId)
+    {
+        $storeProduct = ProductStore::where('store_id', $storeId)
+            ->where('product_id', $productId)
+            ->first();
+
+        if ($storeProduct) {
+            $storeProduct->delete();
+            return response()->json(['message' => 'Producto eliminado de la tienda.'], 200);
+        }
+
+        return response()->json(['message' => 'Producto no encontrado en la tienda.'], 404);
     }
 }
