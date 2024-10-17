@@ -8,6 +8,7 @@ use App\Models\AditionalPicturesProduct;
 use App\Models\Box;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
@@ -1460,24 +1461,37 @@ class MainController extends Controller
         $stores2 = collect();
         $stores3 = collect();
 
+        // Si el usuario no está autenticado
         if (!Auth::check()) {
-            $stores2 = SearchUser::with(['store', 'store.municipality'])
+            $stores2 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
+                ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
+                ->with(['store', 'store.municipality'])
+                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
                 ->limit(9)
                 ->get();
 
-            $stores3 = SearchUser::with(['product', 'store'])
+            $stores3 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
+                ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
+                ->with(['product', 'store'])
+                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
                 ->limit(9)
                 ->get();
         } else {
             $userId = Auth::id();
 
             $stores2 = SearchUser::where('users_id', $userId)
+                ->join('stores', 'search_users.stores_id', '=', 'stores.id')
+                ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['store', 'store.municipality'])
+                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
                 ->limit(9)
                 ->get();
 
             $stores3 = SearchUser::where('users_id', $userId)
+                ->join('stores', 'search_users.stores_id', '=', 'stores.id')
+                ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
+                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
                 ->limit(9)
                 ->get();
         }
@@ -1513,9 +1527,11 @@ class MainController extends Controller
             'publicities' => $publicities,
             'stores' => $stores,
             'lastStores' => $array_stores_final,
-            'lastSearch' => $array_products_final
+            'lastSearch' => $array_products_final,
+            'userCityId' => $userCityId
         ]);
     }
+
 
 
     public function getAllStoresPromotion(Request $request)
@@ -1867,6 +1883,7 @@ class MainController extends Controller
         if ($signal == null) {
             return response()->json(['id' => 0], 200);
         }
+        $signal->confirmation = Carbon::now();
         $signal->status = true;
         $signal->save();
 
@@ -1932,16 +1949,43 @@ class MainController extends Controller
 
     public function qualitySignal(Request $request)
     {
-        $signal = SignalAux::find($request->id);
-        $store = Store::where('users_id', $signal->stores_id)->first();
-        if ($store != null) {
-            $store->score_store = ($request->rate + $store->score_store) / 2;
-            $store->save();
-            $signal->status2 = true;
-            $signal->save();
-            return response()->json('ok', 200);
+        // Validación de los datos que llegan desde el frontend
+        $validatedData = $request->validate([
+            'stores_id' => 'required|integer',
+            'users_id' => 'required|integer',
+            'comment' => 'required|string',
+        ]);
+
+        // Guardar el comentario en la tabla 'comments_services'
+        $comment = new Comment();
+        $comment->stores_id = $validatedData['stores_id'];
+        $comment->users_id = $validatedData['users_id'];
+        $comment->comment = $validatedData['comment'];
+        $comment->status = false;
+        $comment->created_at = now(); // Fecha y hora actuales
+
+        // Guardar en la base de datos
+        if ($comment->save()) {
+            $signal = SignalAux::find($request->signalId);
+            // Actualizar el estado de la señal
+            if ($signal != false) {
+                $signal->status2 = true;
+                $signal->save();
+
+                return response()->json([
+                    'message' => 'Comentario guardado exitosamente',
+                    'data' => $comment
+                ], 201);
+            } else {
+                return response()->json([
+                    'message' => 'Error al conseguir la señal'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Error al guardar el comentario'
+            ], 500);
         }
-        return response()->json('La tienda no fue encontrada', 401);
     }
 
     public function updateComponent(Request $request)
@@ -2247,5 +2291,26 @@ class MainController extends Controller
         }
 
         return response()->json(['message' => 'Producto no encontrado en la tienda.'], 404);
+    }
+
+    public function getCommentaries(Request $request)
+    {
+        $store = Store::find($request->store_id);
+        if (!$store) {
+            return response()->json(['error' => 'Tienda no encontrada'], 404);
+        }
+
+        $commentaries = Comment::where('stores_id', $store->id)->get();
+        foreach ($commentaries as $index => $comment) {
+            if (is_null($comment->user_img) || $comment->user_img == '') {
+                $letter = strtoupper($comment->user->name[0]);
+                $comment->user_img = 'https://ui-avatars.com/api/?name=' . $letter . '&color=7F9CF5&background=EBF4FF';
+            } else {
+                $comment->user_img = $comment->user->image;
+            }
+            $comment->name = $comment->user->name;
+        }
+
+        return response()->json(['commentaries' => $commentaries], 200);
     }
 }

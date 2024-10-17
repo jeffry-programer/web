@@ -9,7 +9,7 @@ class SignalAux extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['users_id', 'stores_id', 'status', 'status2', 'read', 'detail', 'created_at'];
+    protected $fillable = ['users_id', 'stores_id', 'status', 'status2', 'read', 'detail', 'created_at', 'confirmation'];
 
     public $table = 'signals_aux';
 

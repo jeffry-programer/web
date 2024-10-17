@@ -70,6 +70,8 @@ Route::post('/reset-password', [MainController::class, 'resetPassword']);
 Route::post('/change-password', [MainController::class, 'changePassword']);
 Route::post('/save-product', [MainController::class, 'saveProduct']);
 Route::post('/store-products', [MainController::class, 'store']);
+Route::post('/comentaries', [MainController::class, 'getCommentaries']);
+
 // Ruta para agregar o actualizar productos en la tienda
 
 Route::post('/stores/{storeId}/products', [MainController::class, 'addProductToStore']);
