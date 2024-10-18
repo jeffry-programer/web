@@ -1680,6 +1680,18 @@ class MainController extends Controller
         return response()->json(['municipalities' => $municipalities, 'type_stores' => $type_stores], 200);
     }
 
+    public function sectors(Request $request)
+    {
+        $sectors = Sector::where('municipalities_id', $request->municipality)->get();
+        return response()->json($sectors, 200);
+    }
+
+    public function municipalities(Request $request)
+    {
+        $municipalities = Municipality::where('states_id', $request->state)->get();
+        return response()->json($municipalities, 200);
+    }
+
     public function sendSignalAux(Request $request)
     {
         // Encontrar usuario que envía el auxilio vial
@@ -1754,28 +1766,16 @@ class MainController extends Controller
 
                     $messaging->send($message);
                 }
+
+                event(new NewMessage2([], $store->user->id));
             }
         }
 
         // Disparar evento si se enviaron señales a tiendas
         if (count($storesSendSignalAux) > 0) {
-            event(new NewMessage2());
         }
 
         return response()->json(['stores' => $storesSendSignalAux], 200);
-    }
-
-
-    public function sectors(Request $request)
-    {
-        $sectors = Sector::where('municipalities_id', $request->municipality)->get();
-        return response()->json($sectors, 200);
-    }
-
-    public function municipalities(Request $request)
-    {
-        $municipalities = Municipality::where('states_id', $request->state)->get();
-        return response()->json($municipalities, 200);
     }
 
     public function getSignalsAux(Request $request)
@@ -1907,7 +1907,7 @@ class MainController extends Controller
             'userId' =>  $signal->users_id
         ];
 
-        event(new NewMessage2($array_data));
+        event(new NewMessage2($array_data, $signal->users_id));
 
         return response()->json(['id' => $conversation->id], 200);
     }
@@ -1933,7 +1933,9 @@ class MainController extends Controller
             ->where('created_at', '>=', $timeLimit)
             ->delete();
 
-        event(new NewMessage2());
+        foreach($signals as $signal){
+            event(new NewMessage2([], $signal->store->user->id));
+        }
 
         return response()->json(['signals' => $signals], 200);
     }
@@ -1943,7 +1945,7 @@ class MainController extends Controller
         $signal = SignalAux::find($request->id);
         $signal->read = true;
         $signal->save();
-        event(new NewMessage2());
+        event(new NewMessage2([], $signal->store->user->id));
         return response()->json('ok', 200);
     }
 

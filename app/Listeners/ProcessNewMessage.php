@@ -23,6 +23,7 @@ class ProcessNewMessage
     {
         // Obtiene el mensaje del evento
         $message = $event->message;
+        $userId = $event->userId;
 
         // Configuración de Pusher
         $options = array(
@@ -39,7 +40,7 @@ class ProcessNewMessage
         );
 
         // Canal y evento para Pusher
-        $channel = 'chat-channel';
+        $channel = 'chat-channel-' . $event->conversation_id;
         $event = 'new-message';
 
         // Datos que se enviarán al cliente
@@ -48,6 +49,19 @@ class ProcessNewMessage
         ];
 
         // Emite el evento a Pusher
+        $pusher->trigger($channel, $event, $data);
+
+
+        // Canal y evento para Pusher
+        $channel = 'chat-recive-' . $userId;
+        $event = 'new-message';
+
+        // Datos que se enviarán al cliente
+        $data = [
+            'message' => $message->toArray() // Convertir el mensaje a un array
+        ];
+
+        // Emite el evento a los chats
         $pusher->trigger($channel, $event, $data);
     }
 }

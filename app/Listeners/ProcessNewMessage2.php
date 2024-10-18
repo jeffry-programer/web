@@ -19,6 +19,7 @@ class ProcessNewMessage2
     {
         // Obtiene el mensaje del evento
         $data = $event->data;
+        $userId = $event->userId;
 
         // Configuración de Pusher
         $options = array(
@@ -35,7 +36,7 @@ class ProcessNewMessage2
         );
 
         // Canal y evento para Pusher
-        $channel = 'chat-channel';
+        $channel = 'signal-aux-'.$userId;
         $event = 'new-message2';
 
         // Emite el evento a Pusher

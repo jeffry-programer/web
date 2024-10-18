@@ -65,8 +65,6 @@ class MessageController extends Controller
         $message->content = $content;
         $message->from = $from;
 
-        event(new NewMessage($message));
-
         $conversation = Conversation::find($conversationId);
         $user1 = User::find($conversation->users_id);
         $store = User::find($conversation->stores_id)->store;
@@ -75,10 +73,14 @@ class MessageController extends Controller
         if ($user1->email == $user->email) {
             $token = $user2->token;
             $name = $user1->name;
+            $userId = $user2->id;
         } else {
             $token = $user1->token;
             $name = $store->name;
+            $userId = $user1->id;
         }
+
+        event(new NewMessage($message, $conversationId, $userId));
 
         if (strlen($token) > 10) {
             $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));

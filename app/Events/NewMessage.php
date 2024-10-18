@@ -13,15 +13,19 @@ class NewMessage
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+    public $conversation_id;
+    public $userId;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Message $message)
+    public function __construct(Message $message, $conversation_id, $userId)
     {
         $this->message = $message;
+        $this->conversation_id = $conversation_id;
+        $this->userId = $userId;
     }
 
     public function broadcastOn()
