@@ -1928,14 +1928,20 @@ class MainController extends Controller
         // Definir el tiempo límite de un minuto y medio (70 segundos) en el pasado
         $timeLimit = Carbon::now()->subSeconds(70);
 
-        // Eliminar solo las señales creadas dentro del último minuto y medio
+        // Obtener las señales creadas dentro del último minuto y medio
         $signals = SignalAux::where('users_id', $userId)
             ->where('created_at', '>=', $timeLimit)
-            ->delete();
+            ->get();  // Usar get() para obtener la colección de señales
 
-        foreach($signals as $signal){
+        // Emitir el evento para cada señal antes de eliminarlas
+        foreach ($signals as $signal) {
             event(new NewMessage2([], $signal->store->user->id));
         }
+
+        // Luego de emitir los eventos, proceder a eliminar las señales
+        SignalAux::where('users_id', $userId)
+            ->where('created_at', '>=', $timeLimit)
+            ->delete();
 
         return response()->json(['signals' => $signals], 200);
     }
