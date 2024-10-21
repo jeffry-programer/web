@@ -1374,7 +1374,7 @@ class MainController extends Controller
     public function getProductsSearch3($query)
     {
         $products = Product::whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])
-            ->limit(5)
+            ->limit(20)
             ->get();
 
         return response()->json($products);
