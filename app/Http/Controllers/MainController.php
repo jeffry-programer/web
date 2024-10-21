@@ -878,6 +878,7 @@ class MainController extends Controller
         $municipality = $sector ? $sector->municipality : null;
         $state = $municipality ? $municipality->state : null;
         $plan_contracting = PlanContracting::where('stores_id', $store->id)->first();
+        $renovation = Renovation::where('stores_id', $store->id)->where('status', false)->exists();
 
         if ($plan_contracting != false) {
             $plan = $plan_contracting->plan->description;
@@ -899,6 +900,7 @@ class MainController extends Controller
         $storeData['municipality'] = $municipality ? $municipality->name : null;
         $storeData['state'] = $state ? $state->name : null;
         $storeData['plan_contracting'] = $plan . ' (' . $date_range . ')';
+        $storeData['renovation'] = $renovation;
 
         $municipality = Municipality::find($storeData['municipalities_id']);
         $municipalities = Municipality::where('states_id', $municipality->states_id)->get();
