@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('cleanup:remove-expired-promotions-ads')->daily();
+        $schedule->command('assistance:remove-pending')->everyThirtyMinutes();
+        $schedule->command('validate:plan')->daily();
     }
 
     /**
