@@ -370,15 +370,24 @@
                                     <label>{{__($field)}}</label>
                                     <textarea name="{{$field}}" class="form-control" placeholder="Ejemplo: De lunes a viernes: 8 am - 5 pm, Sabado: 9 am - 12 pm"></textarea>
                                 @elseif((str_contains($field, 'tipo')))
-                                    <label>{{__($field)}}</label>
-                                    <select class="form-select" name="tipo">
-                                        <option value="Plataforma plana">Plataforma plana</option>
-                                        <option value="Grúas de gancho">Grúas de gancho</option>
-                                        <option value="Grúas de arrastre">Grúas de arrastre</option>
-                                    </select>
+                                    <div class="display-grua">
+                                        <label>{{__($field)}}</label>
+                                        <select class="form-select" name="tipo">
+                                            <option value="Plataforma plana">Plataforma plana</option>
+                                            <option value="Grúas de gancho">Grúas de gancho</option>
+                                            <option value="Grúas de arrastre">Grúas de arrastre</option>
+                                        </select>
+                                    </div>
                                 @else
-                                    <label for="">{{__($field)}}</label>
-                                    <input type="text" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                    @if($field == 'dimensiones' || $field == 'capacidad')
+                                        <div class="display-grua">
+                                            <label for="">{{__($field)}}</label>
+                                            <input type="text" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                        </div>
+                                    @else
+                                        <label for="">{{__($field)}}</label>
+                                        <input type="text" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                    @endif
                                 @endif
                             @endif
                         @endforeach
@@ -514,16 +523,25 @@
                                         <label>{{__($field)}}</label>
                                         <input type="time" name="{{$field}}" id="{{$field}}" class="form-control">
                                     @elseif((str_contains($field, 'tipo')))
-                                        <label>{{__($field)}}</label>
-                                        <select class="form-select" name="tipo" id="tipo">
-                                            <option value="" selected>Por favor seleccione un tipo de plataforma</option>
-                                            <option value="Plataforma plana">Plataforma plana</option>
-                                            <option value="Grúas de gancho">Grúas de gancho</option>
-                                            <option value="Grúas de arrastre">Grúas de arrastre</option>
-                                        </select>
+                                        <div class="display-grua2">
+                                            <label>{{__($field)}}</label>
+                                            <select class="form-select" name="tipo" id="tipo">
+                                                <option value="" selected>Por favor seleccione un tipo de plataforma</option>
+                                                <option value="Plataforma plana">Plataforma plana</option>
+                                                <option value="Grúas de gancho">Grúas de gancho</option>
+                                                <option value="Grúas de arrastre">Grúas de arrastre</option>
+                                            </select>
+                                        </div>
                                     @else
-                                        <label for="">{{__($field)}}</label>
-                                        <input type="text" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                        @if($field == 'dimensiones' || $field == 'capacidad')
+                                            <div class="display-grua2">
+                                                <label for="">{{__($field)}}</label>
+                                                <input type="text" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                            </div>
+                                        @else
+                                            <label for="">{{__($field)}}</label>
+                                            <input type="text" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                        @endif
                                     @endif
                             @endif
                         @endforeach
@@ -1182,6 +1200,43 @@
                       $('#sectors_id').html(options);
                   }
               });
+        });
+
+        $('[name="type_stores_id"]').change(() => {
+            if ($('[name="type_stores_id"]').val() == {{ env('TIPO_GRUA_ID') }}) {
+                $(".display-grua").css('display', 'block'); // Cambiar 'visiblity' a 'visibility'
+            } else {
+                $(".display-grua").css('display', 'none'); // Cambiar 'visiblity' a 'visibility'
+            }
+        });
+
+        $('#type_stores_id').change(() => {
+            if ($('#type_stores_id').val() == {{ env('TIPO_GRUA_ID') }}) {
+                $(".display-grua2").css('display', 'block'); // Cambiar 'visiblity' a 'visibility'
+            } else {
+                $(".display-grua2").css('display', 'none'); // Cambiar 'visiblity' a 'visibility'
+            }
+        });
+
+        function validateVisibilityTypeStore(){
+            if ($('[name="type_stores_id"]').val() == {{ env('TIPO_GRUA_ID') }}) {
+                $(".display-grua").css('display', 'block'); // Cambiar 'visiblity' a 'visibility'
+            } else {
+                $(".display-grua").css('display', 'none'); // Cambiar 'visiblity' a 'visibility'
+            }
+        }
+
+        function validateVisibilityTypeStore2(){
+            if ($('#type_stores_id').val() == {{ env('TIPO_GRUA_ID') }}) {
+                $(".display-grua2").css('display', 'block'); // Cambiar 'visiblity' a 'visibility'
+            } else {
+                $(".display-grua2").css('display', 'none'); // Cambiar 'visiblity' a 'visibility'
+            }
+        }
+
+        $(document).ready(() => {
+            validateVisibilityTypeStore();
+            validateVisibilityTypeStore2();
         });
     </script>
 @endsection
