@@ -24,6 +24,7 @@ use App\Models\Table;
 use App\Models\TypeStore;
 use App\Models\Modell;
 use App\Models\Municipality;
+use App\Models\ObsceneWord;
 use App\Models\Plan;
 use App\Models\PlanContracting;
 use App\Models\Renovation;
@@ -602,6 +603,7 @@ class MainController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'birthdate' => 'required|date', // Validación para la fecha de nacimiento
         ]);
 
         if ($validator->fails()) {
@@ -613,6 +615,7 @@ class MainController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'birthdate' => $request->birthdate, // Asigna el valor de la fecha de nacimiento
         ]);
 
         $user->notify(new VerifiedEmailApi($user, $request->token));
@@ -1437,13 +1440,13 @@ class MainController extends Controller
         return response()->json(array_values($final_array));
     }
 
-    public function getInfoHome($userId, $municipalityId)
+    public function getInfoHome($userId, $municipalityId = null) // Permitir null como valor por defecto
     {
         $date = Carbon::now();
-
+    
         // Obtener la ciudad del usuario
         $userCityId = $municipalityId;
-
+    
         // Obtener las tiendas en promoción, primero las que están en la misma ciudad
         $storesQuery = Store::where('status', true)
             ->whereHas('promotions', function ($query) use ($date) {
@@ -1452,57 +1455,65 @@ class MainController extends Controller
                     ->where('date_end', '>=', $date);
             })
             ->with('municipality');
-
+    
         // Si el usuario tiene una ciudad, priorizar las tiendas de su misma ciudad
-        if ($userCityId) {
+        if ($userCityId !== null) { // Solo aplicar si no es null
             $storesQuery = $storesQuery->orderByRaw("IF(municipalities_id = ?, 0, 1)", [$userCityId]);
         }
-
+    
         $stores = $storesQuery->take(6)->get();
-
+    
         $stores2 = collect();
         $stores3 = collect();
-
+    
         // Si el usuario no está autenticado
         if (!Auth::check()) {
             $stores2 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['store', 'store.municipality'])
-                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
+                ->when($userCityId, function ($query) use ($userCityId) {
+                    return $query->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId]);
+                })
                 ->limit(9)
                 ->get();
-
+    
             $stores3 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
-                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
+                ->when($userCityId, function ($query) use ($userCityId) {
+                    return $query->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId]);
+                })
                 ->limit(9)
                 ->get();
         } else {
             $userId = Auth::id();
-
+    
             $stores2 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['store', 'store.municipality'])
-                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
+                ->when($userCityId, function ($query) use ($userCityId) {
+                    return $query->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId]);
+                })
                 ->limit(9)
                 ->get();
-
+    
             $stores3 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
-                ->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId])
+                ->when($userCityId, function ($query) use ($userCityId) {
+                    return $query->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId]);
+                })
                 ->limit(9)
                 ->get();
         }
-
+    
         $array_stores = [];
         $array_stores_final = [];
         $array_products = [];
         $array_products_final = [];
-
+    
         foreach ($stores2 as $store) {
             $store_id = $store->store->id;
             if (!in_array($store_id, $array_stores)) {
@@ -1510,7 +1521,7 @@ class MainController extends Controller
                 $array_stores_final[] = $store->store;
             }
         }
-
+    
         foreach ($stores3 as $product) {
             $product_id = $product->product->id;
             if (!in_array($product_id, $array_products)) {
@@ -1518,13 +1529,13 @@ class MainController extends Controller
                 $array_products_final[] = $product->product;
             }
         }
-
+    
         $publicities = Publicity::where('date_end', '>', $date)
             ->where('status', true)
             ->inRandomOrder()
             ->take(8)
             ->get();
-
+    
         return response()->json([
             'publicities' => $publicities,
             'stores' => $stores,
@@ -1533,6 +1544,7 @@ class MainController extends Controller
             'userCityId' => $userCityId
         ]);
     }
+    
 
 
 
@@ -1876,7 +1888,9 @@ class MainController extends Controller
         $array_data = array_values($array_data);
         $array_data2 = array_values($array_data2);
 
-        return response()->json(['array_send' => $array_data, 'array_recive' => $array_data2], 200);
+        $obscene_words = ObsceneWord::all();
+
+        return response()->json(['array_send' => $array_data, 'array_recive' => $array_data2, 'obscene_words' => $obscene_words], 200);
     }
 
     public function changeStatusSignalsAux(Request $request)
@@ -1964,6 +1978,7 @@ class MainController extends Controller
             'stores_id' => 'required|integer',
             'users_id' => 'required|integer',
             'comment' => 'required|string',
+            'rate' => 'required|integer',
         ]);
 
         // Guardar el comentario en la tabla 'comments_services'
@@ -1973,6 +1988,7 @@ class MainController extends Controller
         $comment->comment = $validatedData['comment'];
         $comment->status = false;
         $comment->created_at = now(); // Fecha y hora actuales
+        $comment->rate = $validatedData['rate'];
 
         // Guardar en la base de datos
         if ($comment->save()) {
@@ -2310,7 +2326,7 @@ class MainController extends Controller
             return response()->json(['error' => 'Tienda no encontrada'], 404);
         }
 
-        $commentaries = Comment::where('stores_id', $store->id)->get();
+        $commentaries = Comment::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
         foreach ($commentaries as $index => $comment) {
             if (is_null($comment->user_img) || $comment->user_img == '') {
                 $letter = strtoupper($comment->user->name[0]);

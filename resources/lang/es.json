@@ -427,5 +427,6 @@
     "title" : "Titulo",
     "statusplan" : "Estado plan",
     "status2" : "Estado2",
-    "read" : "Leido"
+    "read" : "Leido",
+    "word" : "Palabra"
 }
