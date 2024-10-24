@@ -716,9 +716,9 @@ class MainController extends Controller
             $store = Store::where('users_id', $user->id)->first();
 
             if ($store != null) {
-                return response()->json(['user' => $user, 'store' => $store->id], 200);
+                return response()->json(['user' => $user, 'store' => $store->id, 'token_fcm' => $request->token_fcm], 422);
             } else {
-                return response()->json(['user' => $user], 200);
+                return response()->json(['user' => $user, 'token_fcm' => $request->token_fcm], 422);
             }
         } else {
             return response()->json(['error' => 'Credenciales incorrectas'], 422);
