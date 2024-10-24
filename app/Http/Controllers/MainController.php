@@ -668,6 +668,7 @@ class MainController extends Controller
         $user = User::find($request->userId);
         if ($user != false) {
             $user->session_active = false;
+            $user->token = '';
             $user->save();
         }
 
@@ -699,6 +700,13 @@ class MainController extends Controller
 
             if ($user->email_verified_at == null) {
                 return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
+            }
+
+            $user_token_exist = User::where('token', $request->token_fcm)->first();
+
+            if($user_token_exist != false){
+                $user_token_exist->token = '';
+                $user_token_exist->save();
             }
 
             $user->session_active = true;
@@ -1443,10 +1451,10 @@ class MainController extends Controller
     public function getInfoHome($userId, $municipalityId = null) // Permitir null como valor por defecto
     {
         $date = Carbon::now();
-    
+
         // Obtener la ciudad del usuario
         $userCityId = $municipalityId;
-    
+
         // Obtener las tiendas en promoción, primero las que están en la misma ciudad
         $storesQuery = Store::where('status', true)
             ->whereHas('promotions', function ($query) use ($date) {
@@ -1455,17 +1463,17 @@ class MainController extends Controller
                     ->where('date_end', '>=', $date);
             })
             ->with('municipality');
-    
+
         // Si el usuario tiene una ciudad, priorizar las tiendas de su misma ciudad
         if ($userCityId !== null) { // Solo aplicar si no es null
             $storesQuery = $storesQuery->orderByRaw("IF(municipalities_id = ?, 0, 1)", [$userCityId]);
         }
-    
+
         $stores = $storesQuery->take(6)->get();
-    
+
         $stores2 = collect();
         $stores3 = collect();
-    
+
         // Si el usuario no está autenticado
         if (!Auth::check()) {
             $stores2 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
@@ -1476,7 +1484,7 @@ class MainController extends Controller
                 })
                 ->limit(9)
                 ->get();
-    
+
             $stores3 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
@@ -1487,7 +1495,7 @@ class MainController extends Controller
                 ->get();
         } else {
             $userId = Auth::id();
-    
+
             $stores2 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
@@ -1497,7 +1505,7 @@ class MainController extends Controller
                 })
                 ->limit(9)
                 ->get();
-    
+
             $stores3 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
@@ -1508,12 +1516,12 @@ class MainController extends Controller
                 ->limit(9)
                 ->get();
         }
-    
+
         $array_stores = [];
         $array_stores_final = [];
         $array_products = [];
         $array_products_final = [];
-    
+
         foreach ($stores2 as $store) {
             $store_id = $store->store->id;
             if (!in_array($store_id, $array_stores)) {
@@ -1521,7 +1529,7 @@ class MainController extends Controller
                 $array_stores_final[] = $store->store;
             }
         }
-    
+
         foreach ($stores3 as $product) {
             $product_id = $product->product->id;
             if (!in_array($product_id, $array_products)) {
@@ -1529,13 +1537,13 @@ class MainController extends Controller
                 $array_products_final[] = $product->product;
             }
         }
-    
+
         $publicities = Publicity::where('date_end', '>', $date)
             ->where('status', true)
             ->inRandomOrder()
             ->take(8)
             ->get();
-    
+
         return response()->json([
             'publicities' => $publicities,
             'stores' => $stores,
@@ -1544,7 +1552,7 @@ class MainController extends Controller
             'userCityId' => $userCityId
         ]);
     }
-    
+
 
 
 
@@ -1566,8 +1574,15 @@ class MainController extends Controller
             'description' => 'required|string|max:255',
             'email' => 'required|email|unique:stores',
             'address' => 'required|max:255',
-            'rif' => 'required|max:255',
+            'rif' => 'required|max:255|unique:stores', // Agregamos la regla 'unique'
             'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/']
+        ], [
+            // Mensajes personalizados
+            'rif.required' => 'El campo RIF es obligatorio.',
+            'rif.unique' => 'Este RIF ya está registrado en la base de datos.',
+            'name.unique' => 'El nombre de la tienda ya está en uso.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'phone.regex' => 'El formato del teléfono no es válido. Debe comenzar con 0412, 0414, 0416, 0424 o 0426.',
         ]);
 
         $type_store = TypeStore::where('description', $request->typeStore)->first();
@@ -2328,11 +2343,12 @@ class MainController extends Controller
 
         $commentaries = Comment::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
         foreach ($commentaries as $index => $comment) {
-            if (is_null($comment->user_img) || $comment->user_img == '') {
+            $image = $comment->user->image;
+            if (is_null($image) || $image == '') {
                 $letter = strtoupper($comment->user->name[0]);
                 $comment->user_img = 'https://ui-avatars.com/api/?name=' . $letter . '&color=7F9CF5&background=EBF4FF';
             } else {
-                $comment->user_img = $comment->user->image;
+                $comment->user_img = $image;
             }
             $comment->name = $comment->user->name;
         }
