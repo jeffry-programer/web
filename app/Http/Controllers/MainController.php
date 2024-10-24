@@ -648,6 +648,17 @@ class MainController extends Controller
             ]);
         }
 
+        $user_token_exist = User::where('token', $request->token_fcm)->first();
+
+        if ($user_token_exist != false) {
+            $user_token_exist->token = '';
+            $user_token_exist->save();
+        }
+
+        $user->session_active = true;
+        $user->token = $request->token_fcm;
+        $user->save();
+
         // Retornar la información del usuario y el token
         return response()->json([
             'user' => $user,
@@ -704,7 +715,7 @@ class MainController extends Controller
 
             $user_token_exist = User::where('token', $request->token_fcm)->first();
 
-            if($user_token_exist != false){
+            if ($user_token_exist != false) {
                 $user_token_exist->token = '';
                 $user_token_exist->save();
             }
@@ -716,9 +727,9 @@ class MainController extends Controller
             $store = Store::where('users_id', $user->id)->first();
 
             if ($store != null) {
-                return response()->json(['user' => $user, 'store' => $store->id, 'token_fcm' => $request->token_fcm], 422);
+                return response()->json(['user' => $user, 'store' => $store->id], 200);
             } else {
-                return response()->json(['user' => $user, 'token_fcm' => $request->token_fcm], 422);
+                return response()->json(['user' => $user], 200);
             }
         } else {
             return response()->json(['error' => 'Credenciales incorrectas'], 422);
