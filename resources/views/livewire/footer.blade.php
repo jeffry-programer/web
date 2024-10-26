@@ -8,7 +8,7 @@
                 <!-- Logo footer -->
                 <div class="col-12 d-flex align-items-center justify-content-center">
                     <a href="#">
-                        <img class="img-fluid" style="width: 16rem;" src=" {{ asset('images/piePagiina.png') }} " alt="..">
+                        <img class="img-fluid" style="width: 12rem;" src=" {{ asset('images/piePagiina.png') }} " alt="..">
                     </a>
                 </div>
                  <!-- Logo footer FIN-->

@@ -97,7 +97,7 @@
   }
   @endphp
   <nav x-data="{ open: false }" class="bg-white border-b border-gray-100"
-    style="height: 6rem;height: 6rem;border: solid 0px;border-bottom: solid 1.4rem #6495ED;padding-bottom: 6rem;margin-bottom: 0rem;">
+    style="height: 6rem;height: 6rem;border: solid 0px;border-bottom: solid 1.4rem #6495ED;padding-bottom: 7rem;margin-bottom: 0rem;">
     <div class="row pt-3" style="width: 100%;">
       <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center">
         <button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
@@ -139,7 +139,7 @@
         </x-dropdown-link>
       </div>
       <div class="col-10 col-md-3 d-flex align-items-center justify-content-center">
-        <img class="img-fluid" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;"
+        <img class="img-fluid" style="height: 90%" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;"
           onclick="window.location.replace('/');">
       </div>
       <div class="col-2 d-flex d-md-none align-items-center justify-content-center">
