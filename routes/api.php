@@ -41,6 +41,7 @@ Route::post('upload-image', [MainController::class, 'uploadImageApi']);
 Route::post('upload-image-store', [MainController::class, 'uploadImageApi2']);
 Route::get('countries', [MainController::class, 'getCountriesApi']);
 Route::get('countries/{countryId}/states', [MainController::class, 'getStatesApi']);
+Route::get('categories/{typeStore}/stores', [MainController::class, 'getCategoriesStoreApi']);
 Route::get('states/{stateId}/municipalities', [MainController::class, 'getMunicipalityByState']); // Obtener ciudades por estado
 Route::get('municipalities/{cityId}/sectors', [MainController::class, 'getSectorsByMunicipality']); // Obtener sectores por ciudad
 Route::get('product-detail/{productId}_{idStore}_{idUser}', [MainController::class, 'getProductDetail']);

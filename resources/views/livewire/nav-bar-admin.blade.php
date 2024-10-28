@@ -1,7 +1,7 @@
 <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="/">
-            <img class="img-fluid" style="width: 16rem;" src=" {{ asset('images/piePagiina.png') }} " alt="..">
+            <img class="img-fluid" style="width: 5rem;margin-left: 3rem;" src=" {{ asset('images/piePagiina.png') }} " alt="..">
         </a>
         <div class="collapse navbar-collapse" id="navbarNav"  style="justify-content: right;">
             <ul class="navbar-nav ml-auto" style="margin-right: 1rem;">

@@ -8,6 +8,7 @@ use App\Models\AditionalPicturesProduct;
 use App\Models\Box;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\CategoryStore;
 use App\Models\Comment;
 use App\Models\Conversation;
 use App\Models\Country;
@@ -610,11 +611,19 @@ class MainController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
+        $user_token_exist = User::where('token', $request->token_fcm)->first();
+
+        if ($user_token_exist != false) {
+            $user_token_exist->token = '';
+            $user_token_exist->save();
+        }
+
         $user = User::create([
             'profiles_id' => 3,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'token' => $request->token_fcm,
             'birthdate' => $request->birthdate, // Asigna el valor de la fecha de nacimiento
         ]);
 
@@ -923,6 +932,12 @@ class MainController extends Controller
         $storeData['state'] = $state ? $state->name : null;
         $storeData['plan_contracting'] = $plan . ' (' . $date_range . ')';
         $storeData['renovation'] = $renovation;
+        $category = CategoryStore::find($store->categories_stores_id);
+        if($category != false){
+            $storeData['category'] = $category->description;
+        }else{
+            $storeData['category'] = null;
+        }
 
         $municipality = Municipality::find($storeData['municipalities_id']);
         $municipalities = Municipality::where('states_id', $municipality->states_id)->get();
@@ -1155,6 +1170,12 @@ class MainController extends Controller
     public function getStatesApi($countryId)
     {
         return State::where('countries_id', $countryId)->get();
+    }
+
+    public function getCategoriesStoreApi($typeStore){
+        $type_store = TypeStore::where('description', $typeStore)->first();
+        $categories = CategoryStore::where('type_stores_id', $type_store->id)->get();
+        return response()->json(['categories' => $categories]);
     }
 
     public function getStates()
@@ -1614,6 +1635,7 @@ class MainController extends Controller
         $store->phone = $request->phone;
         $store->score_store = 0;
         $store->created_at = Carbon::now();
+        $store->categories_stores_id = $request->categories_stores_id;
 
         if ($request->typeStore == 'Grua') {
             $store->tipo = $request->tipo;
