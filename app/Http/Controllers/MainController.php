@@ -933,9 +933,9 @@ class MainController extends Controller
         $storeData['plan_contracting'] = $plan . ' (' . $date_range . ')';
         $storeData['renovation'] = $renovation;
         $category = CategoryStore::find($store->categories_stores_id);
-        if($category != false){
+        if ($category != false) {
             $storeData['category'] = $category->description;
-        }else{
+        } else {
             $storeData['category'] = null;
         }
 
@@ -1172,7 +1172,8 @@ class MainController extends Controller
         return State::where('countries_id', $countryId)->get();
     }
 
-    public function getCategoriesStoreApi($typeStore){
+    public function getCategoriesStoreApi($typeStore)
+    {
         $type_store = TypeStore::where('description', $typeStore)->first();
         $categories = CategoryStore::where('type_stores_id', $type_store->id)->get();
         return response()->json(['categories' => $categories]);
@@ -1348,6 +1349,10 @@ class MainController extends Controller
             $storeQuery->where('sectors_id', $sector_id);
         }
 
+        if ($request->categoryId != '' && $request->categoryId != null && $request->categoryId != 0 && $request->categoryId != '0') {
+            $storeQuery->where('categories_stores_id', $request->categoryId);
+        }
+
         if ($query !== '') {
             $storeQuery->where('name', 'like', '%' . $query . '%');
         }
@@ -1357,6 +1362,9 @@ class MainController extends Controller
         if ($stores->isEmpty()) {
             $locationStores = 'municipality';
             $storeQuery = Store::where('status', true)->where('municipalities_id', $municipalityId)->where('type_stores_id', $request->type)->with('municipality');
+            if ($request->categoryId != '' && $request->categoryId != null && $request->categoryId != 0 && $request->categoryId != '0') {
+                $storeQuery->where('categories_stores_id', $request->categoryId);
+            }
             if ($query !== '') {
                 $storeQuery->where('name', 'like', '%' . $query . '%');
             }
@@ -1367,6 +1375,9 @@ class MainController extends Controller
                 $municipalities = Municipality::where('states_id', $state_id)->pluck('id');
 
                 $stores = Store::where('status', true)->whereIn('municipalities_id', $municipalities)->where('type_stores_id', $request->type)->with('municipality');
+                if ($request->categoryId != '' && $request->categoryId != null && $request->categoryId != 0 && $request->categoryId != '0') {
+                    $stores->where('categories_stores_id', $request->categoryId);
+                }
                 if ($query !== '') {
                     $stores->where('name', 'like', '%' . $query . '%');
                 }
@@ -1378,6 +1389,10 @@ class MainController extends Controller
                     $municipalities = Municipality::pluck('id');
                     $stores = Store::where('status', true)->whereIn('municipalities_id', $municipalities)->where('type_stores_id', $request->type)->with('municipality');
 
+                    if ($request->categoryId != '' && $request->categoryId != null && $request->categoryId != 0 && $request->categoryId != '0') {
+                        $stores->where('categories_stores_id', $request->categoryId);
+                    }
+
                     if ($query !== '') {
                         $stores->where('name', 'like', '%' . $query . '%');
                     }
@@ -1388,7 +1403,7 @@ class MainController extends Controller
         }
 
         // Retorna la respuesta JSON
-        return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
+        return response()->json(['stores' => $stores, 'locationStores' => $locationStores, 'categoryId' => $request->categoryId], 200);
     }
 
     public function getProductsSearch($query)
@@ -1781,12 +1796,21 @@ class MainController extends Controller
             $storesQuery->where('sectors_id', $request->sector);
         }
 
+        if ($request->categoryId != 0 && $request->categoryId != '0' && $request->categoryId != null) {
+            $storesQuery->where('categories_stores_id', $request->categoryId);
+        }
+
         $stores = $storesQuery->get();
 
         $storesSendSignalAux = [];
 
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
+            // Verificar que la tienda no esté asociada al usuario que envía la señal
+            if ($store->user->id === $user->id) {
+                continue; // Saltar esta tienda si pertenece al usuario
+            }
+            
             $storeHasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true)
                 ->where('read', false)
@@ -1833,11 +1857,7 @@ class MainController extends Controller
             }
         }
 
-        // Disparar evento si se enviaron señales a tiendas
-        if (count($storesSendSignalAux) > 0) {
-        }
-
-        return response()->json(['stores' => $storesSendSignalAux], 200);
+        return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId], 200);
     }
 
     public function getSignalsAux(Request $request)
@@ -1952,10 +1972,10 @@ class MainController extends Controller
         $signal->save();
 
         // Eliminar todas las filas relacionadas con el usuario excepto la actual
-        SignalAux::where('users_id', $signal->users_id)
+        $signals = SignalAux::where('users_id', $signal->users_id)
             ->where('id', '!=', $signal->id)
             ->where('status', '!=', true)
-            ->delete();
+            ->get();
 
         $conversation = Conversation::where('users_id', $signal->users_id)->where('stores_id', $signal->stores_id)->first();
         if ($conversation == null) {
@@ -1972,6 +1992,12 @@ class MainController extends Controller
         ];
 
         event(new NewMessage2($array_data, $signal->users_id));
+
+        foreach ($signals as $signal) {
+            $userId = $signal->users_id;
+            $signal->delete();
+            event(new NewMessage2($array_data, $userId));
+        }
 
         return response()->json(['id' => $conversation->id], 200);
     }
@@ -1997,6 +2023,16 @@ class MainController extends Controller
             ->where('created_at', '>=', $timeLimit)
             ->get();  // Usar get() para obtener la colección de señales
 
+        $signal_aux = SignalAux::where('users_id', $userId)->where('created_at', '>=', $timeLimit)->first();
+
+        if ($signal_aux) {
+            $store = $signal_aux->store;
+            $type = TypeStore::find($store->type_stores_id);
+            $store->type = $type ? $type->description : null;
+        } else {
+            $store = null;
+        }
+
         // Emitir el evento para cada señal antes de eliminarlas
         foreach ($signals as $signal) {
             event(new NewMessage2([], $signal->store->user->id));
@@ -2007,7 +2043,7 @@ class MainController extends Controller
             ->where('created_at', '>=', $timeLimit)
             ->delete();
 
-        return response()->json(['signals' => $signals], 200);
+        return response()->json(['signals' => $signals, 'store' => $store, 'type' => $type], 200);
     }
 
     public function closeSignalsAux(Request $request)
