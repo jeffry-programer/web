@@ -45,11 +45,13 @@ Route::get('categories/{typeStore}/stores', [MainController::class, 'getCategori
 Route::get('states/{stateId}/municipalities', [MainController::class, 'getMunicipalityByState']); // Obtener ciudades por estado
 Route::get('municipalities/{cityId}/sectors', [MainController::class, 'getSectorsByMunicipality']); // Obtener sectores por ciudad
 Route::get('product-detail/{productId}_{idStore}_{idUser}', [MainController::class, 'getProductDetail']);
+Route::get('detail-product/{productId}', [MainController::class, 'getProductDetails']);
 Route::get('search-stores', [MainController::class, 'getStoreSearch']);
 Route::get('search-stores2', [MainController::class, 'getStoreSearch2']);
 Route::get('search-products/{query}', [MainController::class, 'getProductsSearch']);
 Route::get('search-products2/{query}-{id}', [MainController::class, 'getProductsSearch2']);
 Route::get('search-products3/{query}', [MainController::class, 'getProductsSearch3']);
+Route::get('search-products4/{query}-{page}', [MainController::class, 'getProductsSearch4']);
 Route::get('/messages/{conversationId}-{userEmail}', [MessageController::class, 'index']);
 Route::get('/chats/{userId}', [MainController::class, 'getChats']);
 Route::post('/messages', [MessageController::class, 'store']);

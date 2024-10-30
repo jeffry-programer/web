@@ -714,7 +714,7 @@
                     <h3>INFORMACIÓN PROPORCIONADA PARA EL ACCESO O REGISTRO</h3>
                     <p>
                         Para utilizar los servicios de la Plataforma TuLoBuscas, se requiere que los
-                        usuarios proporcionen datos como: nombres, apellidos, RIF (para Aliados
+                        usuarios proporcionen datos como: nombres, apellidos, RIF o NIT (para Aliados
                         Comerciales), correo electrónico, dirección, contraseña y número de teléfono.
                         En caso de solicitar soporte al cliente, el usuario podría brindar información
                         adicional, la cual no será compartida con terceros ni utilizada para fines
@@ -863,10 +863,10 @@
                         SMS si así lo has consentido.
                     </p>
                     <p>
-                        Registro de Información Fiscal (RIF), este documento es
+                        Registro de Información Fiscal (RIF o NIT), este documento es
                         necesario para verificar tu identidad al momento de registrar al
                         aliado comercial. Ten en cuenta que no se permite más de un
-                        registro en la aplicación para el mismo RIF.
+                        registro en la aplicación para el mismo RIF o NIT.
                     </p>
                     <p>
                         Fecha de nacimiento, necesaria para asegurar el cumplimiento

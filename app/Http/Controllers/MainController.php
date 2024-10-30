@@ -1236,6 +1236,11 @@ class MainController extends Controller
         return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
+    public function getProductDetails($id){
+        $product = Product::with('brand')->find($id);
+        return response()->json(['product' => $product]);
+    }
+
     public function getStoreSearch(Request $request)
     {
         $search = str_replace('-', ' ', $request->query('query'));
@@ -1434,9 +1439,22 @@ class MainController extends Controller
     public function getProductsSearch3($query)
     {
         $products = Product::whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])
-            ->limit(20)
+            ->limit(5)
             ->get();
 
+        return response()->json($products);
+    }
+
+    public function getProductsSearch4($query, $page = 1)
+    {
+        $perPage = 20; // Número de productos por página
+        $offset = ($page - 1) * $perPage;
+    
+        $products = Product::whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])
+            ->offset($offset)
+            ->limit($perPage)
+            ->get();
+    
         return response()->json($products);
     }
 
@@ -2412,6 +2430,13 @@ class MainController extends Controller
 
         $commentaries = Comment::where('stores_id', $store->id)->orderBy('created_at', 'desc')->get();
         foreach ($commentaries as $index => $comment) {
+            if ($comment->user->store) {
+                $comment->user->image = $comment->user->store->image;
+                $comment->user->name = $comment->user->store->name;
+                $comment->store = $comment->user->store->id;
+            }else{
+                $comment->store = null;
+            }
             $image = $comment->user->image;
             if (is_null($image) || $image == '') {
                 $letter = strtoupper($comment->user->name[0]);
