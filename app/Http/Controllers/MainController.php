@@ -1374,7 +1374,6 @@ class MainController extends Controller
         }
     }
     
-
     /*--------------------------------------------------------------------------------------*/
 
     public function getStoreSearch2(Request $request)
