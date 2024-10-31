@@ -1556,10 +1556,10 @@ class MainController extends Controller
     public function getInfoHome($userId, $municipalityId = null) // Permitir null como valor por defecto
     {
         $date = Carbon::now();
-
+    
         // Obtener la ciudad del usuario
         $userCityId = $municipalityId;
-
+    
         // Obtener las tiendas en promoción, primero las que están en la misma ciudad
         $storesQuery = Store::where('status', true)
             ->whereHas('promotions', function ($query) use ($date) {
@@ -1568,17 +1568,17 @@ class MainController extends Controller
                     ->where('date_end', '>=', $date);
             })
             ->with('municipality');
-
+    
         // Si el usuario tiene una ciudad, priorizar las tiendas de su misma ciudad
         if ($userCityId !== null) { // Solo aplicar si no es null
             $storesQuery = $storesQuery->orderByRaw("IF(municipalities_id = ?, 0, 1)", [$userCityId]);
         }
-
+    
         $stores = $storesQuery->take(6)->get();
-
+    
         $stores2 = collect();
         $stores3 = collect();
-
+    
         // Si el usuario no está autenticado
         if (!Auth::check()) {
             $stores2 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
@@ -1589,7 +1589,7 @@ class MainController extends Controller
                 })
                 ->limit(9)
                 ->get();
-
+    
             $stores3 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
@@ -1600,7 +1600,7 @@ class MainController extends Controller
                 ->get();
         } else {
             $userId = Auth::id();
-
+    
             $stores2 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
@@ -1610,7 +1610,7 @@ class MainController extends Controller
                 })
                 ->limit(9)
                 ->get();
-
+    
             $stores3 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
@@ -1621,44 +1621,51 @@ class MainController extends Controller
                 ->limit(9)
                 ->get();
         }
-
+    
         $array_stores = [];
         $array_stores_final = [];
         $array_products = [];
         $array_products_final = [];
-
-        foreach ($stores2 as $store) {
-            $store_id = $store->store->id;
-            if (!in_array($store_id, $array_stores)) {
-                $array_stores[] = $store_id;
-                $array_stores_final[] = $store->store;
+    
+        try {
+            foreach ($stores2 as $store) {
+                if ($store->store) { // Verificar que $store->store no es null
+                    $store_id = $store->store->id;
+                    if (!in_array($store_id, $array_stores)) {
+                        $array_stores[] = $store_id;
+                        $array_stores_final[] = $store->store;
+                    }
+                }
             }
-        }
-
-        foreach ($stores3 as $product) {
-            $product_id = $product->product->id;
-            if (!in_array($product_id, $array_products)) {
-                $array_products[] = $product_id;
-                $array_products_final[] = $product->product;
+    
+            foreach ($stores3 as $product) {
+                if ($product->product) { // Verificar que $product->product no es null
+                    $product_id = $product->product->id;
+                    if (!in_array($product_id, $array_products)) {
+                        $array_products[] = $product_id;
+                        $array_products_final[] = $product->product;
+                    }
+                }
             }
+    
+            $publicities = Publicity::where('date_end', '>', $date)
+                ->where('status', true)
+                ->inRandomOrder()
+                ->take(8)
+                ->get();
+    
+            return response()->json([
+                'publicities' => $publicities,
+                'stores' => $stores,
+                'lastStores' => $array_stores_final,
+                'lastSearch' => $array_products_final,
+                'userCityId' => $userCityId
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $publicities = Publicity::where('date_end', '>', $date)
-            ->where('status', true)
-            ->inRandomOrder()
-            ->take(8)
-            ->get();
-
-        return response()->json([
-            'publicities' => $publicities,
-            'stores' => $stores,
-            'lastStores' => $array_stores_final,
-            'lastSearch' => $array_products_final,
-            'userCityId' => $userCityId
-        ]);
     }
-
-
+    
 
 
     public function getAllStoresPromotion(Request $request)
