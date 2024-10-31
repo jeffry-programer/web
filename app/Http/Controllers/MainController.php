@@ -1241,100 +1241,141 @@ class MainController extends Controller
         return response()->json(['product' => $product]);
     }
 
+    /*----------------------------------------BUSQUEDA PRINCIPAL---------------------------------*/
     public function getStoreSearch(Request $request)
     {
         $search = str_replace('-', ' ', $request->query('query'));
         $municipalityId = $request->municipalityId;
-        $state_id = $request->stateId;
-        $sector_id = $request->sectorId;
-        $locationStores = 'sector';
-
-        // Build the base query for stores
-        $storeQuery = Store::where('status', true)->where('municipalities_id', $municipalityId);
-
-        // Add sector filter if applicable
-        if ($sector_id !== 'Todos') {
-            $storeQuery->where('sectors_id', $sector_id);
+        $stateId = $request->stateId;
+        $sectorId = $request->sectorId;
+        $locationStores = 'sector'; // Valor por defecto
+    
+        $stores = $this->searchStores10($search, $municipalityId, $stateId, $sectorId, $locationStores);
+    
+        // Guardar la búsqueda del usuario si se encontraron tiendas
+        $this->recordUserSearch($stores, $request->userId);
+    
+        return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
+    }
+    
+    private function searchStores10($search, $municipalityId, $stateId, $sectorId, &$locationStores)
+    {
+        $storeQuery = Store::where('status', true);
+    
+        // Filtrar por municipio
+        if ($municipalityId) {
+            $storeQuery->where('municipalities_id', $municipalityId);
         }
-
-        // Add product filter including subcategory check if categories_id is specified
-        $storeQuery->whereHas('products', function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        });
-
-        // Eager load products with subcategory filter if categories_id is specified
-        $storeQuery->with(['products' => function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }, 'municipality']);
-
-        $stores = $storeQuery->paginate(10);
-
-        if ($stores->isEmpty()) {
-            $locationStores = 'municipality';
-            $storeQuery = Store::where('status', true)->where('municipalities_id', $municipalityId);
-
-            // Add product filter including subcategory check if categories_id is specified
-            $storeQuery->whereHas('products', function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            });
-
-            // Eager load products with subcategory filter if categories_id is specified
-            $storeQuery->with(['products' => function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            }, 'municipality'])->paginate(10);
-
-            $stores = $storeQuery->paginate(10);
-
-            if ($stores->isEmpty()) {
-                $locationStores = 'state';
-                $municipalities = Municipality::where('states_id', $state_id)->pluck('id');
-
-                $stores = Store::where('status', true)
-                    ->whereIn('municipalities_id', $municipalities)
-                    ->whereHas('products', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->with(['products' => function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
-                    }, 'municipality'])->paginate(10);
-
-                if ($stores->isEmpty()) {
-                    $locationStores = 'country';
-                    $municipalities = Municipality::pluck('id');
-
-                    $stores = Store::where('status', true)
-                        ->whereIn('municipalities_id', $municipalities)
-                        ->whereHas('products', function ($query) use ($search) {
-                            $query->where('name', 'like', '%' . $search . '%');
-                        })
-                        ->with(['products' => function ($query) use ($search) {
-                            $query->where('name', 'like', '%' . $search . '%');
-                        }, 'municipality'])->paginate(10);
+    
+        // Agregar filtro de sector si corresponde
+        if ($sectorId !== 'Todos') {
+            $storeQuery->where('sectors_id', $sectorId);
+        }
+    
+        // Dividir la búsqueda en palabras clave y convertir a minúsculas
+        $searchTerms = explode(' ', strtolower($search));
+    
+        // Filtro de productos, asegurando que todos los términos estén presentes
+        $storeQuery->whereHas('products', function ($query) use ($searchTerms) {
+            $query->where(function ($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $q->where('name', 'like', '%' . $term . '%');
                 }
-            }
+            });
+        });
+    
+        // Cargar las relaciones necesarias
+        $storeQuery->with(['products' => function ($query) use ($searchTerms) {
+            $query->where(function ($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $q->where('name', 'like', '%' . $term . '%');
+                }
+            });
+        }, 'municipality']);
+    
+        // Paginación
+        $stores = $storeQuery->paginate(10);
+    
+        // Si no se encontraron tiendas, intenta buscar a nivel de estado
+        if ($stores->isEmpty()) {
+            $stores = $this->searchInState($search, $stateId, $locationStores);
         }
-
-        if (!$stores->isEmpty()) {
-            foreach ($stores as $store) {
-                $product_store = ProductStore::where('products_id', $store->products->first()->id)
+    
+        return $stores;
+    }
+    
+    private function searchInState($search, $stateId, &$locationStores)
+    {
+        $municipalities = Municipality::where('states_id', $stateId)->pluck('id');
+    
+        // Asegurarse de que se está buscando en el estado
+        $stores = Store::where('status', true)
+            ->whereIn('municipalities_id', $municipalities)
+            ->whereHas('products', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->with(['products' => function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            }, 'municipality'])
+            ->paginate(10);
+    
+        // Si aún no se encontraron tiendas, busca a nivel nacional
+        if ($stores->isEmpty()) {
+            $stores = $this->searchInCountry($search);
+            // Cambiar locationStores a 'country' si se busca a nivel nacional
+            $locationStores = 'country';
+        } else {
+            // Cambiar locationStores a 'state' si se encontró en el estado
+            $locationStores = 'state';
+        }
+    
+        return $stores;
+    }
+    
+    private function searchInCountry($search)
+    {
+        return Store::where('status', true)
+            ->whereHas('products', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->with(['products' => function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            }, 'municipality'])
+            ->paginate(10);
+    }
+    
+    
+    private function recordUserSearch($stores, $userId)
+    {
+        foreach ($stores as $store) {
+            // Verificar si hay productos antes de acceder a ellos
+            $firstProduct = $store->products->first();
+    
+            if ($firstProduct) { // Asegúrate de que no sea null
+                $productStore = ProductStore::where('products_id', $firstProduct->id)
                     ->where('stores_id', $store->id)
                     ->first();
-                if ($product_store != null) {
-                    $searches = SearchUser::where('products_id', $product_store->products_id)->where('stores_id', $store->id)->get();
-                    if ($searches->isEmpty()) {
-                        $search = new SearchUser();
-                        $search->users_id = $request->userId;
-                        $search->stores_id = $store->id;
-                        $search->products_id = $product_store->products_id;
-                        $search->created_at = now();
-                        $search->save();
+    
+                if ($productStore) {
+                    $searchExists = SearchUser::where('products_id', $productStore->products_id)
+                        ->where('stores_id', $store->id)
+                        ->exists();
+    
+                    if (!$searchExists) {
+                        SearchUser::create([
+                            'users_id' => $userId,
+                            'stores_id' => $store->id,
+                            'products_id' => $productStore->products_id,
+                            'created_at' => now(),
+                        ]);
                     }
                 }
             }
         }
-
-        return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
     }
+    
+
+    /*--------------------------------------------------------------------------------------*/
 
     public function getStoreSearch2(Request $request)
     {
