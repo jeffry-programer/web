@@ -33,10 +33,11 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="p-4">
-                    <h2 class="text-justify mt-5">TÉRMINOS Y CONDICIONES</h2>
-                    <p class="text-justify mt-10">Estos Términos y Condiciones regulan la relación entre los usuarios de
-                        la plataforma TuLoBuscas y Tecnotach, empresa registrada en el Registro Mercantil Primero del
-                        Estado Táchira, propietaria de la marca y aplicación TuLoBuscas.</p>
+                    <h2 class="text-justify mt-5">TÉRMINOS, CONDICIONES Y POLÍTICAS DE PRIVACIDAD</h2>
+                    <p class="text-justify mt-10">PARA USUARIOS DE LA PLATAFORMA TULOBUSCAS, LEA ESTAS CONDICIONES Y
+                        POLITICAS DETENIDAMENTE ANTES DE ACCEDER O USAR LOS SERVICIOS.</p>
+
+                    <h3 class="text-justify mt-5">SECCIÓN I: TERMINOS Y CONDICIONES</h3>
 
                     <h3 class="text-justify mt-5">1. OBJETO Y TITULARIDAD</h3>
                     <p>La empresa Tecnotach registrada ante el Registro Mercantil Primero del Estado
@@ -328,7 +329,7 @@
                         o atención solicitada por el Usuario/Consumidor.
                     </p>
                     <p>
-                        Restricciones. No podrás: (i) eliminar o alterar ninguna marca registrada, nota de
+                        <b>Restricciones.</b> No podrás: (i) eliminar o alterar ninguna marca registrada, nota de
                         derechos de autor u otras señales de propiedad presentes en cualquier parte de
                         los servicios; (ii) copiar, modificar, crear derivados, distribuir, licenciar, alquilar,
                         revender, transferir, presentar o mostrar en público, transmitir o explotar los
@@ -536,6 +537,12 @@
                         registros y podrá suspender o cancelar los servicios asociados a las cuentas de
                         los usuarios responsables.
                     </p>
+                    <p>
+                        Por último, Tecnotach en su Plataforma TuLoBuscas se reserva el derecho de admisión de Aliado
+                        Comercial o Usuarios Consumidores que deseen registrarse, lo que significa que la aceptación o
+                        rechazo de registros se hará a discreción de la Plataforma TuLoBuscas según sus políticas
+                        internas y criterios de verificación.
+                    </p>
                     <h3>
                         14. LIMITACIÓN DE RESPONSABILIDAD DE TECNOTACH Y SU PLATAFRMA
                         TULOBUSCAS
@@ -711,7 +718,7 @@
                         funcionalidades de la Plataforma TuLoBuscas. La Plataforma TuLoBuscas puede
                         utilizar direcciones IP para analizar tendencias y gestionar la Plataforma.
                     </p>
-                    <h3>INFORMACIÓN PROPORCIONADA PARA EL ACCESO O REGISTRO</h3>
+                    <h3>3. INFORMACIÓN PROPORCIONADA PARA EL ACCESO O REGISTRO</h3>
                     <p>
                         Para utilizar los servicios de la Plataforma TuLoBuscas, se requiere que los
                         usuarios proporcionen datos como: nombres, apellidos, RIF o NIT (para Aliados
@@ -895,6 +902,10 @@
                         prestación de nuestros servicios en función de tu conectividad.
                     </p>
                     <p>
+                        La información anteriormente mencionada puede ser compartida con terceros asociados para los
+                        siguientes propósitos:
+                    </p>
+                    <p>
                         - Personalización de la experiencia de usuario: Utilizamos tus datos para
                         ajustar y adaptar la experiencia dentro de la Plataforma TuLoBuscas,
                         asegurando que los servicios y funcionalidades que te ofrecemos
@@ -930,6 +941,12 @@
                         políticas de seguridad y privacidad, asegurando que solo el personal
                         autorizado tenga acceso a la información que nos proporcionas, y que
                         dicha información sea tratada con absoluta confidencialidad.
+                    </p>
+
+                    <p>
+                        Además, revisamos y actualizamos nuestras prácticas de seguridad de forma regular para
+                        asegurarnos de que estén alineadas con los avances tecnológicos y con los estándares más
+                        rigurosos de la industria.
                     </p>
 
                     <p><b>c. Enlaces a sitios web de terceros</b></p>
@@ -1051,7 +1068,7 @@
                         sin necesidad de notificación previa.</p>
 
                     <p><b>8. Fuerza mayor</b></p>
-                    
+
                     <p>Ninguna de las partes será responsable del incumplimiento de sus obligaciones
                         en caso de fuerza mayor, como desastres naturales, conflictos armados,
                         disturbios, acciones gubernamentales, fallos técnicos, entre otros eventos
@@ -1061,11 +1078,11 @@
                     <p><b>9. Acuerdo total</b></p>
 
                     <p>Estos Términos y Condiciones, junto con la Política de Privacidad, constituyen el
-                      acuerdo completo entre el usuario de acuerdo con su rol: Usuario Consumidor,
-                      Aliado Comercial y Tecnotach y su Plataforma TuLoBuscas respecto al uso de la
-                      Plataforma TuLoBuscas, y reemplazan cualquier negociación, acuerdo o
-                      compromiso anterior.</p>
-                    
+                        acuerdo completo entre el usuario de acuerdo con su rol: Usuario Consumidor,
+                        Aliado Comercial y Tecnotach y su Plataforma TuLoBuscas respecto al uso de la
+                        Plataforma TuLoBuscas, y reemplazan cualquier negociación, acuerdo o
+                        compromiso anterior.</p>
+
 
                     <p><b>10.Modificaciones</b></p>
                     <p>
@@ -1075,17 +1092,17 @@
                         Plataforma TuLoBuscas. El uso continuo de la Plataforma TuLoBuscas implica la
                         aceptación de las modificaciones.
                     </p>
-                    <p><b>12.Contacto</b></p>
                     <p>
-                        Tecnotach y su Plataforma TuLoBuscas se reserva el derecho de modificar estos
-                        Términos y Condiciones en cualquier momento. El usuario debe revisar
-                        periódicamente los cambios, que entrarán en vigor desde su publicación en la
-                        Plataforma TuLoBuscas. El uso continuo de la Plataforma TuLoBuscas implica la
-                        aceptación de las modificaciones.
+                        <b>11. Ley aplicable</b>
+                    <p>
+                        Estos Términos y Condiciones y la Política de Privacidad se regirán por las leyes de la
+                        República Bolivariana de Venezuela. Cualquier disputa o controversia relacionada con el uso de
+                        la Plataforma TuLoBuscas se resolverá ante los tribunales competentes de Venezuela.
                     </p>
-                    <p>Para cualquier duda o consulta, el usuario puede contactar al soporte a través 
-                      del correo electrónico soporte@tulobuscas.app o mediante los formularios 
-                      disponibles en la Plataforma TuLoBuscas</p>
+                    </p>
+                    <p><b>12.Contacto</b></p>
+                    <p>Para cualquier duda o consulta, el usuario puede contactar al soporte a través
+                        del correo electrónico soporte@tulobuscas.app o escribiendo al Whattsap +58 412-965-6872</p>
                 </div>
             </div>
         </div>
