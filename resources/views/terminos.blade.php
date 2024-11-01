@@ -1102,7 +1102,7 @@
                     </p>
                     <p><b>12.Contacto</b></p>
                     <p>Para cualquier duda o consulta, el usuario puede contactar al soporte a través
-                        del correo electrónico soporte@tulobuscas.app o escribiendo al Whattsap +58 412-965-6872</p>
+                        del correo electrónico soporte@tulobuscas.app o escribiendo al Whatsapp +58 412-965-6872</p>
                 </div>
             </div>
         </div>

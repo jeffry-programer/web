@@ -39,18 +39,17 @@
             <div class="col-md-12">
                 <div class="p-4">
                     <h2 class="text-justify mt-5">¿Que es <span class="texto-azul">Tulo</span>buscas?</h2>
-                    <p class="text-justify mt-10">Tulobuscas es una plataforma útil diseñada para facilitar la búsqueda
-                        de una amplia variedad de repuestos para vehículos, motocicletas y camiones. Nuestra plataforma
-                        te permite explorar un extenso listado de tiendas que ofrecen los productos que necesitas,
-                        simplificando así tu proceso de compra. Además, Tulobuscas establece un eficiente canal de
-                        comunicación entre la tienda y el usuario que realiza la búsqueda, asegurando una experiencia
-                        fluida y satisfactoria para ambas partes</p>
+                    <p class="text-justify mt-10">TuLoBuscas es una plataforma útil diseñada para facilitar la búsqueda de una amplia 
+                      variedad de productos y servicios. Nuestra plataforma permite explorar un extenso 
+                      listado de tiendas que ofrecen los productos que necesitas, simplificando así tu proceso 
+                      de compra. Además, TuLoBuscas establece un eficiente canal de comunicación entre la 
+                      tienda y el usuario que realiza la búsqueda, asegurando una experiencia fluida y 
+                      satisfactoria para ambas partes de forma directa.</p>
 
-                    <h2 class="text-justify mt-5">¿Quien tiene acceso a mis datos?</h2>
-                    <p class="text-justify mt-10">Tulobuscas mantiene una estricta política de privacidad en relación
-                        con la información de sus usuarios. Solo los propios usuarios tienen acceso a su información
-                        personal, y son responsables de mantenerla actualizada. Esta información se gestiona a través de
-                        los perfiles de usuario, garantizando así la confidencialidad y seguridad de los datos.</p>
+                    <h2 class="text-justify mt-5">1. Accede a la Configuración de Ubicación: </h2>
+                    <p class="text-justify mt-10">a. Abre la aplicación o página web oficial y selecciona el icono , que se 
+                      encuentra en la parte superior de la página o aplicación móvil de 
+                      TuLoBuscas</p>
 
                     <h2 class="text-justify mt-5">¿Que beneficios tengo como usuario deTulobuscas?</h2>
                     <p class="text-justify mt-10">Los usuarios registrados en nuestra plataforma disfrutan de numerosos
