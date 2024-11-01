@@ -35,7 +35,7 @@
       <div class="col-12 col-md-6">
         <h2 class="mt-5">Contacta con el área comercial</h2>
         <p class="mt-5">Para cualquier duda o consulta, el usuario puede contactar al soporte a través
-          del correo electrónico atencionalcliente@tulobuscas.app o escribiendo al Whattsap +58 412-965-6872</p>
+          del correo electrónico atencionalcliente@tulobuscas.app o escribiendo al Whatsapp +58 412-965-6872</p>
       </div>
       <div class="col-12 col-md-6">
         <img src="{{ asset('images/celular.png') }}" class="img-fluid">

@@ -47,7 +47,7 @@
                       satisfactoria para ambas partes de forma directa.</p>
 
                     <h2 class="text-justify mt-5">1. Accede a la Configuración de Ubicación: </h2>
-                    <p class="text-justify mt-10">a. Abre la aplicación o página web oficial y selecciona el icono , que se 
+                    <p class="text-justify mt-10">a. Abre la aplicación o página web oficial y selecciona el icono <i class="fa-solid fa-location-dot my-auto"></i>, que se 
                       encuentra en la parte superior de la página o aplicación móvil de 
                       TuLoBuscas</p>
 
