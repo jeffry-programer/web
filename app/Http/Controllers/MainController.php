@@ -655,7 +655,14 @@ class MainController extends Controller
         }
 
         // Buscar usuario por correo
-        $user = User::where('email', $request->email)->first();
+        $email = $request->email;
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
 
         if (!$user) {
             // Si el usuario no existe, lo creamos con una contraseña vacía
