@@ -600,17 +600,19 @@ class MainController extends Controller
 
     public function registerApi(Request $request)
     {
+        // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'birthdate' => 'required|date', // Validación para la fecha de nacimiento
+            'birthdate' => 'required|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
 
+        // Limpiar el token FCM si ya existe
         $user_token_exist = User::where('token', $request->token_fcm)->first();
 
         if ($user_token_exist != false) {
@@ -618,19 +620,27 @@ class MainController extends Controller
             $user_token_exist->save();
         }
 
+        $encrytedEmail = Crypt::encrypt($request->email);
+
+        // Crear el nuevo usuario
         $user = User::create([
             'profiles_id' => 3,
             'name' => $request->name,
-            'email' => $request->email,
+            'email' => $encrytedEmail, // Cifrar después de la validación
             'password' => Hash::make($request->password),
             'token' => $request->token_fcm,
-            'birthdate' => $request->birthdate, // Asigna el valor de la fecha de nacimiento
+            'birthdate' => $request->birthdate,
         ]);
 
+        $user->email = $request->email;
+
+        // Enviar notificación
         $user->notify(new VerifiedEmailApi($user, $request->token));
 
         return response()->json(['message' => 'Usuario registrado exitosamente'], 201);
     }
+
+
 
     public function loginOrRegisterWithGoogle(Request $request)
     {
@@ -651,7 +661,7 @@ class MainController extends Controller
             // Si el usuario no existe, lo creamos con una contraseña vacía
             $user = User::create([
                 'name' => $request->name,
-                'email' => $request->email,
+                'email' => Crypt::encrypt($request->email),
                 'password' => '', // Contraseña vacía ya que está utilizando Google Login
                 'profiles_id' => 3, // O el perfil que necesites
             ]);
@@ -667,6 +677,10 @@ class MainController extends Controller
         $user->session_active = true;
         $user->token = $request->token_fcm;
         $user->save();
+
+        $user->email = Crypt::decrypt($user->email);
+        $user->address = !empty($user->address) ? Crypt::decrypt($user->address) : null;
+        $user->phone = !empty($user->phone) ? Crypt::decrypt($user->phone) : null;
 
         // Retornar la información del usuario y el token
         return response()->json([
@@ -701,57 +715,84 @@ class MainController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-
-        $user = User::where('email', $request->email)->first();
-        if ($user == null) {
+    
+        $email = $request->email;
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+    
+        if (!$user) {
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
-
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            $user = User::where('email', $request->email)->first();
-            if ($user->session_active == true) {
-                return response()->json(['error' => 'Ya tienes una cuenta abierta por favor cierrala para continuar'], 422);
-            }
-
-            if ($user->email_verified_at == null) {
-                return response()->json(['error' => 'Por favor verifica tu correo electronico'], 422);
-            }
-
-            $user_token_exist = User::where('token', $request->token_fcm)->first();
-
-            if ($user_token_exist != false) {
-                $user_token_exist->token = '';
-                $user_token_exist->save();
-            }
-
-            $user->session_active = true;
-            $user->token = $request->token_fcm;
-            $user->save();
-
-            $store = Store::where('users_id', $user->id)->first();
-
-            if ($store != null) {
-                return response()->json(['user' => $user, 'store' => $store->id], 200);
-            } else {
-                return response()->json(['user' => $user], 200);
-            }
-        } else {
+    
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json(['error' => 'Credenciales incorrectas'], 422);
         }
+    
+        if ($user->session_active) {
+            return response()->json(['error' => 'Ya tienes una cuenta abierta, por favor ciérrala para continuar'], 422);
+        }
+    
+        if (is_null($user->email_verified_at)) {
+            return response()->json(['error' => 'Por favor verifica tu correo electrónico'], 422);
+        }
+    
+        // Actualizar token de FCM si es necesario
+        if ($userWithToken = User::where('token', $request->token_fcm)->first()) {
+            $userWithToken->update(['token' => null]);
+        }
+    
+        // Activar la sesión y asignar el nuevo token FCM
+        $user->update([
+            'session_active' => true,
+            'token' => $request->token_fcm,
+        ]);
+    
+        // Obtener tienda y desencriptar datos sensibles del usuario y la tienda si existe
+        $store = Store::where('users_id', $user->id)->first();
+        $user->email = $email;
+        $user->address = $user->address ? Crypt::decrypt($user->address) : null;
+        $user->phone = $user->phone ? Crypt::decrypt($user->phone) : null;
+    
+        if ($store) {
+            $store->email = Crypt::decrypt($store->email);
+            $store->address = Crypt::decrypt($store->address);
+            $store->RIF = Crypt::decrypt($store->RIF);
+            $store->phone = Crypt::decrypt($store->phone);
+        }
+    
+        return response()->json([
+            'user' => $user,
+            'store' => $store ? $store->id : null,
+        ], 200);
     }
+    
+
 
     public function verifiedApi(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
-        if ($user)
+        // Buscar el usuario por el correo encriptado
+        $user = User::where('token', $request->token_fcm)->first();
+
+        if ($user) {
+            // Actualizar la fecha de verificación
             $user->email_verified_at = Carbon::now();
-        $user->save();
-        return response()->json(['user' => $user], 200);
+            $user->save();
+            $user->email = Crypt::decrypt($user->email);
+            $user->address = !empty($user->address) ? Crypt::decrypt($user->address) : null;
+            $user->phone = !empty($user->phone) ? Crypt::decrypt($user->phone) : null;
+            return response()->json(['user' => $user], 200);
+        } else {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
     }
 
     public function current(Request $request)
@@ -939,6 +980,11 @@ class MainController extends Controller
             $storeData['category'] = null;
         }
 
+        $storeData['email'] = Crypt::decrypt($storeData['email']);
+        $storeData['address'] = Crypt::decrypt($storeData['address']);
+        $storeData['RIF'] = Crypt::decrypt($storeData['RIF']);
+        $storeData['phone'] = Crypt::decrypt($storeData['phone']);
+
         $municipality = Municipality::find($storeData['municipalities_id']);
         $municipalities = Municipality::where('states_id', $municipality->states_id)->get();
 
@@ -1093,12 +1139,28 @@ class MainController extends Controller
 
     public function updateDataApi(Request $request)
     {
+        // Validar formato básico de correo
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
         $user = User::find($request->id);
         $user->name = $request->name;
+        $user->email = Crypt::encrypt($request->email);
+        $user->address = Crypt::encrypt($request->address);
+        $user->phone = Crypt::encrypt($request->phone);
+        $user->save();
+
         $user->email = $request->email;
         $user->address = $request->address;
         $user->phone = $request->phone;
-        $user->save();
 
         return response()->json(['user' => $user], 200);
     }
@@ -1108,9 +1170,9 @@ class MainController extends Controller
         $store = Store::find($request->id);
         $store->name = $request->name;
         $store->description = $request->description;
-        $store->email = $request->email;
-        $store->address = $request->address;
-        $store->phone = $request->phone;
+        $store->email = Crypt::encrypt($request->email);
+        $store->address = Crypt::encrypt($request->address);
+        $store->phone = Crypt::encrypt($request->phone);
         $store->municipalities_id = $request->municipalities_id;
         $store->sectors_id = $request->sectors_id;
         $store->save();
@@ -1236,7 +1298,8 @@ class MainController extends Controller
         return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
-    public function getProductDetails($id){
+    public function getProductDetails($id)
+    {
         $product = Product::with('brand')->find($id);
         return response()->json(['product' => $product]);
     }
@@ -1249,32 +1312,36 @@ class MainController extends Controller
         $stateId = $request->stateId;
         $sectorId = $request->sectorId;
         $locationStores = 'sector'; // Valor por defecto
-    
+
         $stores = $this->searchStores10($search, $municipalityId, $stateId, $sectorId, $locationStores);
-    
+
+        foreach ($stores as $store) {
+            $store->address = Crypt::decrypt($store->address);
+        }
+
         // Guardar la búsqueda del usuario si se encontraron tiendas
         $this->recordUserSearch($stores, $request->userId);
-    
+
         return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
     }
-    
+
     private function searchStores10($search, $municipalityId, $stateId, $sectorId, &$locationStores)
     {
         $storeQuery = Store::where('status', true);
-    
+
         // Filtrar por municipio
         if ($municipalityId) {
             $storeQuery->where('municipalities_id', $municipalityId);
         }
-    
+
         // Agregar filtro de sector si corresponde
         if ($sectorId !== 'Todos') {
             $storeQuery->where('sectors_id', $sectorId);
         }
-    
+
         // Dividir la búsqueda en palabras clave y convertir a minúsculas
         $searchTerms = explode(' ', strtolower($search));
-    
+
         // Filtro de productos, asegurando que todos los términos estén presentes
         $storeQuery->whereHas('products', function ($query) use ($searchTerms) {
             $query->where(function ($q) use ($searchTerms) {
@@ -1283,7 +1350,7 @@ class MainController extends Controller
                 }
             });
         });
-    
+
         // Cargar las relaciones necesarias
         $storeQuery->with(['products' => function ($query) use ($searchTerms) {
             $query->where(function ($q) use ($searchTerms) {
@@ -1292,22 +1359,22 @@ class MainController extends Controller
                 }
             });
         }, 'municipality']);
-    
+
         // Paginación
         $stores = $storeQuery->paginate(10);
-    
+
         // Si no se encontraron tiendas, intenta buscar a nivel de estado
         if ($stores->isEmpty()) {
             $stores = $this->searchInState($search, $stateId, $locationStores);
         }
-    
+
         return $stores;
     }
-    
+
     private function searchInState($search, $stateId, &$locationStores)
     {
         $municipalities = Municipality::where('states_id', $stateId)->pluck('id');
-    
+
         // Asegurarse de que se está buscando en el estado
         $stores = Store::where('status', true)
             ->whereIn('municipalities_id', $municipalities)
@@ -1318,7 +1385,7 @@ class MainController extends Controller
                 $query->where('name', 'like', '%' . $search . '%');
             }, 'municipality'])
             ->paginate(10);
-    
+
         // Si aún no se encontraron tiendas, busca a nivel nacional
         if ($stores->isEmpty()) {
             $stores = $this->searchInCountry($search);
@@ -1328,10 +1395,10 @@ class MainController extends Controller
             // Cambiar locationStores a 'state' si se encontró en el estado
             $locationStores = 'state';
         }
-    
+
         return $stores;
     }
-    
+
     private function searchInCountry($search)
     {
         return Store::where('status', true)
@@ -1343,24 +1410,24 @@ class MainController extends Controller
             }, 'municipality'])
             ->paginate(10);
     }
-    
-    
+
+
     private function recordUserSearch($stores, $userId)
     {
         foreach ($stores as $store) {
             // Verificar si hay productos antes de acceder a ellos
             $firstProduct = $store->products->first();
-    
+
             if ($firstProduct) { // Asegúrate de que no sea null
                 $productStore = ProductStore::where('products_id', $firstProduct->id)
                     ->where('stores_id', $store->id)
                     ->first();
-    
+
                 if ($productStore) {
                     $searchExists = SearchUser::where('products_id', $productStore->products_id)
                         ->where('stores_id', $store->id)
                         ->exists();
-    
+
                     if (!$searchExists) {
                         SearchUser::create([
                             'users_id' => $userId,
@@ -1373,7 +1440,7 @@ class MainController extends Controller
             }
         }
     }
-    
+
     /*--------------------------------------------------------------------------------------*/
 
     public function getStoreSearch2(Request $request)
@@ -1447,6 +1514,10 @@ class MainController extends Controller
             }
         }
 
+        foreach($stores as $store){
+            $store->address = Crypt::decrypt($store->address);
+        }
+
         // Retorna la respuesta JSON
         return response()->json(['stores' => $stores, 'locationStores' => $locationStores, 'categoryId' => $request->categoryId], 200);
     }
@@ -1489,12 +1560,12 @@ class MainController extends Controller
     {
         $perPage = 20; // Número de productos por página
         $offset = ($page - 1) * $perPage;
-    
+
         $products = Product::whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$query])
             ->offset($offset)
             ->limit($perPage)
             ->get();
-    
+
         return response()->json($products);
     }
 
@@ -1545,7 +1616,7 @@ class MainController extends Controller
                 $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
                 $final_array[$key]['last_message_time'] = $lastMessage->created_at;
                 $final_array[$key]['last_message_status'] = $lastMessage->status;
-                $final_array[$key]['last_message_from'] = Crypt::decryptString($lastMessage->from);
+                $final_array[$key]['last_message_from'] = Crypt::decrypt($lastMessage->from);
                 $final_array[$key]['id'] = $conversation->id;
             }
         }
@@ -1556,10 +1627,10 @@ class MainController extends Controller
     public function getInfoHome($userId, $municipalityId = null) // Permitir null como valor por defecto
     {
         $date = Carbon::now();
-    
+
         // Obtener la ciudad del usuario
         $userCityId = $municipalityId;
-    
+
         // Obtener las tiendas en promoción, primero las que están en la misma ciudad
         $storesQuery = Store::where('status', true)
             ->whereHas('promotions', function ($query) use ($date) {
@@ -1568,17 +1639,17 @@ class MainController extends Controller
                     ->where('date_end', '>=', $date);
             })
             ->with('municipality');
-    
+
         // Si el usuario tiene una ciudad, priorizar las tiendas de su misma ciudad
         if ($userCityId !== null) { // Solo aplicar si no es null
             $storesQuery = $storesQuery->orderByRaw("IF(municipalities_id = ?, 0, 1)", [$userCityId]);
         }
-    
+
         $stores = $storesQuery->take(6)->get();
-    
+
         $stores2 = collect();
         $stores3 = collect();
-    
+
         // Si el usuario no está autenticado
         if (!Auth::check()) {
             $stores2 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
@@ -1589,7 +1660,7 @@ class MainController extends Controller
                 })
                 ->limit(9)
                 ->get();
-    
+
             $stores3 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
@@ -1600,7 +1671,7 @@ class MainController extends Controller
                 ->get();
         } else {
             $userId = Auth::id();
-    
+
             $stores2 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
@@ -1610,7 +1681,7 @@ class MainController extends Controller
                 })
                 ->limit(9)
                 ->get();
-    
+
             $stores3 = SearchUser::where('users_id', $userId)
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
@@ -1621,25 +1692,30 @@ class MainController extends Controller
                 ->limit(9)
                 ->get();
         }
-    
+
         $array_stores = [];
         $array_stores_final = [];
         $array_products = [];
         $array_products_final = [];
-    
+
         try {
             foreach ($stores2 as $store) {
-                if ($store->store) { // Verificar que $store->store no es null
+                if ($store->store) {
                     $store_id = $store->store->id;
                     if (!in_array($store_id, $array_stores)) {
+                        // Desencriptar datos del store
+                        $store->store->email = Crypt::decrypt($store->store->email);
+                        $store->store->address = Crypt::decrypt($store->store->address);
+                        $store->store->phone = Crypt::decrypt($store->store->phone);
+
                         $array_stores[] = $store_id;
                         $array_stores_final[] = $store->store;
                     }
                 }
             }
-    
+
             foreach ($stores3 as $product) {
-                if ($product->product) { // Verificar que $product->product no es null
+                if ($product->product) {
                     $product_id = $product->product->id;
                     if (!in_array($product_id, $array_products)) {
                         $array_products[] = $product_id;
@@ -1647,13 +1723,13 @@ class MainController extends Controller
                     }
                 }
             }
-    
+
             $publicities = Publicity::where('date_end', '>', $date)
                 ->where('status', true)
                 ->inRandomOrder()
                 ->take(8)
                 ->get();
-    
+
             return response()->json([
                 'publicities' => $publicities,
                 'stores' => $stores,
@@ -1665,7 +1741,7 @@ class MainController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
 
 
     public function getAllStoresPromotion(Request $request)
@@ -1707,12 +1783,12 @@ class MainController extends Controller
         $store->sectors_id = $request->sectors_id;
         $store->name = $request->name;
         $store->description = $request->description;
-        $store->email = $request->email;
-        $store->address = $request->address;
+        $store->email = Crypt::encrypt($request->email);
+        $store->address = Crypt::encrypt($request->address);
         $store->link = str_replace(' ', '-', $request->name);
         $store->status = false;
-        $store->RIF = $request->rif;
-        $store->phone = $request->phone;
+        $store->RIF = Crypt::encrypt($request->rif);
+        $store->phone = Crypt::encrypt($request->phone);
         $store->score_store = 0;
         $store->created_at = Carbon::now();
         $store->categories_stores_id = $request->categories_stores_id;
@@ -1749,6 +1825,11 @@ class MainController extends Controller
             $user->profiles_id = 5;
         }
         $user->save();
+
+        $store->email = $request->email;
+        $store->address = $request->address;
+        $store->RIF = $request->rif;
+        $store->phone = $request->phone;
 
         //Devolvemos la tienda
         return response()->json(['store' => $store, 'user' => $user], 200);
@@ -1875,7 +1956,7 @@ class MainController extends Controller
             if ($store->user->id === $user->id) {
                 continue; // Saltar esta tienda si pertenece al usuario
             }
-            
+
             $storeHasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true)
                 ->where('read', false)
@@ -2174,14 +2255,24 @@ class MainController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $email = $request->email;
 
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+    
         if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado'], 404);
+            return response()->json(['error' => 'Usuario no registrado'], 422);
         }
+
+        $user->email = $request->email;
 
         $user->notify(new ResetPasswordApi($request->token));
 
@@ -2481,7 +2572,7 @@ class MainController extends Controller
                 $comment->user->image = $comment->user->store->image;
                 $comment->user->name = $comment->user->store->name;
                 $comment->store = $comment->user->store->id;
-            }else{
+            } else {
                 $comment->store = null;
             }
             $image = $comment->user->image;

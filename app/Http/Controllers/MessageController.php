@@ -30,12 +30,12 @@ class MessageController extends Controller
 
         // Actualizar el estado de los mensajes y desencriptar el contenido
         foreach ($conversation->messages as $message) {
-            if($message->from != $user->email){
+            if(Crypt::decrypt($message->from) == Crypt::decrypt($user->email) && $message->status == false){
                 $message->status = true;
                 $message->save();
             }
             $message->content = Crypt::decryptString($message->content);
-            $message->from = Crypt::decryptString($message->from);
+            $message->from = Crypt::decrypt($message->from);
         }
 
         $store = $user->store ?? null;
@@ -53,12 +53,12 @@ class MessageController extends Controller
         $user = User::find($request->userId);
         $conversationId = $request->id;
         $content = $request->content;
-        $from = $user->email;
+        $from = Crypt::decrypt($user->email);
 
         $message = new Message();
         $message->conversations_id = $conversationId;
         $message->content = Crypt::encryptString($content);
-        $message->from = Crypt::encryptString($user->email);
+        $message->from = $user->email;
         $message->status = false;
         $message->save();
 
