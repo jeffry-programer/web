@@ -1983,6 +1983,8 @@ class MainController extends Controller
 
         $storesSendSignalAux = [];
 
+        $type = '';
+
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
             // Verificar que la tienda no esté asociada al usuario que envía la señal
@@ -2007,6 +2009,8 @@ class MainController extends Controller
                 ]);
 
                 $storesSendSignalAux[] = $store;
+
+                $type = $store->typeStore->description;
 
                 // Enviar notificación via Firebase si el token es válido
                 $token = $store->user->token;
@@ -2036,7 +2040,7 @@ class MainController extends Controller
             }
         }
 
-        return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId], 200);
+        return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId, 'typeStore' => $type], 200);
     }
 
     public function getSignalsAux(Request $request)
@@ -2194,23 +2198,13 @@ class MainController extends Controller
     {
         $userId = $request->userId;
 
-        // Definir el tiempo límite de un minuto y medio (70 segundos) en el pasado
-        $timeLimit = Carbon::now()->subSeconds(70);
+        // Definir el tiempo límite de un minuto y medio (90 segundos) en el pasado
+        $timeLimit = Carbon::now()->subSeconds(90);
 
         // Obtener las señales creadas dentro del último minuto y medio
         $signals = SignalAux::where('users_id', $userId)
             ->where('created_at', '>=', $timeLimit)
             ->get();  // Usar get() para obtener la colección de señales
-
-        $signal_aux = SignalAux::where('users_id', $userId)->where('created_at', '>=', $timeLimit)->first();
-
-        if ($signal_aux) {
-            $store = $signal_aux->store;
-            $type = TypeStore::find($store->type_stores_id);
-            $store->type = $type ? $type->description : null;
-        } else {
-            $store = null;
-        }
 
         // Emitir el evento para cada señal antes de eliminarlas
         foreach ($signals as $signal) {
@@ -2222,7 +2216,7 @@ class MainController extends Controller
             ->where('created_at', '>=', $timeLimit)
             ->delete();
 
-        return response()->json(['signals' => $signals, 'store' => $store, 'type' => $type], 200);
+        return response()->json(['signals' => $signals], 200);
     }
 
     public function closeSignalsAux(Request $request)
