@@ -722,11 +722,11 @@ class MainController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-    
+
         $email = $request->email;
         $user = User::all()->first(function ($user) use ($email) {
             try {
@@ -735,53 +735,53 @@ class MainController extends Controller
                 return false;
             }
         });
-    
+
         if (!$user) {
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
-    
+
         if (!Hash::check($request->password, $user->password)) {
             return response()->json(['error' => 'Credenciales incorrectas'], 422);
         }
-    
+
         if ($user->session_active) {
             return response()->json(['error' => 'Ya tienes una cuenta abierta, por favor ciérrala para continuar'], 422);
         }
-    
+
         if (is_null($user->email_verified_at)) {
             return response()->json(['error' => 'Por favor verifica tu correo electrónico'], 422);
         }
-    
+
         // Actualizar token de FCM si es necesario
         if ($userWithToken = User::where('token', $request->token_fcm)->first()) {
             $userWithToken->update(['token' => null]);
         }
-    
+
         // Activar la sesión y asignar el nuevo token FCM
         $user->update([
             'session_active' => true,
             'token' => $request->token_fcm,
         ]);
-    
+
         // Obtener tienda y desencriptar datos sensibles del usuario y la tienda si existe
         $store = Store::where('users_id', $user->id)->first();
         $user->email = $email;
         $user->address = $user->address ? Crypt::decrypt($user->address) : null;
         $user->phone = $user->phone ? Crypt::decrypt($user->phone) : null;
-    
+
         if ($store) {
             $store->email = Crypt::decrypt($store->email);
             $store->address = Crypt::decrypt($store->address);
             $store->RIF = Crypt::decrypt($store->RIF);
             $store->phone = Crypt::decrypt($store->phone);
         }
-    
+
         return response()->json([
             'user' => $user,
             'store' => $store ? $store->id : null,
         ], 200);
     }
-    
+
 
 
     public function verifiedApi(Request $request)
@@ -794,7 +794,7 @@ class MainController extends Controller
                 return false;
             }
         });
-    
+
         if ($user) {
             // Actualizar la fecha de verificación
             $user->email_verified_at = Carbon::now();
@@ -1534,7 +1534,7 @@ class MainController extends Controller
             }
         }
 
-        foreach($stores as $store){
+        foreach ($stores as $store) {
             $store->address = Crypt::decrypt($store->address);
         }
 
@@ -1592,32 +1592,33 @@ class MainController extends Controller
     public function getChats($userId)
     {
         $final_array = [];
-
+    
         // Obtener conversaciones del usuario y las asociadas a su tienda (si tiene)
         $conversations = Conversation::where('users_id', $userId)->orWhere('stores_id', $userId)->with(['user', 'store', 'messages'])->get();
-
+    
         // Ordenar las conversaciones por la fecha del mensaje más reciente
         $conversations = $conversations->sortByDesc(function ($conversation) {
-            // Obtener la fecha del último mensaje
             return optional($conversation->messages->last())->created_at;
         });
-
+    
         $my_user = User::find($userId);
-
+    
         // Recorrer las conversaciones y agregar datos al array final
         foreach ($conversations as $key => $conversation) {
             $user = User::find($conversation->users_id);
             $user2 = User::find($conversation->stores_id);
             $lastMessage = $conversation->messages->last(); // Obtener el último mensaje
-
+    
             // Verificar si se encontraron tanto el usuario como la tienda y si hay mensajes
             if ($user && $user2 && $lastMessage) {
+                // Determinar el usuario en función del ID actual
                 if ($my_user->id != $user->id) {
                     $user = $user;
                 } else {
                     $user = $user2;
                 }
-
+    
+                // Establecer el nombre y la imagen del usuario o tienda
                 if ($user->store) {
                     $final_array[$key]['user_name'] = $user->store->name;
                     $final_array[$key]['user_img'] = $user->store->image;
@@ -1625,24 +1626,36 @@ class MainController extends Controller
                     $final_array[$key]['user_name'] = $user->name;
                     $final_array[$key]['user_img'] = $user->image;
                 }
-
-                if ($final_array[$key]['user_img'] == null || $final_array[$key]['user_img'] == '') {
+    
+                // Verificar si la imagen es nula o vacía, asignar un avatar por defecto
+                if (empty($final_array[$key]['user_img'])) {
                     $letter = strtoupper($final_array[$key]['user_name'][0]);
-                    $final_array[$key]['user_img'] = 'https://ui-avatars.com/api/?name=' . $letter . '&amp;color=7F9CF5&amp;background=EBF4FF';
-                } else {
-                    $final_array[$key]['user_img'] = $final_array[$key]['user_img'];
+                    $final_array[$key]['user_img'] = 'https://ui-avatars.com/api/?name=' . $letter . '&color=7F9CF5&background=EBF4FF';
                 }
-
-                $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
+    
+                // Desencriptar el contenido del último mensaje y otros datos relacionados
+                try {
+                    $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
+                } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                    $final_array[$key]['last_message'] = 'Mensaje no disponible';
+                }
+    
                 $final_array[$key]['last_message_time'] = $lastMessage->created_at;
                 $final_array[$key]['last_message_status'] = $lastMessage->status;
-                $final_array[$key]['last_message_from'] = Crypt::decrypt($lastMessage->from);
+    
+                try {
+                    $final_array[$key]['last_message_from'] = Crypt::decrypt($lastMessage->from);
+                } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                    $final_array[$key]['last_message_from'] = 'Remitente no disponible';
+                }
+    
                 $final_array[$key]['id'] = $conversation->id;
             }
         }
-
+    
         return response()->json(array_values($final_array));
     }
+    
 
     public function getInfoHome($userId, $municipalityId = null) // Permitir null como valor por defecto
     {
@@ -2287,7 +2300,7 @@ class MainController extends Controller
                 return false;
             }
         });
-    
+
         if (!$user) {
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
