@@ -816,7 +816,14 @@ class MainController extends Controller
 
     public function subscriptionsApi(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $email = $request->email;
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
         $subscriptions = Subscription::where('users_id', $user->id)->get();
         $array_subscriptions = array();
         foreach ($subscriptions as $key) {
