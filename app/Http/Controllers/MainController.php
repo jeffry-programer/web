@@ -779,9 +779,15 @@ class MainController extends Controller
 
     public function verifiedApi(Request $request)
     {
-        // Buscar el usuario por el correo encriptado
-        $user = User::where('token', $request->token_fcm)->first();
-
+        $email = $request->email;
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+    
         if ($user) {
             // Actualizar la fecha de verificación
             $user->email_verified_at = Carbon::now();
