@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfilePhotoController;
@@ -15,6 +16,8 @@ Route::put('/user/profile-photo', [ProfilePhotoController::class, 'update'])->na
 Route::get('/', function () {
     return view('dashboard');
 });
+
+Route::post('login2', [AuthController::class, 'loginUser'])->name('login2');
 
 
 Route::get('/register-grua', [MainController::class, 'registerGrua'])->name('register-grua');
