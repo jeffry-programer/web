@@ -428,5 +428,6 @@
     "statusplan" : "Estado plan",
     "status2" : "Estado2",
     "read" : "Leido",
-    "word" : "Palabra"
+    "word" : "Palabra",
+    "birthdate" : "Fecha de Nacimiento"
 }

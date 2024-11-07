@@ -42,7 +42,7 @@
                             <a href="{{asset('')}}" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #3d4852; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;">
                                 <img style="background: white;
                                 padding: 1rem;
-                                border-radius: 15px;" src="{{asset('images/tulobuscas.png')}}">
+                                border-radius: 15px;width: 10rem;" src="{{asset('images/piePagiina.png')}}">
                             </a>
                         </td>
                     </tr>

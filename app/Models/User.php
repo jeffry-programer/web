@@ -16,6 +16,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -72,7 +73,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'profile_photo_url',
     ];
 
-    public function store(){
+    public function store()
+    {
         return $this->hasOne(Store::class, 'users_id');
     }
 
@@ -81,7 +83,8 @@ class User extends Authenticatable implements MustVerifyEmail
         tap($this->profile_photo_path, function ($previous) use ($photo, $storagePath) {
             $this->forceFill([
                 'image' => $photo->storePublicly(
-                    $storagePath, ['disk' => $this->profilePhotoDisk()]
+                    $storagePath,
+                    ['disk' => $this->profilePhotoDisk()]
                 ),
             ])->save();
 
@@ -93,19 +96,59 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendEmailVerificationNotification()
     {
+        // Verificar y desencriptar el email si está encriptado
+        try {
+            $this->email = Crypt::decrypt($this->email);
+        } catch (\Exception $e) {
+            // Si el email no está encriptado, no pasa nada
+        }
+
+        // Enviar la notificación de verificación
         $this->notify(new CustomVerificationEmail);
-    } 
+    }
 
     public function sendPasswordResetNotification($token)
     {
+        // Verificar y desencriptar el email si está encriptado
+        try {
+            $this->email = Crypt::decrypt($this->email);
+        } catch (\Exception $e) {
+            // Si el email no está encriptado, no pasa nada
+        }
+        
         $this->notify(new CustomResetPassword($token));
     }
 
-    public function profile(){
+    public function profile()
+    {
         return $this->belongsTo(Profile::class, 'profiles_id', 'id');
     }
 
-    public function subscriptions(){
+    public function subscriptions()
+    {
         return $this->hasMany(Subscription::class, 'users_id');
+    }
+
+    public function hasVerifiedEmail()
+    {
+        return ! is_null($this->email_verified_at);
+    }
+
+    // Método markEmailAsVerified
+    public function markEmailAsVerified()
+    {
+        // Si el correo ya está verificado, simplemente devuelve false
+        if ($this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        // Marca el correo como verificado asignando la fecha y hora actual
+        $this->email_verified_at = now();
+        $this->save();
+
+        // Dispara el evento Verified
+        event(new \Illuminate\Auth\Events\Verified($this));
+
+        return true;
     }
 }

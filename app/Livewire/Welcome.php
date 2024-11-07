@@ -7,6 +7,7 @@ use App\Models\SearchUser;
 use App\Models\Store;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
 
 class Welcome extends Component
@@ -23,24 +24,24 @@ class Welcome extends Component
 
         if (!Auth::check()) {
             $stores2 = SearchUser::with(['store', 'store.municipality'])
-                                ->limit(9)
-                                ->get();
+                ->limit(9)
+                ->get();
 
             $stores3 = SearchUser::with(['product', 'store'])
-                                ->limit(9)
-                                ->get();
+                ->limit(9)
+                ->get();
         } else {
             $userId = Auth::id();
 
             $stores2 = SearchUser::where('users_id', $userId)
-                                ->with(['store', 'store.municipality'])
-                                ->limit(9)
-                                ->get();
+                ->with(['store', 'store.municipality'])
+                ->limit(9)
+                ->get();
 
             $stores3 = SearchUser::where('users_id', $userId)
-                                ->with(['product', 'store'])
-                                ->limit(9)
-                                ->get();
+                ->with(['product', 'store'])
+                ->limit(9)
+                ->get();
         }
 
         $array_stores = [];
@@ -66,10 +67,19 @@ class Welcome extends Component
 
 
         $publicities = Publicy::where('date_end', '>', $date)
-                            ->where('status', true)
-                            ->inRandomOrder()
-                            ->take(8)
-                            ->get();
+            ->where('status', true)
+            ->inRandomOrder()
+            ->take(8)
+            ->get();
+
+        foreach ($stores as $store) {
+            $store->address = Crypt::decrypt($store->address);
+        }
+
+        foreach ($array_stores_final as $store) {
+            $store->store->address = Crypt::decrypt($store->store->address);
+        }
+
 
         return view('livewire.welcome', [
             'stores' => $stores,

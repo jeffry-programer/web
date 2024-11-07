@@ -5,7 +5,6 @@ use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Livewire\AssociateProduct;
-use App\Livewire\Counter;
 use App\Livewire\DetailStore;
 use App\Livewire\Subscribe;
 use App\Livewire\UserManagement;
@@ -18,7 +17,8 @@ Route::get('/', function () {
 });
 
 Route::post('login2', [AuthController::class, 'loginUser'])->name('login2');
-
+Route::post('register2', [AuthController::class, 'registerUser'])->name('register2');
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])->name('verification.verify');
 
 Route::get('/register-grua', [MainController::class, 'registerGrua'])->name('register-grua');
 Route::get('/register-taller', [MainController::class, 'registerTaller'])->name('register-taller');
@@ -42,7 +42,6 @@ Route::get('/autocomplete-products-store', [MainController::class, 'autocomplete
 Route::get('update-counter-component', [MainController::class, 'updateComponent']);
 Route::get('/states/{state}/municipalities', [MainController::class, 'municipalities']);
 Route::post('/stores', [MainController::class, 'getMoreStores'])->name('stores');
-
 
 
 Route::middleware([

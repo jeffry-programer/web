@@ -14,6 +14,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -176,6 +177,11 @@ class DetailStore extends Component
             'search' => $search,
             'category' => $category
         ];
+
+        $store->address = Crypt::decrypt($store->address);
+        $store->email = Crypt::decrypt($store->email);
+        $store->RIF = Crypt::decrypt($store->RIF);
+        $store->phone = Crypt::decrypt($store->phone);
         
         return view('livewire.detail-store', $array_data);
     }

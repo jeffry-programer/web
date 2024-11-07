@@ -39,7 +39,7 @@
 
   @media (max-width: 768px) {
     .lupitaaa {
-      margin-left: 1rem;
+      margin-left: 3rem;
     }
   }
 
@@ -138,8 +138,8 @@
           <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Grúas') }}
         </x-dropdown-link>
       </div>
-      <div class="col-10 col-md-3 d-flex align-items-center justify-content-center">
-        <img class="img-fluid" style="height: 90%" src=" {{ asset('images/tulobuscas.png') }} " alt="img" style="cursor: pointer;"
+      <div class="col-10 col-md-3 d-flex align-items-center justify-content-start">
+        <img class="img-fluid" style="height: 90%;width: 30%;" src=" {{ asset('images/piePagiina.png') }} " alt="img" style="cursor: pointer;"
           onclick="window.location.replace('/');">
       </div>
       <div class="col-2 d-flex d-md-none align-items-center justify-content-center">
@@ -227,7 +227,6 @@
           </div>
           <div class="col-1 d-flex align-items-center justify-content-center">
             <i class="fa-solid fa-magnifying-glass icons-search pointer lupitaaa" onclick="searchData()"></i>
-            <i class="fa-solid fa-microphone icons-search pointer" style="margin-left: -1rem;"></i>
           </div>
         </form>
       </div>

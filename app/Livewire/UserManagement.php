@@ -29,6 +29,7 @@ use App\Notifications\NotifyAdmin;
 use App\Notifications\NotifyUsers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -326,7 +327,7 @@ class UserManagement extends Component
     {
         $request->validate([
             'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/'],
-            'RIF' => 'required|max:45',
+            'RIF' => 'required|max:45|unique:stores',
             'address' => 'required|max:255',
             'email' => 'required|email|unique:stores',
             'description' => 'required|string|max:255',
@@ -339,6 +340,11 @@ class UserManagement extends Component
         $data = $request->all();
 
         $data['link'] = str_replace(' ', '-', $data['name']);
+
+        $data['address'] = Crypt::encrypt($data['address']);
+        $data['email'] = Crypt::encrypt($data['email']);
+        $data['RIF'] = Crypt::encrypt($data['RIF']);
+        $data['phone'] = Crypt::encrypt($data['phone']);
 
         // Crear la tienda
         $store = Store::create($data);

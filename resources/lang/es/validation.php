@@ -250,6 +250,7 @@ return [
         'sectors_id'               => 'sector',
         'RIF'                      => 'RIF',
         'municipalities_id'        => 'municipio',
-        'states_id'                => 'estado'
+        'states_id'                => 'estado',
+        'birthdate'                => 'fecha de nacimiento'
     ],
 ];
