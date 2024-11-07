@@ -216,10 +216,12 @@ class MainController extends Controller
         $type_stores = TypeStore::all();
         $municipalities = Municipality::all();
         $states = State::all();
+        $categories_stores = CategoryStore::where('type_stores_id', env('TIPO_TIENDA_ID'))->get();
         $array_data = [
             'type_stores' => $type_stores,
             'municipalities' => $municipalities,
-            'states' => $states
+            'states' => $states,
+            'categories_stores' => $categories_stores
         ];
         return view('register-data-store', $array_data);
     }
@@ -230,10 +232,12 @@ class MainController extends Controller
         $type_stores = TypeStore::all();
         $municipalities = Municipality::all();
         $states = State::all();
+        $categories_stores = CategoryStore::where('type_stores_id', env('TIPO_TALLER_ID'))->get();
         $array_data = [
             'type_stores' => $type_stores,
             'municipalities' => $municipalities,
-            'states' => $states
+            'states' => $states,
+            'categories_stores' => $categories_stores
         ];
         return view('register-data-taller', $array_data);
     }

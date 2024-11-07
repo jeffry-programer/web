@@ -73,6 +73,15 @@
                         
                         <div class="row">
                             <div class="col-md-6 form-group">
+                                <label class="py-3" for="name">{{ __('Categoria Tienda') }}</label>
+                                <select name="categories_stores_id" class="form-select mt-1">
+                                    <option value="">Selecciona un categoria</option>
+                                    @foreach ($categories_stores as $category)
+                                        <option value="{{$category->id}}">{{$category->description}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Estado') }}</label>
                                 <select name="states_id" class="form-select mt-1">
                                     <option value="">Selecciona un estado</option>
