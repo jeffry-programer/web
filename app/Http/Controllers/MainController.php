@@ -532,6 +532,13 @@ class MainController extends Controller
         // Check if there are more stores to load
         $hasMoreStores = ($response->currentPage() * $response->perPage()) < $totalStores;
 
+        foreach($response as $store){
+            $store->address = Crypt::decrypt($store->address);
+            $store->RIF = Crypt::decrypt($store->RIF);
+            $store->email = Crypt::decrypt($store->email);
+            $store->phone = Crypt::decrypt($store->phone);
+        }
+
         // Prepare the response array
         $array_response = [
             'stores' => $response,
@@ -2336,12 +2343,20 @@ class MainController extends Controller
         $attributes = Schema::getColumnListing($name_table);
         $data = DB::table($name_table)->get();
 
-        if ($name_label == 'Tiendas'){
-            foreach($data as $key){
-                $key->email = Crypt::decrypt($key->email);
-                $key->address = Crypt::decrypt($key->address);
-                $key->phone = Crypt::decrypt($key->phone);
-                $key->RIF = Crypt::decrypt($key->RIF);
+        if ($name_label == 'Tiendas') {
+            foreach($data as $key) {
+                $key->email = $key->email ? Crypt::decrypt($key->email) : null;
+                $key->address = $key->address ? Crypt::decrypt($key->address) : null;
+                $key->phone = $key->phone ? Crypt::decrypt($key->phone) : null;
+                $key->RIF = $key->RIF ? Crypt::decrypt($key->RIF) : null;
+            }
+        }
+        
+        if ($name_label == 'Usuarios') {
+            foreach($data as $key) {
+                $key->email = $key->email ? Crypt::decrypt($key->email) : null;
+                $key->address = $key->address ? Crypt::decrypt($key->address) : null;
+                $key->phone = $key->phone ? Crypt::decrypt($key->phone) : null;
             }
         }
 

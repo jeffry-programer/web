@@ -876,6 +876,15 @@ class UserManagement extends Component
             $store->save();
         }
 
+        if ($request->label == 'Usuarios') {
+            $store = User::find($request->id);
+            $store->email = Crypt::encrypt($request->email);
+            $store->address = Crypt::encrypt($request->address);
+            $store->phone = Crypt::encrypt($request->phone);
+
+            $store->save();
+        }
+
         if ($name_table == 'publicities') {
             $status2 = Publicity::find($request->id)->status;
             if ($status1 == false && $status2 == true) {

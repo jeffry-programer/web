@@ -199,7 +199,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Ahorra tiempo</h6>
                     <p> Al consultar el repuesto que necesita, el sistema muestra que tiendas
@@ -214,7 +214,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Ahorra dinero</h6>
                     <p> Ahorrarás dinero, al no tener que recorrer toda la ciudad averiguando
@@ -229,7 +229,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;"> Aprovecho ofertas</h6>
                     <p> Aprovecharas las diferentes promociones que las tiendas tienen para ti, al suscribirte
@@ -244,7 +244,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Te recomendamos talleres
                     </h6>

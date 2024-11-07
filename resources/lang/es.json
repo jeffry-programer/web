@@ -430,5 +430,6 @@
     "read" : "Leido",
     "word" : "Palabra",
     "birthdate" : "Fecha de Nacimiento",
-    "categories_stores_id" : "Categoria Tienda"
+    "categories_stores_id" : "Categoria Tienda",
+    "session_active" : "Sesión Activa"
 }

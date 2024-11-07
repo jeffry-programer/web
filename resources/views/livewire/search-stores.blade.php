@@ -42,7 +42,7 @@
                     <a href="/tienda/{{ str_replace(' ','-', $store->name) }}/{{ str_replace(' ','-', $store->products->first()->name) }}">
                         <div class="card card-store">
                             <div class="zoom-container">
-                            <img class="zoomed-image" src="{{ asset($store->image) }}" alt="Descripción de la imagen">
+                            <img class="zoomed-image" src="{{ asset($store->image && file_exists(public_path($store->image)) ? $store->image : 'images/1.jpg') }}" alt="Descripción de la imagen">
                             </div>
                             <div class="card-body" style="height: 14rem;">
                             <h5 class="card-title">{{$store->name}}</h5>

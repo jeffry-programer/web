@@ -9,6 +9,7 @@ use App\Models\SearchUser;
 use App\Models\Store;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -160,6 +161,14 @@ class SearchStores extends Component
                     }
                 }
             }
+        }
+
+
+        foreach($stores as $store){
+            $store->address = Crypt::decrypt($store->address);
+            $store->RIF = Crypt::decrypt($store->RIF);
+            $store->email = Crypt::decrypt($store->email);
+            $store->phone = Crypt::decrypt($store->phone);
         }
 
         return view('livewire.search-stores', ['stores' => $stores, 'locationStores' => $locationStores, 'product_search' => $finalSearch]);

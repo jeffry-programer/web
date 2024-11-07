@@ -186,7 +186,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Aumenta el trafico de clientes a tu tienda desde tulobuscas</h6>
                     <p> Logra aunmentar el número de clientes gracias a la gran red
@@ -199,7 +199,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Aumenta la exposición de tu tienda con tulobuscas</h6>
                     <p> Aumenta la visibilidad de tu tienda y atrae mayor clientes, desde
@@ -212,7 +212,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">  Obtendras información extra</h6>
                     <p>  Obtendras informción que te ayudara en tus ventas, como por ejemplo
@@ -225,7 +225,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Tendras un código QR</h6>
                     <p>  Con el código QR en fisico, expuesto en la tienda fisica, los posibles clientes pueden

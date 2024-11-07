@@ -72,7 +72,7 @@
                         <a href="/tienda/{{ str_replace(' ', '-', $store->name) }}">
                             <div class="card card-store">
                                 <div class="zoom-container">
-                                    <img class="zoomed-image" src="{{ asset($store->image) }}"
+                                    <img class="zoomed-image" src="{{ asset($store->image && file_exists(public_path($store->image)) ? $store->image : 'images/1.jpg') }}"
                                         alt="Descripción de la imagen">
                                 </div>
                                 <div class="card-body" style="padding-bottom: 4rem;">
@@ -103,7 +103,7 @@
                         <a href="/tienda/{{ str_replace(' ', '-', $store->store->name) }}">
                             <div class="card card-store">
                                 <div class="zoom-container">
-                                    <img class="zoomed-image" src="{{ asset($store->store->image) }}"
+                                    <img class="zoomed-image" src="{{ asset($store->store->image && file_exists(public_path($store->store->image)) ? $store->store->image : 'images/1.jpg') }}"
                                         alt="Descripción de la imagen">
                                 </div>
                                 <div class="card-body" style="padding-bottom: 4rem;">
@@ -135,7 +135,7 @@
                     <a href="/tienda/{{ str_replace(' ', '-', $store->store->name) }}/{{ str_replace(' ', '-', $store->product->name) }}">
                         <div class="card card-store">
                             <div class="zoom-container">
-                                <img class="zoomed-image" src="{{ asset($store->product->image) }}" alt="Descripción de la imagen">
+                                <img class="zoomed-image" style="object-fit: contain" src="{{ asset($store->product->image && file_exists(public_path($store->product->image)) ? $store->product->image : 'images/1.jpg') }}" alt="Descripción de la imagen">
                             </div>
                             <div class="card-body" style="padding-bottom: 4rem;">
                                 <h5 class="card-title">{{ $store->product->name }}</h5>

@@ -899,7 +899,7 @@
             init: function(){
                 this.on("sending", function(file, xhr, formData){
                     formData.append("id", `${$("#id").val()}`);
-                    formData.append("table", `${$("#table").val()}`);
+                    formData.append("table", `products`);
                 });
 
                 this.on("addedfile",  function(file) {
@@ -960,6 +960,46 @@
                 showConfirmButton: false,
                 title: "Registro editado exitosamente!!",
                 timer: 3000
+            });
+        }
+
+        function deleteImg(nameImg){
+            Swal.fire({
+                title: "¿Seguro que quieres eliminar esta imagen?",
+                showCancelButton: true,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: `Cancelar`
+            }).then((result) => {
+                if (result.isConfirmed){
+                    deleteImgDb(nameImg);
+                }
+            });
+        }
+
+        function deleteImgDb(nameImg){
+            $.ajax({
+                url: "{{route('delete-img')}}",
+                data: {_token : "{{csrf_token()}}", nameImg: nameImg.replaceAll('storage','/storage'), id: $("#id").val(), label: 'Productos'},
+                method: 'POST',
+                success(response){
+                    var plantilla = $("#row-img-update").html();
+                    var plantillaRemplazar = `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;"><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" style="position: absolute;width: 1.4rem;left: 8.8rem;background: white;border-radius: 100%;top: 0.1rem;"></a></div>`;
+                    plantilla = plantilla.replaceAll(plantillaRemplazar, '');
+                    $("#row-img-update").html(plantilla);
+                    $("#row-img-update").show();
+                    setTimeout(() => {
+                        //window.location.reload();
+                    }, 3000);
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'center',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        title: "Imágen eliminada exitosamente",
+                        timer: 3000
+                    });
+                }
             });
         }
 

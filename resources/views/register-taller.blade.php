@@ -183,7 +183,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Aumenta el trafico de clientes a tu servicio
         desde tulobuscas</h6>
@@ -197,7 +197,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Aumenta la exposición de tu servicio con tulobuscas</h6>
                     <p>Potencia la visibilidad de tu servicio de grúa para atraer a más clientes.
@@ -211,7 +211,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;"> Obtendras información extra</h6>
                     <p>  O Obtendrás información valiosa que potenciará tus servicios. Por ejemplo, te proporcionaremos datos sobre
@@ -225,7 +225,7 @@
                 padding: 1rem;
                 margin-bottom: 2rem;
                 color: white;
-                text-align: left;height: 16rem;">
+                text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
                     font-weight: bolder;">Tendras un código QR</h6>
                     <p>   Mediante el uso de un código QR físico, ubicado en las puertas del camión,

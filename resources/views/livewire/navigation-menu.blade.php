@@ -332,17 +332,17 @@
         <div class="modal-body">
           <ul class="list-group">
             @foreach ($subscribeds as $key)
-            <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}" target="_blank">
-              <li class="list-group-item d-flex" style="justify-content: start;align-items: center;border: none;">
-                <img src="{{ asset($key->store->image) }}" alt="img" style="width: 3rem;
-                            height: 3rem;
-                            border-radius: 100%;
-                            margin-right: 1rem;
-                            border: solid 1px #dee2e6;
-                            object-fit: cover;">{{ $key->store->name }}
-              </li>
-            </a>
-            @endforeach
+              <a href="/tienda/{{ str_replace(' ', '-', $key->store->name) }}" target="_blank">
+                  <li class="list-group-item d-flex" style="justify-content: start; align-items: center; border: none;">
+                      <img 
+                          src="{{ asset($key->store->image && file_exists(public_path($key->store->image)) ? $key->store->image : 'images/1.jpg') }}" 
+                          alt="img" 
+                          style="width: 3rem; height: 3rem; border-radius: 100%; margin-right: 1rem; border: solid 1px #dee2e6; object-fit: cover;"
+                      >
+                      {{ $key->store->name }}
+                  </li>
+              </a>  
+          @endforeach
           </ul>
         </div>
       </div>
