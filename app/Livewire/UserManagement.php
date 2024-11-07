@@ -69,11 +69,7 @@ class UserManagement extends Component
         if ($name_table == 'stores' || $name_table == 'users') {
             $states = State::all();
         }
-        if ($name_table == 'products') {
-            $data = Product::all();
-        } else {
-            $data = DB::table($name_table)->get();
-        }
+        $data = [];
         $atributes = Schema::getColumnListing($name_table);
         $extra_data = [];
 
@@ -102,6 +98,7 @@ class UserManagement extends Component
 
         if ($name_label == 'Productos') $categories = Category::all();
         if ($name_label == 'Perfil operaciones') $modules = Module::all();
+
         return view('livewire.user-management', ['data' => $data, 'label' => $name_label, 'atributes' => $atributes, 'extra_data' => $extra_data, 'tables' => $tables, 'tables2' => $tables2, 'categories' => $categories, 'modules' => $modules, 'states' => $states]);
     }
 
@@ -334,7 +331,8 @@ class UserManagement extends Component
             'name' => 'required|string|max:100|unique:stores',
             'sectors_id' => 'required',
             'municipalities_id' => 'required',
-            'states_id' => ['required']
+            'states_id' => 'required',
+            'categories_stores_id' => 'required'
         ]);
 
         $data = $request->all();
@@ -850,7 +848,9 @@ class UserManagement extends Component
                         $days_plan = TypePublicity::find($request->type_publicities_id)->amount_days;
                         $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
                     }
-                    if ($field !== 'image' && $field !== 'image2') {
+
+                    $condition = $request->label == 'Tiendas' && ($field == 'email' || $field == 'address' || $field == 'phone' || $field == 'RIF');
+                    if ($field !== 'image' && $field !== 'image2' && !$condition) {
                         if ($field == 'password' && $data[$field] != '') {
                             $data[$field] = Hash::make($data[$field]);
                             $query .= ", $field = '" . $data[$field] . "' ";
@@ -865,6 +865,16 @@ class UserManagement extends Component
         }
         $query .= "where id = $request->id";
         DB::update($query);
+
+        if ($request->label == 'Tiendas') {
+            $store = Store::find($request->id);
+            $store->email = Crypt::encrypt($request->email);
+            $store->address = Crypt::encrypt($request->address);
+            $store->phone = Crypt::encrypt($request->phone);
+            $store->RIF = Crypt::encrypt($request->RIF);
+
+            $store->save();
+        }
 
         if ($name_table == 'publicities') {
             $status2 = Publicity::find($request->id)->status;

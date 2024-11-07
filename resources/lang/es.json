@@ -429,5 +429,6 @@
     "status2" : "Estado2",
     "read" : "Leido",
     "word" : "Palabra",
-    "birthdate" : "Fecha de Nacimiento"
+    "birthdate" : "Fecha de Nacimiento",
+    "categories_stores_id" : "Categoria Tienda"
 }

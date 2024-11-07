@@ -3,8 +3,9 @@
         <x-slot name="logo">
         </x-slot>
 
-        <img class="img-fluid" src=" {{ asset('images/piePagiina.png') }} " style="cursor: pointer;margin-bottom:2rem" onclick="window.location.replace('/');">
-
+        <div style="display: flex;justify-content: center;">
+            <img class="img-fluid" src=" {{ asset('images/piePagiina.png') }} " style="cursor: pointer;margin-bottom:2rem;width: 14rem;" onclick="window.location.replace('/');">
+        </div>
 
         <div class="mb-4 text-sm text-gray-600">
             {{ __('¿Has olvidado tu contraseña? No te preocupes. Solo indícanos tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña, permitiéndote elegir una nueva.') }}

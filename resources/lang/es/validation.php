@@ -251,6 +251,7 @@ return [
         'RIF'                      => 'RIF',
         'municipalities_id'        => 'municipio',
         'states_id'                => 'estado',
-        'birthdate'                => 'fecha de nacimiento'
+        'birthdate'                => 'fecha de nacimiento',
+        'categories_stores_id'     => 'categoria tienda'
     ],
 ];

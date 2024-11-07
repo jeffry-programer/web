@@ -243,10 +243,12 @@ class MainController extends Controller
         $type_stores = TypeStore::all();
         $municipalities = Municipality::all();
         $states = State::all();
+        $categories_stores = CategoryStore::where('type_stores_id', env('TIPO_GRUA_ID'))->get();
         $array_data = [
             'type_stores' => $type_stores,
             'municipalities' => $municipalities,
-            'states' => $states
+            'states' => $states,
+            'categories_stores' => $categories_stores
         ];
         return view('register-data-grua', $array_data);
     }
@@ -2329,6 +2331,15 @@ class MainController extends Controller
 
         $attributes = Schema::getColumnListing($name_table);
         $data = DB::table($name_table)->get();
+
+        if ($name_label == 'Tiendas'){
+            foreach($data as $key){
+                $key->email = Crypt::decrypt($key->email);
+                $key->address = Crypt::decrypt($key->address);
+                $key->phone = Crypt::decrypt($key->phone);
+                $key->RIF = Crypt::decrypt($key->RIF);
+            }
+        }
 
         $dataTable = DataTables::of($data);
 
