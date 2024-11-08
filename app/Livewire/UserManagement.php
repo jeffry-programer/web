@@ -952,10 +952,10 @@ class UserManagement extends Component
 
         $store = Store::find($request->stores_id);
         $store->name = $request->name;
-        $store->address = $request->address;
+        $store->address = Crypt::encrypt($request->address);
         $store->description = $request->description;
-        $store->email = $request->email;
-        $store->phone = $request->phone;
+        $store->email = Crypt::encrypt($request->email);
+        $store->phone = Crypt::encrypt($request->phone);
 
         if (isset($request->tipo)) {
             $store->tipo = $request->tipo;

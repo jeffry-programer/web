@@ -50,18 +50,22 @@ class Welcome extends Component
         $array_products_final = [];
 
         foreach ($stores2 as $store) {
-            $store_id = $store->store->id; // Asegúrate de que 'store' y 'id' son correctos
-            if (!in_array($store_id, $array_stores)) {
-                $array_stores[] = $store_id;
-                $array_stores_final[] = $store;
-            }
+            if($store->store != null){
+                $store_id = $store->store->id; // Asegúrate de que 'store' y 'id' son correctos
+                if (!in_array($store_id, $array_stores)) {
+                    $array_stores[] = $store_id;
+                    $array_stores_final[] = $store;
+                }
+            }   
         }
 
         foreach ($stores3 as $product) {
-            $product_id = $product->product->id; // Asegúrate de que 'product' y 'id' son correctos
-            if (!in_array($product_id, $array_products)) {
-                $array_products[] = $product_id;
-                $array_products_final[] = $product;
+            if($product->product != null){
+                $product_id = $product->product->id; // Asegúrate de que 'product' y 'id' son correctos
+                if (!in_array($product_id, $array_products)) {
+                    $array_products[] = $product_id;
+                    $array_products_final[] = $product;
+                }
             }
         }
 
