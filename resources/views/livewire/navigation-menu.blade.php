@@ -63,6 +63,22 @@
     text-overflow: ellipsis;
     white-space: normal;
   }
+
+  .div-justify{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .category-icon{
+    font-size: 4rem
+  }
+
+  .div-categories{
+    border: solid;
+    padding: 1rem;
+    border-radius: 100%;
+  }
 </style>
 
 <div>
@@ -124,18 +140,18 @@
 
         <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal26" style="text-decoration: none"
           style="font-size: 1rem;">
-          <i class="fa-solid fa-circle-user me-1"></i>{{ __('Tiendas') }}
+          <i class="fa-solid fa-circle-user me-1"></i>{{ __('Buscar tiendas') }}
         </x-dropdown-link>
 
 
         <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal27" style="text-decoration: none"
           style="font-size: 1rem;">
-          <i class="fa-solid fa-house me-1"></i>{{ __('Talleres') }}
+          <i class="fa-solid fa-house me-1"></i>{{ __('Buscar talleres') }}
         </x-dropdown-link>
 
         <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal28" style="text-decoration: none"
           style="font-size: 1rem;">
-          <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Grúas') }}
+          <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Buscar grúas') }}
         </x-dropdown-link>
       </div>
       <div class="col-10 col-md-3 d-flex align-items-center justify-content-start">

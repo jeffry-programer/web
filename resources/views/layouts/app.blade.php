@@ -24,6 +24,7 @@
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.css">
+
         @yield('css')
     </head>
     <body class="font-sans antialiased">
@@ -58,6 +59,8 @@
         <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>       
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
         <script src=" {{ asset('js/script.js') }} "></script>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.2/dist/ionicons/ionicons.js"></script>
         @yield('js')
     </body>
     @livewire('footer')

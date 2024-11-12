@@ -727,10 +727,6 @@ class UserManagement extends Component
                 if ($count == 0) {
                     $query .= "$field = '" . $data[$field] . "' ";
                 } else {
-                    if ($request->label == 'Plan contratado' && $field == 'date_end') {
-                        $days_plan = Plan::find($request->plans_id)->days;
-                        $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
-                    }
                     if ($field == 'read') {
                         $field = "`read`";
                         $data[$field] = $data['read'];

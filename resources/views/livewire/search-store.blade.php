@@ -4,6 +4,28 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cleanData()"></button>
     </div>
     <div class="modal-body">
+        <!--<div class="row">
+            <div class="col-md-3 form-group div-justify">
+                <div class="div-categories">
+                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+                </div>
+            </div>
+            <div class="col-md-3 form-group div-justify">
+                <div class="div-categories">
+                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+                </div>
+            </div>
+            <div class="col-md-3 form-group div-justify">
+                <div class="div-categories">
+                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+                </div>
+            </div>
+            <div class="col-md-3 form-group div-justify">
+                <div class="div-categories">
+                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+                </div>
+            </div>
+        </div>-->
         <div class="row">
             <div class="col-md-3 form-group">
                 <label for="country" class="pb-3">{{ __('Estado') }}</label>
