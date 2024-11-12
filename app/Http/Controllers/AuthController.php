@@ -88,25 +88,26 @@ class AuthController extends Controller
         return redirect()->intended('/dashboard');
     }
 
-    public function verify(Request $request)
+    public function verify(Request $request, $id)
     {
-        $user = Auth::user();
-
+        // Obtener el usuario por ID
+        $user = User::findOrFail($id);
+    
         // Verificar si la firma del enlace es válida
-        if (! URL::hasValidSignature($request)) {
+        if (!URL::hasValidSignature($request)) {
             return redirect('/login')->withErrors(['message' => 'El enlace de verificación no es válido o ha expirado.']);
         }
-
+    
         // Verificar si el usuario ya está verificado
         if ($user->hasVerifiedEmail()) {
             return redirect('/dashboard')->with('status', 'Tu correo ya está verificado.');
         }
-
+    
         // Marcar el correo electrónico como verificado y disparar el evento
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
-
+    
         return redirect('/dashboard')->with('status', '¡Tu correo ha sido verificado exitosamente!');
     }
 }
