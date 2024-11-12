@@ -1202,21 +1202,57 @@
               });
         });
 
+        fillCategoriesSelect($('[name="type_stores_id"]').val(), $('[name="categories_stores_id"]'));
+
         $('[name="type_stores_id"]').change(() => {
-            if ($('[name="type_stores_id"]').val() == {{ env('TIPO_GRUA_ID') }}) {
-                $(".display-grua").css('display', 'block'); // Cambiar 'visiblity' a 'visibility'
+            const typeStoresId = $('[name="type_stores_id"]').val();
+
+            if (typeStoresId == {{ env('TIPO_GRUA_ID') }}) {
+                $(".display-grua").css('display', 'block');
             } else {
-                $(".display-grua").css('display', 'none'); // Cambiar 'visiblity' a 'visibility'
+                $(".display-grua").css('display', 'none');
             }
+
+            // Llenar el select de categorías
+            fillCategoriesSelect(typeStoresId, $('[name="categories_stores_id"]'));
         });
 
         $('#type_stores_id').change(() => {
-            if ($('#type_stores_id').val() == {{ env('TIPO_GRUA_ID') }}) {
-                $(".display-grua2").css('display', 'block'); // Cambiar 'visiblity' a 'visibility'
+            const typeStoresId = $('#type_stores_id').val();
+
+            if (typeStoresId == {{ env('TIPO_GRUA_ID') }}) {
+                $(".display-grua2").css('display', 'block');
             } else {
-                $(".display-grua2").css('display', 'none'); // Cambiar 'visiblity' a 'visibility'
+                $(".display-grua2").css('display', 'none');
             }
+
+            // Llenar el select de categorías
+            fillCategoriesSelect(typeStoresId, $('#categories_stores_id'));
         });
+
+        // Función para llenar el select de categorías
+        function fillCategoriesSelect(typeStoresId, selectElement) {
+            $.ajax({
+                url: '/get-categories',
+                type: 'GET',
+                data: {
+                    type_stores_id: typeStoresId
+                },
+                success: function(response) {
+                    selectElement.empty(); // Limpiar el select
+                    selectElement.append('<option value="">Seleccione una categoría</option>');
+
+                    // Agregar las opciones al select
+                    response.categories.forEach(category => {
+                        selectElement.append(`<option value="${category.id}">${category.description}</option>`);
+                    });
+                },
+                error: function(error) {
+                    console.error('Error al obtener las categorías:', error);
+                }
+            });
+        }
+
 
         function validateVisibilityTypeStore(){
             if ($('[name="type_stores_id"]').val() == {{ env('TIPO_GRUA_ID') }}) {

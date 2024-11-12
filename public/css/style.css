@@ -805,3 +805,7 @@ input:focus{
 #myUL30 li a:hover {
   background-color: #f4f4f4;
 }
+
+.highway-car{
+  padding: 0.3rem !important;
+}

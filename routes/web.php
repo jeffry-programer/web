@@ -42,6 +42,7 @@ Route::get('/autocomplete-products-store', [MainController::class, 'autocomplete
 Route::get('update-counter-component', [MainController::class, 'updateComponent']);
 Route::get('/states/{state}/municipalities', [MainController::class, 'municipalities']);
 Route::post('/stores', [MainController::class, 'getMoreStores'])->name('stores');
+Route::get('/get-categories', [MainController::class, 'getCategoriesStore']);
 
 
 Route::middleware([

@@ -731,6 +731,10 @@ class UserManagement extends Component
                         $days_plan = Plan::find($request->plans_id)->days;
                         $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
                     }
+                    if ($field == 'read') {
+                        $field = "`read`";
+                        $data[$field] = $data['read'];
+                    }
                     if ($field == 'password') $data[$field] = Hash::make($data[$field]);
                     $query .= ", $field = '" . $data[$field] . "' ";
                 }

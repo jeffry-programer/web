@@ -532,7 +532,7 @@ class MainController extends Controller
         // Check if there are more stores to load
         $hasMoreStores = ($response->currentPage() * $response->perPage()) < $totalStores;
 
-        foreach($response as $store){
+        foreach ($response as $store) {
             $store->address = Crypt::decrypt($store->address);
             $store->RIF = Crypt::decrypt($store->RIF);
             $store->email = Crypt::decrypt($store->email);
@@ -1605,23 +1605,23 @@ class MainController extends Controller
     public function getChats($userId)
     {
         $final_array = [];
-    
+
         // Obtener conversaciones del usuario y las asociadas a su tienda (si tiene)
         $conversations = Conversation::where('users_id', $userId)->orWhere('stores_id', $userId)->with(['user', 'store', 'messages'])->get();
-    
+
         // Ordenar las conversaciones por la fecha del mensaje más reciente
         $conversations = $conversations->sortByDesc(function ($conversation) {
             return optional($conversation->messages->last())->created_at;
         });
-    
+
         $my_user = User::find($userId);
-    
+
         // Recorrer las conversaciones y agregar datos al array final
         foreach ($conversations as $key => $conversation) {
             $user = User::find($conversation->users_id);
             $user2 = User::find($conversation->stores_id);
             $lastMessage = $conversation->messages->last(); // Obtener el último mensaje
-    
+
             // Verificar si se encontraron tanto el usuario como la tienda y si hay mensajes
             if ($user && $user2 && $lastMessage) {
                 // Determinar el usuario en función del ID actual
@@ -1630,7 +1630,7 @@ class MainController extends Controller
                 } else {
                     $user = $user2;
                 }
-    
+
                 // Establecer el nombre y la imagen del usuario o tienda
                 if ($user->store) {
                     $final_array[$key]['user_name'] = $user->store->name;
@@ -1639,36 +1639,36 @@ class MainController extends Controller
                     $final_array[$key]['user_name'] = $user->name;
                     $final_array[$key]['user_img'] = $user->image;
                 }
-    
+
                 // Verificar si la imagen es nula o vacía, asignar un avatar por defecto
                 if (empty($final_array[$key]['user_img'])) {
                     $letter = strtoupper($final_array[$key]['user_name'][0]);
                     $final_array[$key]['user_img'] = 'https://ui-avatars.com/api/?name=' . $letter . '&color=7F9CF5&background=EBF4FF';
                 }
-    
+
                 // Desencriptar el contenido del último mensaje y otros datos relacionados
                 try {
                     $final_array[$key]['last_message'] = Crypt::decryptString($lastMessage->content);
                 } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
                     $final_array[$key]['last_message'] = 'Mensaje no disponible';
                 }
-    
+
                 $final_array[$key]['last_message_time'] = $lastMessage->created_at;
                 $final_array[$key]['last_message_status'] = $lastMessage->status;
-    
+
                 try {
                     $final_array[$key]['last_message_from'] = Crypt::decrypt($lastMessage->from);
                 } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
                     $final_array[$key]['last_message_from'] = 'Remitente no disponible';
                 }
-    
+
                 $final_array[$key]['id'] = $conversation->id;
             }
         }
-    
+
         return response()->json(array_values($final_array));
     }
-    
+
 
     public function getInfoHome($userId, $municipalityId = null) // Permitir null como valor por defecto
     {
@@ -2344,16 +2344,16 @@ class MainController extends Controller
         $data = DB::table($name_table)->get();
 
         if ($name_label == 'Tiendas') {
-            foreach($data as $key) {
+            foreach ($data as $key) {
                 $key->email = $key->email ? Crypt::decrypt($key->email) : null;
                 $key->address = $key->address ? Crypt::decrypt($key->address) : null;
                 $key->phone = $key->phone ? Crypt::decrypt($key->phone) : null;
                 $key->RIF = $key->RIF ? Crypt::decrypt($key->RIF) : null;
             }
         }
-        
+
         if ($name_label == 'Usuarios') {
-            foreach($data as $key) {
+            foreach ($data as $key) {
                 $key->email = $key->email ? Crypt::decrypt($key->email) : null;
                 $key->address = $key->address ? Crypt::decrypt($key->address) : null;
                 $key->phone = $key->phone ? Crypt::decrypt($key->phone) : null;
@@ -2643,5 +2643,13 @@ class MainController extends Controller
         }
 
         return response()->json(['commentaries' => $commentaries], 200);
+    }
+
+    public function getCategoriesStore(Request $request)
+    {
+        $typeStoresId = $request->type_stores_id;
+        $categories = CategoryStore::where('type_stores_id', $typeStoresId)->get();
+
+        return response()->json(['categories' => $categories]);
     }
 }

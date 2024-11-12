@@ -144,7 +144,7 @@ class SearchStores extends Component
             }
         }
 
-        if (!$stores->isEmpty()) {
+        if (!$stores->isEmpty() && Auth::user() != null) {
             foreach ($stores as $store) {
                 $product_store = ProductStore::where('products_id', $store->products->first()->id)
                     ->where('stores_id', $store->id)
