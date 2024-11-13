@@ -1,67 +1,79 @@
 <div>
     <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Talleres</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cleanData()"></button>
+        <h5 class="modal-title" id="exampleModalLabel">Tiendas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="cleanData2()"></button>
     </div>
     <div class="modal-body">
-        <div class="row">
-            <div class="col-md-3 form-group">
-                <label for="country" class="pb-3">{{ __('Estado') }}</label>
-                <select class="form-select" id="state-search-taller-id" wire:model="selectedState" wire:change="changeState()">
-                    <option value="" selected>Seleccione un estado</option>
-                    @foreach ($states as $index => $state)
-                    <option value="{{ $state->id }}">{{ $state->name }}</option>
-                    @endforeach
-                </select>
+        <div id="categories-container2" class="d-flex flex-wrap justify-content-center">
+            @foreach ($categories as $category)
+                <div class="category-card2" data-category-id="{{ $category->id }}">
+                    <ion-icon name="{{ $category->icon }}" class="category-icon"></ion-icon>
+                    <p class="category-description"><b>{{ $category->description }}</b></p>
+                </div>
+            @endforeach
+        </div>
+        
+        <div id="filters-container2" style="display: none">
+            <div class="row">
+                <div class="col-md-12 form-group" style="display: flex;justify-content: center;align-items: center;">
+                    <ion-icon id="btn-back-categories2" style="font-size: 4rem;width: 3rem;cursor: pointer;color: #0d6efd;" name="arrow-back-circle-outline"></ion-icon>
+                </div>
             </div>
-            <div class="col-md-3 form-group">
-                <label for="name" class="pb-3">{{ __('Municipio') }}</label>
-                <select class="form-select" id="municipality-search-taller-id" wire:model="selectedMunicipality" wire:change="changeMunicipality()">
-                    <option value="" selected>Seleccione un municipio</option>
-                    @foreach ($municipalities as $index => $municipalitiy)
-                    <option value="{{ $municipalitiy->id }}">{{ $municipalitiy->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 form-group">
-                <label for="name" class="pb-3">{{ __('Sector') }}</label>
-                <select class="form-select" id="sector-search-taller-id" wire:model="selectedSector" wire:change="changeSector()">
-                    <option selected value="">Seleccione un sector</option>
-                    <option value="Todos">Todos</option>
-                    @foreach ($sectors as $index => $sector)
-                    <option value="{{ $sector->id }}">{{ $sector->description }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 form-group">
-                <label for="name" class="pb-3">{{ __('Nombre (opcional)') }}</label>
-                <input type="text" wire:model="name_store" id="name-search-taller" class="form-control" placeholder="Ingrese un nombre">
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    <label for="state-search-store-id">{{ __('Estado') }}</label>
+                    <select class="form-select" id="state-search-store-id2">
+                        <option value="" selected>Seleccione un estado</option>
+                        @foreach ($states as $state)
+                            <option value="{{ $state->id }}">{{ $state->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="municipality-search-store-id">{{ __('Municipio') }}</label>
+                    <select class="form-select" id="municipality-search-store-id2">
+                        <option value="" selected>Seleccione un municipio</option>
+                    </select>
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="sector-search-store-id">{{ __('Sector') }}</label>
+                    <select class="form-select" id="sector-search-store-id2">
+                        <option value="" selected>Seleccione un sector</option>
+                        <option value="Todos">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="name-search-store">{{ __('Nombre (opcional)') }}</label>
+                    <input type="text" id="name-search-store2" class="form-control" placeholder="Ingrese un nombre">
+                </div>
             </div>
         </div>
-        <div class="row">
+        
+        <div class="row" id="show-stores2">
             <div>
-                <div class="alert alert-info mt-3" id="new_message_taller" style="display: none">
+                <div class="alert alert-info mt-3" id="new_message_store_taller" style="display: none">
                     No hemos encontrado resultados que coincidieran con tu búsqueda, aquí puedes ver otros
                     resultados en tu mismo municipio.
                 </div>
-                <div class="alert alert-info mt-3" id="new_message_taller2" style="display: none">
+                <div class="alert alert-info mt-3" id="new_message_store2_taller" style="display: none">
                     No hemos encontrado resultados que coincidieran con tu búsqueda, aquí puedes ver otros
                     resultados en tu mismo estado.
                 </div>
-                <div class="alert alert-info mt-3" id="new_message_taller3" style="display: none">
+                <div class="alert alert-info mt-3" id="new_message_store3_taller" style="display: none">
                     No hemos encontrado resultados que coincidieran con tu búsqueda, aquí puedes ver otros
                     resultados en tu mismo país.
                 </div>
             </div>
-            <div class="row" id="showTaller">
+            
+            <div class="row" id="showstore2">
                 <!-- Aquí se mostrarán las tiendas -->
             </div>
-            <div class="row d-none" id="loading-more-taller" style="margin-top: .5rem">
+            <div class="row d-none" id="loading-more-store2" style="margin-top: .5rem">
                 <div class="col-12 text-center">
-                    <button class="btn btn-warning" id="load-products-taller">Cargar más..</button>
+                    <button class="btn btn-warning" id="load-products-store2">Cargar más..</button>
                 </div>
             </div>
-            <div class="row" id="emptyTaller" style="display: none">
+            <div class="row" id="emptystore2" style="display: none">
                 <div class="col-12 col-md-6">
                     <h2 class="ms-5 mt-5">Ups no hemos encontrado resultados a tu búsqueda</h2>
                 </div>
@@ -72,27 +84,157 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cleanData()">Cerrar</button>
-        <button type="button" class="btn btn-primary" id="btn-search-taller" @if ($disabled) disabled @endif>Buscar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+        onclick="cleanData2()">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="btn-search-store2">Buscar</button>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
-        var loading = false;
-        var page = 1;
-        var hasMoreStores = true; // Variable para controlar si hay más tiendas disponibles
+        let selectedCategoryId2 = null;
+        var loading2 = false;
+        var page2 = 1;
+        var hasMoreStores2 = true; // Variable para controlar si hay más tiendas disponibles
+
+        $("#btn-search-store2").prop('disabled', true);
     
-        $("#btn-search-taller").click(() => {
-            page = 1; // Reset the page number for a new search
-            hasMoreStores = true;
-            getDataTaller();
+        // Al hacer clic en una categoría
+        $('.category-card2').on('click', function () {
+            selectedCategoryId2 = $(this).data('category-id');
+            console.log(`Categoría seleccionada: ${selectedCategoryId2}`);
+    
+            // Ocultamos las categorías con animación
+            $("#emptystore2").hide();
+            $('#filters-container2').fadeIn("slow");
+            $("#show-stores2").fadeIn("slow");
+            $('#categories-container2').addClass('d-none');
+        });
+
+        $("#sector-search-store-id2").on('change', function () {
+            if($(this).val() != ''){
+                $("#btn-search-store2").prop('disabled', false);
+            }
         });
     
-        $("#load-products-taller").click(() => {
-            getDataTaller();
+    
+        // Al hacer clic en el botón de regresar
+        $('#btn-back-categories2').on('click', function () {
+            console.log('Regresando a la selección de categorías');
+            
+            // Reseteamos los selects
+            $('#state-search-store-id2').val('').trigger('change');
+            $('#municipality-search-store-id2').html('<option value="" selected>Seleccione un municipio</option>');
+            $('#sector-search-store-id2').html('<option value="" selected>Seleccione un sector</option><option value="Todos">Todos</option>');
+            $('#name-search-store2').val(''); // Limpiar el input de nombre
+            
+            // Ocultar los filtros y mostrar las categorías
+            $('#filters-container2').fadeOut("slow");
+
+            $("#showstore2").html('');
+            $("#loading-more-store2").addClass('d-none');
+            $("#new_message_store_taller").hide();
+            $("#new_message_store2_taller").hide();
+            $("#new_message_store3_taller").hide();
+
+            $("#emptystore2").fadeOut('slow');
+
+            setTimeout(() => {
+                $('#categories-container2').removeClass('d-none');
+                $("#btn-search-store2").prop('disabled', true);
+            }, 500);
+
+            page2 = 1;
+        });
+
+        function cleanData2(){
+            $('#state-search-store-id2').val('').trigger('change');
+            $('#municipality-search-store-id2').html('<option value="" selected>Seleccione un municipio</option>');
+            $('#sector-search-store-id2').html('<option value="" selected>Seleccione un sector</option><option value="Todos">Todos</option>');
+            $('#name-search-store2').val(''); // Limpiar el input de nombre
+
+            $("#showstore2").html('');
+            $("#loading-more-store2").addClass('d-none');
+            $("#new_message_store_taller").hide();
+            $("#new_message_store2_taller").hide();
+            $("#new_message_store3_taller").hide();
+
+            $('#filters-container2').fadeOut("slow");
+            
+            setTimeout(() => {
+                $("#emptystore2").hide();
+                $("#btn-search-store2").prop('disabled', true);
+                $('#categories-container2').removeClass('d-none');
+            }, 500);
+        }
+    
+        // Al seleccionar un estado, cargar los municipios
+        $('#state-search-store-id2').on('change', function () {
+            const stateId = $(this).val();
+            if (!stateId) return;
+    
+            console.log(`Cargando municipios para el estado: ${stateId}`);
+            $('#municipality-search-store-id2').html('<option>Cargando...</option>');
+    
+            $.ajax({
+                url: '/get-municipalities',
+                method: 'POST',
+                data: { stateId },
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                success: function (municipalities) {
+                    console.log('Municipios cargados:', municipalities);
+                    let options = '<option value="">Seleccione un municipio</option>';
+                    municipalities.forEach(municipality => {
+                        options += `<option value="${municipality.id}">${municipality.name}</option>`;
+                    });
+                    $('#municipality-search-store-id2').html(options);
+                },
+                error: function (xhr) {
+                    console.error('Error al cargar municipios:', xhr.responseText);
+                    alert('No se pudieron cargar los municipios. Inténtalo de nuevo.');
+                }
+            });
         });
     
-        function showAlertTime() {
+        // Al seleccionar un municipio, cargar los sectores
+        $('#municipality-search-store-id2').on('change', function () {
+            const municipalityId = $(this).val();
+            if (!municipalityId) return;
+    
+            console.log(`Cargando sectores para el municipio: ${municipalityId}`);
+            $('#sector-search-store-id2').html('<option>Cargando...</option>');
+    
+            $.ajax({
+                url: '/get-sectors',
+                method: 'POST',
+                data: { municipalityId },
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                success: function (sectors) {
+                    console.log('Sectores cargados:', sectors);
+                    let options = '<option value="">Seleccione un sector</option><option value="Todos">Todos</option>';
+                    sectors.forEach(sector => {
+                        options += `<option value="${sector.id}">${sector.description}</option>`;
+                    });
+                    $('#sector-search-store-id2').html(options);
+                },
+                error: function (xhr) {
+                    console.error('Error al cargar sectores:', xhr.responseText);
+                    alert('No se pudieron cargar los sectores. Inténtalo de nuevo.');
+                }
+            });
+        });
+    
+        // Al hacer clic en buscar
+        $("#btn-search-store2").click(() => {
+            page2 = 1; // Reset the page2 number for a new search
+            hasMoreStores2 = true;
+            getDataStores2();
+        });
+    
+        $("#load-products-store2").click(() => {
+            getDataStores2();
+        });
+    
+        function showAlertTime2() {
             Swal.fire({
                 toast: true,
                 position: 'center',
@@ -104,26 +246,27 @@
             });
         }
     
-        function getDataTaller(){
+        function getDataStores2(){
             showAlertTime();
-            if (!loading && hasMoreStores){ // Verificar si hay más tiendas disponibles
-                loading = true;
+            if (!loading2 && hasMoreStores2){ // Verificar si hay más tiendas disponibles
+                loading2 = true;
                 $.ajax({
                     url: '/stores',
                     data: {
-                        'selectedSector': $("#sector-search-taller-id").val(),
-                        'selectedMunicipality': $("#municipality-search-taller-id").val(),
-                        'selectedState': $("#state-search-taller-id").val(),
-                        'name_store': $("#name-search-taller").val(),
-                        'page': page,
-                        'type': @json($type_store)
+                        'selectedCategoryId' : selectedCategoryId2,
+                        'selectedSector': $("#sector-search-store-id2").val(),
+                        'selectedMunicipality': $("#municipality-search-store-id2").val(),
+                        'selectedState': $("#state-search-store-id2").val(),
+                        'name_store': $("#name-search-store2").val(),
+                        'page': page2,
+                        'type': 'Taller'
                     },
                     headers: {
                         'X-CSRF-TOKEN': "{{ csrf_token() }}",
                     },
                     method: 'POST',
                     success: function(response) {
-                        showMessageTaller(response); // Mostrar mensaje antes de cargar las tiendas
+                        showMessage2(response); // Mostrar mensaje antes de cargar las tiendas
                         var stores = response.stores.data;
                         if (stores.length > 0) {
                             var $html = "";
@@ -156,32 +299,32 @@
                                             </section>`;
                             });
     
-                            if (page === 1) {
-                                $('#showTaller').html($html);
+                            if (page2 === 1) {
+                                $('#showstore2').html($html);
                             } else {
-                                $('#showTaller').append($html);
+                                $('#showstore2').append($html);
                             }
-                            $('#showTaller').show();
+                            $('#showstore2').show();
     
-                            page++;
-                            hasMoreStores = response.has_more_stores; // Actualizar el estado de hasMoreStores
+                            page2++;
+                            hasMoreStores2 = response.has_more_stores; // Actualizar el estado de hasMoreStores
                         } else {
                             // Mostrar mensaje de no resultados
-                            $('#showTaller').html('');
-                            $('#emptyTaller').fadeIn(3000);
+                            $('#showstore2').html('');
+                            $('#emptystore2').fadeIn(3000);
                             setTimeout(() => {
-                                $("#loading-more-taller").addClass('d-none');
+                                $("#loading-more-store2").addClass('d-none');
                             }, 10);
                         }
     
                         // Mostrar u ocultar el botón "Cargar más"
-                        if (hasMoreStores) {
-                            $("#loading-more-taller").removeClass('d-none');
+                        if (hasMoreStores2) {
+                            $("#loading-more-store2").removeClass('d-none');
                         } else {
-                            $("#loading-more-taller").addClass('d-none');
+                            $("#loading-more-store2").addClass('d-none');
                         }
     
-                        loading = false;
+                        loading2 = false;
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
@@ -193,33 +336,34 @@
             }
         }
     
-        function showMessageTaller(response) {
+        function showMessage2(response) {
             if (response.new_message) {
-                $("#new_message_taller").fadeIn(1500);
-                $("#new_message_taller2").hide();
-                $("#new_message_taller3").hide();
-                $("#emptyTaller").hide();
+                $("#new_message_store_taller").fadeIn(1500);
+                $("#new_message_store2_taller").hide();
+                $("#new_message_store3_taller").hide();
+                $("#emptystore2").hide();
             } else if (response.new_message2) {
-                $("#new_message_taller2").fadeIn(1500);
-                $("#new_message_taller").hide();
-                $("#new_message_taller3").hide();
-                $("#emptyTaller").hide();
+                $("#new_message_store2_taller").fadeIn(1500);
+                $("#new_message_store_taller").hide();
+                $("#new_message_store3_taller").hide();
+                $("#emptystore2").hide();
             } else if (response.new_message3) {
-                $("#new_message_taller3").fadeIn(1500);
-                $("#new_message_taller2").hide();
-                $("#new_message_taller").hide();
-                $("#emptyTaller").hide();
+                $("#new_message_store3_taller").fadeIn(1500);
+                $("#new_message_store2_taller").hide();
+                $("#new_message_store_taller").hide();
+                $("#emptystore2").hide();
             } else if (response.empty_stores) {
-                $("#emptyTaller").fadeIn(1500);
-                $("#new_message_taller3").hide();
-                $("#new_message_taller2").hide();
-                $("#new_message_taller").hide();
+                $("#emptystore2").fadeIn(1500);
+                $("#new_message_store3_taller").hide();
+                $("#new_message_store2_taller").hide();
+                $("#new_message_store_taller").hide();
             } else {
-                $("#new_message_taller").hide();
-                $("#new_message_taller2").hide();
-                $("#new_message_taller3").hide();
-                $("#emptyTaller").hide();
+                $("#new_message_store_taller").hide();
+                $("#new_message_store2_taller").hide();
+                $("#new_message_store3_taller").hide();
+                $("#emptystore2").hide();
             }
         }
     </script>    
+    
 </div>

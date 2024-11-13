@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Municipality;
 use App\Models\Sector;
 use App\Models\State;
+use App\Models\CategoryStore;
 use App\Models\Store;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -18,6 +19,7 @@ class SearchTaller extends Component
     public $states = [];
     public $sectors = [];
     public $data_stores = [];
+    public $categories = [];
     public $disabled = true;
     public $empty_stores = false;
     public $new_message = false;
@@ -43,6 +45,7 @@ class SearchTaller extends Component
 
     public function mount(){
         $this->states = State::orderBy('name', 'asc')->get();
+        $this->categories = CategoryStore::where('type_stores_id', env('TIPO_TALLER_ID'))->get();
     }
 
     public function render()

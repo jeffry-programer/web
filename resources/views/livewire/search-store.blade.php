@@ -1,70 +1,55 @@
 <div>
     <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Tiendas</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cleanData()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="cleanData()"></button>
     </div>
     <div class="modal-body">
-        <!--<div class="row">
-            <div class="col-md-3 form-group div-justify">
-                <div class="div-categories">
-                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+        <div id="categories-container" class="d-flex flex-wrap justify-content-center">
+            @foreach ($categories as $category)
+                <div class="category-card" data-category-id="{{ $category->id }}">
+                    <ion-icon name="{{ $category->icon }}" class="category-icon"></ion-icon>
+                    <p class="category-description"><b>{{ $category->description }}</b></p>
+                </div>
+            @endforeach
+        </div>
+        
+        <div id="filters-container" style="display: none">
+            <div class="row">
+                <div class="col-md-12 form-group" style="display: flex;justify-content: center;align-items: center;">
+                    <ion-icon id="btn-back-categories" style="font-size: 4rem;width: 3rem;cursor: pointer;color: #0d6efd;" name="arrow-back-circle-outline"></ion-icon>
                 </div>
             </div>
-            <div class="col-md-3 form-group div-justify">
-                <div class="div-categories">
-                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    <label for="state-search-store-id">{{ __('Estado') }}</label>
+                    <select class="form-select" id="state-search-store-id">
+                        <option value="" selected>Seleccione un estado</option>
+                        @foreach ($states as $state)
+                            <option value="{{ $state->id }}">{{ $state->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
-            <div class="col-md-3 form-group div-justify">
-                <div class="div-categories">
-                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+                <div class="col-md-3 form-group">
+                    <label for="municipality-search-store-id">{{ __('Municipio') }}</label>
+                    <select class="form-select" id="municipality-search-store-id">
+                        <option value="" selected>Seleccione un municipio</option>
+                    </select>
                 </div>
-            </div>
-            <div class="col-md-3 form-group div-justify">
-                <div class="div-categories">
-                    <ion-icon name="accessibility-outline" class="category-icon"></ion-icon>
+                <div class="col-md-3 form-group">
+                    <label for="sector-search-store-id">{{ __('Sector') }}</label>
+                    <select class="form-select" id="sector-search-store-id">
+                        <option value="" selected>Seleccione un sector</option>
+                        <option value="Todos">Todos</option>
+                    </select>
                 </div>
-            </div>
-        </div>-->
-        <div class="row">
-            <div class="col-md-3 form-group">
-                <label for="country" class="pb-3">{{ __('Estado') }}</label>
-                <select class="form-select" id="state-search-store-id" wire:model="selectedState"
-                    wire:change="changeState()">
-                    <option value="" selected>Seleccione un estado</option>
-                    @foreach ($states as $index => $state)
-                    <option value="{{ $state->id }}">{{ $state->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 form-group">
-                <label for="name" class="pb-3">{{ __('Municipio') }}</label>
-                <select class="form-select" id="municipality-search-store-id" wire:model="selectedMunicipality"
-                    wire:change="changeMunicipality()">
-                    <option value="" selected>Seleccione un municipio</option>
-                    @foreach ($municipalities as $index => $municipalitiy)
-                    <option value="{{ $municipalitiy->id }}">{{ $municipalitiy->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 form-group">
-                <label for="name" class="pb-3">{{ __('Sector') }}</label>
-                <select class="form-select" id="sector-search-store-id" wire:model="selectedSector"
-                    wire:change="changeSector()">
-                    <option selected value="">Seleccione un sector</option>
-                    <option value="Todos">Todos</option>
-                    @foreach ($sectors as $index => $sector)
-                    <option value="{{ $sector->id }}">{{ $sector->description }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 form-group">
-                <label for="name" class="pb-3">{{ __('Nombre (opcional)') }}</label>
-                <input type="text" wire:model="name_store" id="name-search-store" class="form-control"
-                    placeholder="Ingrese un nombre">
+                <div class="col-md-3 form-group">
+                    <label for="name-search-store">{{ __('Nombre (opcional)') }}</label>
+                    <input type="text" id="name-search-store" class="form-control" placeholder="Ingrese un nombre">
+                </div>
             </div>
         </div>
-        <div class="row">
+        
+        <div class="row" id="show-stores">
             <div>
                 <div class="alert alert-info mt-3" id="new_message_store" style="display: none">
                     No hemos encontrado resultados que coincidieran con tu búsqueda, aquí puedes ver otros
@@ -98,18 +83,146 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cleanData()">Cerrar</button>
-        <button type="button" class="btn btn-primary" id="btn-search-store" @if ($disabled) disabled
-            @endif>Buscar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+        onclick="cleanData()">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="btn-search-store">Buscar</button>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.js"
-        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
+        let selectedCategoryId = null;
         var loading = false;
         var page = 1;
         var hasMoreStores = true; // Variable para controlar si hay más tiendas disponibles
+
+        $("#btn-search-store").prop('disabled', true);
     
+        // Al hacer clic en una categoría
+        $('.category-card').on('click', function () {
+            selectedCategoryId = $(this).data('category-id');
+            console.log(`Categoría seleccionada: ${selectedCategoryId}`);
+    
+            // Ocultamos las categorías con animación
+            $('#categories-container').addClass('d-none');
+            $('#filters-container').fadeIn("slow");
+            $("#show-stores").fadeIn("slow");
+        });
+
+        $("#sector-search-store-id").on('change', function () {
+            if($(this).val() != ''){
+                $("#btn-search-store").prop('disabled', false);
+            }
+        });
+    
+    
+        // Al hacer clic en el botón de regresar
+        $('#btn-back-categories').on('click', function () {
+            console.log('Regresando a la selección de categorías');
+            
+            // Reseteamos los selects
+            $('#state-search-store-id').val('').trigger('change');
+            $('#municipality-search-store-id').html('<option value="" selected>Seleccione un municipio</option>');
+            $('#sector-search-store-id').html('<option value="" selected>Seleccione un sector</option><option value="Todos">Todos</option>');
+            $('#name-search-store').val(''); // Limpiar el input de nombre
+            
+            // Ocultar los filtros y mostrar las categorías
+            $('#filters-container').fadeOut("slow");
+
+            $("#showstore").html('');
+            $("#loading-more-store").addClass('d-none');
+            $("#new_message_store").hide();
+            $("#new_message_store2").hide();
+            $("#new_message_store3").hide();
+
+            $("#emptystore").fadeOut('slow');
+
+            setTimeout(() => {
+                $("#btn-search-store").prop('disabled', true);
+                $('#categories-container').removeClass('d-none');
+            }, 500);
+
+            page = 1;
+        });
+
+        function cleanData(){
+            // Reseteamos los selects
+            $('#state-search-store-id').val('').trigger('change');
+            $('#municipality-search-store-id').html('<option value="" selected>Seleccione un municipio</option>');
+            $('#sector-search-store-id').html('<option value="" selected>Seleccione un sector</option><option value="Todos">Todos</option>');
+            $('#name-search-store').val(''); // Limpiar el input de nombre
+
+            $("#showstore").html('');
+            $("#loading-more-store").addClass('d-none');
+            $("#new_message_store").hide();
+            $("#new_message_store2").hide();
+            $("#new_message_store3").hide();
+
+            $("#emptystore").fadeOut('slow');
+
+            $('#filters-container').fadeOut("slow");
+            setTimeout(() => {
+                $('#categories-container').removeClass('d-none');
+                $("#btn-search-store").prop('disabled', true);
+            }, 500);
+        }
+    
+        // Al seleccionar un estado, cargar los municipios
+        $('#state-search-store-id').on('change', function () {
+            const stateId = $(this).val();
+            if (!stateId) return;
+    
+            console.log(`Cargando municipios para el estado: ${stateId}`);
+            $('#municipality-search-store-id').html('<option>Cargando...</option>');
+    
+            $.ajax({
+                url: '/get-municipalities',
+                method: 'POST',
+                data: { stateId },
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                success: function (municipalities) {
+                    console.log('Municipios cargados:', municipalities);
+                    let options = '<option value="">Seleccione un municipio</option>';
+                    municipalities.forEach(municipality => {
+                        options += `<option value="${municipality.id}">${municipality.name}</option>`;
+                    });
+                    $('#municipality-search-store-id').html(options);
+                },
+                error: function (xhr) {
+                    console.error('Error al cargar municipios:', xhr.responseText);
+                    alert('No se pudieron cargar los municipios. Inténtalo de nuevo.');
+                }
+            });
+        });
+    
+        // Al seleccionar un municipio, cargar los sectores
+        $('#municipality-search-store-id').on('change', function () {
+            const municipalityId = $(this).val();
+            if (!municipalityId) return;
+    
+            console.log(`Cargando sectores para el municipio: ${municipalityId}`);
+            $('#sector-search-store-id').html('<option>Cargando...</option>');
+    
+            $.ajax({
+                url: '/get-sectors',
+                method: 'POST',
+                data: { municipalityId },
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                success: function (sectors) {
+                    console.log('Sectores cargados:', sectors);
+                    let options = '<option value="">Seleccione un sector</option><option value="Todos">Todos</option>';
+                    sectors.forEach(sector => {
+                        options += `<option value="${sector.id}">${sector.description}</option>`;
+                    });
+                    $('#sector-search-store-id').html(options);
+                },
+                error: function (xhr) {
+                    console.error('Error al cargar sectores:', xhr.responseText);
+                    alert('No se pudieron cargar los sectores. Inténtalo de nuevo.');
+                }
+            });
+        });
+    
+        // Al hacer clic en buscar
         $("#btn-search-store").click(() => {
             page = 1; // Reset the page number for a new search
             hasMoreStores = true;
@@ -139,6 +252,7 @@
                 $.ajax({
                     url: '/stores',
                     data: {
+                        'selectedCategoryId' : selectedCategoryId,
                         'selectedSector': $("#sector-search-store-id").val(),
                         'selectedMunicipality': $("#municipality-search-store-id").val(),
                         'selectedState': $("#state-search-store-id").val(),
@@ -226,17 +340,17 @@
                 $("#new_message_store").fadeIn(1500);
                 $("#new_message_store2").hide();
                 $("#new_message_store3").hide();
-                $("#emptystore").hide();
+                $("#emptystore").fadeOut('slow');
             } else if (response.new_message2) {
                 $("#new_message_store2").fadeIn(1500);
                 $("#new_message_store").hide();
                 $("#new_message_store3").hide();
-                $("#emptystore").hide();
+                $("#emptystore").fadeOut('slow');
             } else if (response.new_message3) {
                 $("#new_message_store3").fadeIn(1500);
                 $("#new_message_store2").hide();
                 $("#new_message_store").hide();
-                $("#emptystore").hide();
+                $("#emptystore").fadeOut('slow');
             } else if (response.empty_stores) {
                 $("#emptystore").fadeIn(1500);
                 $("#new_message_store3").hide();
@@ -246,8 +360,9 @@
                 $("#new_message_store").hide();
                 $("#new_message_store2").hide();
                 $("#new_message_store3").hide();
-                $("#emptystore").hide();
+                $("#emptystore").fadeOut('slow');
             }
         }
-    </script>
+    </script>    
+    
 </div>

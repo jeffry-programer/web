@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\CategoryStore;
 use App\Models\Municipality;
 use App\Models\Sector;
 use App\Models\State;
@@ -18,6 +19,7 @@ class SearchStore extends Component
     public $states = [];
     public $sectors = [];
     public $data_stores = [];
+    public $categories = [];
     public $disabled = true;
     public $empty_stores = false;
     public $new_message = false;
@@ -28,6 +30,10 @@ class SearchStore extends Component
     public $selectedMunicipality;
     public $selectedSector;
     public $name_store;
+
+    public $showFilters = false;
+    public $selectedCategoryId;
+
 
     public function cleanData(){
         $this->disabled = true;
@@ -43,6 +49,7 @@ class SearchStore extends Component
 
     public function mount(){
         $this->states = State::orderBy('name', 'asc')->get();
+        $this->categories = CategoryStore::where('type_stores_id', env('TIPO_TIENDA_ID'))->get();
     }
 
     public function render()
@@ -69,4 +76,11 @@ class SearchStore extends Component
             $this->disabled = true;
         }
     }
+
+    public function selectCategory($categoryId)
+    {
+        $this->showFilters = true;
+        $this->selectedCategoryId = $categoryId;
+    }
+
 }

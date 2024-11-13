@@ -445,6 +445,7 @@ class MainController extends Controller
         $new_message2 = false;
         $new_message3 = false;
         $empty_stores = false;
+        $categoryId = $request->selectedCategoryId;
 
         // Base query for stores
         $stores = Store::where('status', true)
@@ -464,6 +465,10 @@ class MainController extends Controller
             $stores->whereFullText('name', $request->name_store);
         }
 
+        if($categoryId != '' && $categoryId != 0){
+            $stores->where('categories_stores_id', $categoryId);
+        }
+
         // Get the total count of stores before pagination
         $totalStores = $stores->count();
 
@@ -480,6 +485,10 @@ class MainController extends Controller
 
             if ($request->name_store != "") {
                 $stores->whereFullText('name', $request->name_store);
+            }
+
+            if($categoryId != '' && $categoryId != 0){
+                $stores->where('categories_stores_id', $categoryId);
             }
 
             $totalStores = $stores->count(); // Update total stores after applying the new filters
@@ -501,6 +510,10 @@ class MainController extends Controller
                     $stores->whereFullText('name', $request->name_store);
                 }
 
+                if($categoryId != '' && $categoryId != 0){
+                    $stores->where('categories_stores_id', $categoryId);
+                }
+
                 $totalStores = $stores->count(); // Update total stores after applying the new filters
 
                 $response = $stores->with('municipality')->with('sector')->paginate(6, ['*'], 'page', $request->page);
@@ -515,6 +528,10 @@ class MainController extends Controller
 
                     if ($request->name_store != "") {
                         $stores->whereFullText('name', $request->name_store);
+                    }
+
+                    if($categoryId != '' && $categoryId != 0){
+                        $stores->where('categories_stores_id', $categoryId);
                     }
 
                     $totalStores = $stores->count(); // Update total stores after applying the new filters
@@ -2651,5 +2668,42 @@ class MainController extends Controller
         $categories = CategoryStore::where('type_stores_id', $typeStoresId)->get();
 
         return response()->json(['categories' => $categories]);
+    }
+
+    public function getMunicipalities2(Request $request)
+    {
+        $stateId = $request->input('stateId');
+
+        // Validar el ID del estado
+        if (!$stateId) {
+            return response()->json(['error' => 'El estado es requerido'], 400);
+        }
+
+        // Obtener los municipios
+        $municipalities = Municipality::where('states_id', $stateId)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name']);
+
+        return response()->json($municipalities);
+    }
+
+    /**
+     * Obtener sectores basado en el municipio seleccionado.
+     */
+    public function getSectors(Request $request)
+    {
+        $municipalityId = $request->input('municipalityId');
+
+        // Validar el ID del municipio
+        if (!$municipalityId) {
+            return response()->json(['error' => 'El municipio es requerido'], 400);
+        }
+
+        // Obtener los sectores
+        $sectors = Sector::where('municipalities_id', $municipalityId)
+            ->orderBy('description', 'asc')
+            ->get(['id', 'description']);
+
+        return response()->json($sectors);
     }
 }

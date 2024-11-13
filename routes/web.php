@@ -44,6 +44,12 @@ Route::get('/states/{state}/municipalities', [MainController::class, 'municipali
 Route::post('/stores', [MainController::class, 'getMoreStores'])->name('stores');
 Route::get('/get-categories', [MainController::class, 'getCategoriesStore']);
 
+// Ruta para obtener los municipios basado en el estado seleccionado
+Route::post('/get-municipalities', [MainController::class, 'getMunicipalities2'])->name('get.municipalities');
+
+// Ruta para obtener los sectores basado en el municipio seleccionado
+Route::post('/get-sectors', [MainController::class, 'getSectors'])->name('get.sectors');
+
 
 Route::middleware([
     'auth:sanctum',

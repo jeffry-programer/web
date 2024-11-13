@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\CategoryStore;
 use App\Models\Municipality;
 use App\Models\Sector;
 use App\Models\State;
@@ -18,6 +19,7 @@ class SearchGrua extends Component
     public $states = [];
     public $sectors = [];
     public $data_stores = [];
+    public $categories = [];
     public $disabled = true;
     public $empty_stores = false;
     public $new_message = false;
@@ -43,8 +45,8 @@ class SearchGrua extends Component
 
     public function mount(){
         $this->states = State::orderBy('name', 'asc')->get();
+        $this->categories = CategoryStore::where('type_stores_id', env('TIPO_GRUA_ID'))->get();
     }
-
     public function render()
     {
         return view('livewire.search-grua');
