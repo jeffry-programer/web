@@ -43,7 +43,7 @@
     <div class="row">
         <div class="col-md-1 offset-md-6 d-flex align-items-center mt-3">
             @if ($subscribed)
-                <button type="button" class="btn btn-subs" style="display: flex;align-items: center;"
+                <button type="button" class="btn btn-subs" style="display: flex;align-items: center;margin-left: 6rem;"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Suscrito
                     <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -56,12 +56,12 @@
                 </ul>
             @else
                 @if (!$condition)
-                    <button class="btn btn-subs" id="subscribe">Suscribete</button>
+                    <button class="btn btn-subs" id="subscribe" style="margin-left: 6rem;">Suscribete</button>
                 @endif
             @endif
         </div>
         @if (!$condition2)
-            <div class="col-12 col-md-5">
+            <div class="col-12 col-md-5" style="display: flex;justify-content: end;">
                 <?php
                 $link_store = str_replace(' ', '-', $store->name);
                 ?>
@@ -69,7 +69,7 @@
                     style="background: #fff;
                     border-radius: 30px;
                     border: solid 1px #dfdfdf;
-                    box-shadow: 1px 0px 6px 2px rgba(39,39,39,0.16);">
+                    box-shadow: 1px 0px 6px 2px rgba(39,39,39,0.16);width: 26rem;">
                     <div class="col-4 col-md-3 d-none d-md-flex align-items-center justify-content-center">
                         <select id="select-search-categories" name="tBGZall1t5CCeUqrQOkM" class="select-search">
                             <option selected value="Categoria">Categoria</option>
@@ -92,8 +92,7 @@
                     </div>
                     <div class="col-2 d-flex align-items-center justify-content-center">
                         <button type="submit"><i
-                                class="fa-solid fa-magnifying-glass icons-search pointer"></i></button>
-                        <button type="button"><i class="fa-solid fa-microphone icons-search pointer"></i></button>
+                                class="fa-solid fa-magnifying-glass icons-search pointer" style="margin-right: -0.5rem;"></i></button>
                     </div>
                 </form>
             </div>

@@ -51,4 +51,8 @@ class Store extends Model
     public function sector(){
         return $this->belongsTo(Sector::class, 'sectors_id');
     }
+
+    public function category(){
+        return $this->belongsTo(CategoryStore::class, 'categories_stores_id');
+    }
 }

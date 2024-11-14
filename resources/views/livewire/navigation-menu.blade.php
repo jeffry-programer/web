@@ -215,7 +215,7 @@
         </x-dropdown-link>
       </div>
       <div class="col-10 col-md-3 d-flex align-items-center justify-content-start">
-        <img class="img-fluid" style="height: 90%;width: 30%;" src=" {{ asset('images/piePagiina.png') }} " alt="img" style="cursor: pointer;"
+        <img class="img-fluid" style="height: 90%;width: 30%;cursor: pointer;" src=" {{ asset('images/piePagiina.png') }} " alt="img" style="cursor: pointer;"
           onclick="window.location.replace('/');">
       </div>
       <div class="col-2 d-flex d-md-none align-items-center justify-content-center">

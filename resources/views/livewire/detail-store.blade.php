@@ -242,22 +242,50 @@
                                         <div class="col-12">
                                             <p><b>Descripción:</b></p>
                                             <p>{{ $store->description }}</p>
-                                            <p><b>Dirección:</b></p>
-                                            <p><i
-                                                    class="fa-solid fa-location-dot me-2"></i>{{ $store->municipality->state->name }}
-                                                - {{ $store->municipality->name }} - {{ $store->sector->description }} - {{ $store->address }}</p>
-                                            <p><b>Correo electrónico:</b></p>
-                                            <p>{{ $store->email }}</p>
-                                            <p><b>Número de contacto:</b></p>
-                                            <p>{{ $store->phone }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-8" style="margin-top: 3rem;">
+                                <ul class="nav nav-tabs product-details-tab" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link me-2 active" id="productEspecification3"
+                                            data-bs-toggle="tab" data-bs-target="#especificationProduct3"
+                                            type="button" role="tab" aria-controls="especificationProduct3"
+                                            aria-selected="true">Dirección</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content pt-3 product-details-tab-content" id="myTabContent">
+                                    <div class="tab-pane fade active show" id="especificationProduct3"
+                                        role="tabpanel" aria-labelledby="productEspecification3">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p><i class="fa-solid fa-location-dot me-2"></i>{{ $store->municipality->state->name }} - {{ $store->municipality->name }} - {{ $store->sector->description }} - {{ $store->address }}</p>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <p><b>Correo electrónico:</b></p>
+                                                <p>{{ $store->email }}</p>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <p><b>Número de contacto:</b></p>
+                                                <p>{{ $store->phone }}</p>
+                                            </div>
                                             @if ($store->typeStore->description == env('TIPO_GRUA'))
-                                                <p><b>Capacidad de la grúa:</b></p>
-                                                <p>{{ $store->capacidad }}</p>
-                                                <p><b>Tipo de grúa:</b></p>
-                                                <p>{{ $store->tipo }}</p>
-                                                <p><b>Dimensiones de la grúa:</b></p>
-                                                <p>{{ $store->dimensiones }}</p>
+                                                <div class="col-md-4">
+                                                    <p><b>Capacidad de la grúa:</b></p>
+                                                    <p>{{ $store->capacidad }}</p>
+                                                    <p><b>Tipo de grúa:</b></p>
+                                                    <p>{{ $store->tipo }}</p>
+                                                    <p><b>Dimensiones de la grúa:</b></p>
+                                                    <p>{{ $store->dimensiones }}</p>
+                                                </div>
                                             @endif
+                                        </div>    
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <p><b>Categoria:</b></p>
+                                                <p>{{ $store->category->description }}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -395,30 +423,13 @@
                                                     {{ $this->product_detail->brand->description }}</h4>
                                                 <h3>{{ $this->product_detail->name }}</h3>
                                                 <p>Ref. {{ $this->product_detail->reference }}</p>
-                                                <p>$<b>{{ $this->product_store->price }}</b></p>
+                                                <p style="font-size: 2rem;">$<b>{{ $this->product_store->price }}</b></p>
                                                 <p>Iva incluido</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <p><b>Código:</b></p>
-                                                <p><b>Referencia:</b></p>
-                                                <p><b>Detalle:</b></p>
-                                            </div>
-                                            <div class="col-6">
-                                                <p>{{ $this->product_detail->code }}</p>
-                                                <p>{{ $this->product_detail->reference }}</p>
-                                                <p>{{ $this->product_detail->detail }}</p>
-                                            </div>
-                                            @if(isset($this->product_detail->promotion))
-                                                <h5><b style="color: #6495ED">Producto en promoción</b></h5>
-                                                <p>{{ $this->product_detail->promotion->description }}</p>
-                                                <p><b>{{ $this->product_detail->promotion->price }}</b> de descuento</p>
-                                            @endif
-                                            <div class="col-12 mt-3">
-                                                <h4 style="color: gray;">Cantidad disponible</h4>
-                                                <input type="number" class="form-control w-25 mt-3"
-                                                    value="{{ $this->product_store->amount }}" disabled>
+                                                <div class="col-12 mt-3">
+                                                    <h4 style="color: gray;">Cantidad disponible</h4>
+                                                    <input type="number" class="form-control w-25 mt-3"
+                                                        value="{{ $this->product_store->amount }}" disabled>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -436,6 +447,19 @@
                                         <div class="tab-pane fade active show" id="especificationProduct2"
                                             role="tabpanel" aria-labelledby="productEspecification2">
                                             <p>{{ $this->product_detail->description }}</p>
+                                            <div class="col-6">
+                                                <p><b>Código:</b></p>
+                                                <p>{{ $this->product_detail->code }}</p>
+                                                <p><b>Referencia:</b></p>
+                                                <p>{{ $this->product_detail->reference }}</p>
+                                                <p><b>Detalle:</b></p>
+                                                <p>{{ $this->product_detail->detail }}</p>
+                                            </div>
+                                            @if(isset($this->product_detail->promotion))
+                                                <h5><b style="color: #6495ED">Producto en promoción</b></h5>
+                                                <p>{{ $this->product_detail->promotion->description }}</p>
+                                                <p><b>{{ $this->product_detail->promotion->price }}</b> de descuento</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -525,7 +549,7 @@
                 @endif
             </div>
         </div>
-        <div class="col-12 col-lg-2">
+        <div class="col-12 col-lg-2" style="height: auto;margin-bottom: 3rem;">
             <div class="row" id="publicities">
                 @foreach ($publicities as $key)
                     <li class="slide"
