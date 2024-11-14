@@ -18,7 +18,10 @@ Route::get('/', function () {
 
 Route::post('login2', [AuthController::class, 'loginUser'])->name('login2');
 Route::post('register2', [AuthController::class, 'registerUser'])->name('register2');
+Route::post('forgetpassowrd2', [AuthController::class, 'forgetPassword'])->name('forgetpassowrd2');
+Route::post('password-update', [AuthController::class, 'resetPassword'])->name('password-update');
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])->name('verification.verify');
+
 
 Route::get('/register-grua', [MainController::class, 'registerGrua'])->name('register-grua');
 Route::get('/register-taller', [MainController::class, 'registerTaller'])->name('register-taller');
@@ -49,7 +52,6 @@ Route::post('/get-municipalities', [MainController::class, 'getMunicipalities2']
 
 // Ruta para obtener los sectores basado en el municipio seleccionado
 Route::post('/get-sectors', [MainController::class, 'getSectors'])->name('get.sectors');
-
 
 Route::middleware([
     'auth:sanctum',

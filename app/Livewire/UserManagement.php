@@ -104,12 +104,43 @@ class UserManagement extends Component
 
     public function searchData(Request $request)
     {
+        $result = [];
+    
         if ($request->table == 'users') {
-            return json_encode(DB::table($request->table)->where('email', 'like', '%' . $request->value . '%')->select('id', 'email')->get());
+            // Obtener todos los registros y descifrar los correos
+            $users = DB::table($request->table)->select('id', 'email', 'name')->get();
+    
+            foreach ($users as $user) {
+                try {
+                    // Intentar descifrar el correo
+                    $decryptedEmail = decrypt($user->email);
+    
+                    // Comparar el correo descifrado con el valor de búsqueda
+                    if (stripos($decryptedEmail, $request->value) !== false) {
+                        $result[] = [
+                            'id' => $user->id,
+                            'email' => $decryptedEmail,
+                            'name' => $user->name
+                        ];
+                    }
+                } catch (\Exception $e) {
+                    // Si ocurre un error al descifrar (por ejemplo, si el dato no estaba cifrado)
+                    continue;
+                }
+            }
+    
+            return json_encode($result);
         } else {
-            return json_encode(DB::table($request->table)->where('name', 'like', '%' . $request->value . '%')->select('id', 'name')->get());
+            // Búsqueda normal para otras tablas
+            return json_encode(
+                DB::table($request->table)
+                    ->where('name', 'like', '%' . $request->value . '%')
+                    ->select('id', 'name')
+                    ->get()
+            );
         }
     }
+    
 
     public function validateRequest(Request $request, $name_table)
     {
@@ -283,6 +314,7 @@ class UserManagement extends Component
                     $count++;
                     continue;
                 }
+                
                 if ($data[$field] != $request->label && $data[$field] != $request->_token) {
                     if ($count == 0) {
                         if ($field == 'product_stores_id') $data[$field] = ProductStore::where('products_id', $data['products_id'])->where('stores_id', $data['stores_id'])->first()->id;
@@ -296,6 +328,14 @@ class UserManagement extends Component
                             $data[$field] = str_replace(' ', '-', $data['name']);
                         }
 
+                        if($request->label == 'Tiendas' && ($field == 'email' || $field == 'address' || $field == 'phone' || $field == 'RIF')){
+                            $data[$field] = Crypt::encrypt($data[$field]);
+                        }
+
+                        if($request->label == 'Usuarios' && ($field == 'email' || $field == 'address' || $field == 'phone')){
+                            $data[$field] = Crypt::encrypt($data[$field]);
+                        }
+
                         $query .= ",'" . $data[$field] . "'";
                     }
                     $count++;
@@ -306,6 +346,7 @@ class UserManagement extends Component
         $query .= ",'" . $date . "')";
         DB::insert($query);
         $id = DB::table($name_table)->latest('id')->first()->id;
+
         if ($name_table == 'stores') {
             $type_plan = Plan::where('description', 'Basico')->first();
             $plan = new PlanContracting();
@@ -850,7 +891,8 @@ class UserManagement extends Component
                     }
 
                     $condition = $request->label == 'Tiendas' && ($field == 'email' || $field == 'address' || $field == 'phone' || $field == 'RIF');
-                    if ($field !== 'image' && $field !== 'image2' && !$condition) {
+                    $condition2 = $request->label == 'Usuarios' && ($field == 'email' || $field == 'address' || $field == 'phone');
+                    if ($field !== 'image' && $field !== 'image2' && !$condition && !$condition2) {
                         if ($field == 'password' && $data[$field] != '') {
                             $data[$field] = Hash::make($data[$field]);
                             $query .= ", $field = '" . $data[$field] . "' ";

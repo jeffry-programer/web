@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -109,5 +111,71 @@ class AuthController extends Controller
         }
     
         return redirect('/dashboard')->with('status', '¡Tu correo ha sido verificado exitosamente!');
+    }
+
+    public function forgetPassword(Request $request)
+    {
+        // Validar los datos de entrada
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:255',
+        ]);
+    
+        $email = $request->email;
+
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+    
+        if (!$user) {
+            $validator->errors()->add('email', 'Usuario no registrado');
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+    
+        // Usar el correo cifrado para enviar el enlace de restablecimiento
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    }
+    
+    public function resetPassword(Request $request)
+    {
+        // Validar los datos de entrada
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+    
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+    
+        $email = $request->email;
+        $newPassword = $request->password;
+    
+        // Buscar al usuario descifrando el correo
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+    
+        // Si no se encuentra el usuario, devolver error
+        if (!$user) {
+            return redirect()->back()->withErrors(['email' => 'Usuario no registrado o correo inválido'])->withInput();
+        }
+    
+        $user->password = Hash::make($newPassword);
+        $user->save();
+
+        return redirect()->route('login')->with('status', '¡Tu contraseña ha sido restablecida exitosamente!');
     }
 }

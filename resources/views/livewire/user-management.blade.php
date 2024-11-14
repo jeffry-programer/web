@@ -644,6 +644,7 @@
                     if(response.length > 0 && valueInput != ''){
                         plantilla += '<div class="row">';
                         response.forEach((key) => {
+                            console.log(key);
                             if(key.name == null) key.name = key.email;
                             plantilla += `<div class="d-flex col-12 ms-4 my-2" style="cursor: pointer;font-size: 0.9rem;color: #5e5e5e;" onclick="asignId(${key.id},'${key.name}','${field}')">${key.name}</div>`;
                         });

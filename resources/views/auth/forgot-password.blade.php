@@ -20,7 +20,7 @@
         <x-validation-errors class="mb-4" />
 
         @if (!session('status'))
-            <form method="POST" action="{{ route('password.email') }}" autocomplete="off">
+            <form method="POST" action="{{ route('forgetpassowrd2') }}" autocomplete="off">
                 @csrf
 
                 <div class="block">
