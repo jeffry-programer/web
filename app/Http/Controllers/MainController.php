@@ -2706,4 +2706,19 @@ class MainController extends Controller
 
         return response()->json($sectors);
     }
+
+    public function createSucursal(){
+        $type_stores = TypeStore::all();
+        $municipalities = Municipality::all();
+        $states = State::all();
+        $categories_stores = CategoryStore::where('type_stores_id', Auth::user()->store->type_stores_id)->get();
+        $array_data = [
+            'type_stores' => $type_stores,
+            'municipalities' => $municipalities,
+            'states' => $states,
+            'categories_stores' => $categories_stores
+        ];
+
+        return view('create-sucursal', $array_data);
+    }
 }

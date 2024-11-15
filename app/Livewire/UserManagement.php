@@ -29,6 +29,7 @@ use App\Notifications\NotifyAdmin;
 use App\Notifications\NotifyUsers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
+use Illuminate\Validation\Rules\Password;
 
 class UserManagement extends Component
 {
@@ -399,6 +401,60 @@ class UserManagement extends Component
         $plan->created_at = Carbon::now();
         $plan->save();
 
+        // Puedes devolver una respuesta JSON si lo prefieres
+        return json_encode('stores' . '-' . $store->id);
+    }
+
+    public function registerSucursal(Request $request)
+    {
+        $request->validate([
+            'phone' => ['required', 'regex:/^(0412|0414|0416|0424|0426)\d{7}$/'],
+            'address' => 'required|max:255',
+            'email' => 'required|email|unique:users|unique:stores',
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+            'description' => 'required|string|max:255',
+            'name' => 'required|string|max:100|unique:stores',
+            'name2'  => 'required|string|max:100',
+            'sectors_id' => 'required',
+            'municipalities_id' => 'required',
+            'states_id' => 'required',
+            'categories_stores_id' => 'required'
+        ]);
+    
+        $data = $request->all();
+    
+        // Encriptar datos sensibles
+        $data['link'] = str_replace(' ', '-', $data['name']);
+        $data['address'] = Crypt::encrypt($data['address']);
+        $data['RIF'] = Crypt::encrypt(Auth::user()->store->RIF);
+        $data['email'] = Crypt::encrypt($data['email']);
+        $data['phone'] = Crypt::encrypt($data['phone']);
+    
+        // Crear el usuario
+        $user = User::create([
+            'profiles_id' => Auth::user()->profiles_id,
+            'name' => $data['name2'],
+            'email' => $data['email'], // Se debe desencriptar al mostrarlo
+            'password' => Hash::make($request->password),
+        ]);
+    
+        // Crear la tienda
+        $data['users_id'] = $user->id;
+        $data['sucursal'] = true;
+        $store = Store::create($data);
+    
+        // Asignar plan básico a la tienda
+        $type_plan = Plan::where('description', 'Basico')->first();
+
+        $plan = new PlanContracting();
+        $plan->plans_id = $type_plan->id;
+        $plan->stores_id = $store->id;
+        $plan->date_init = Carbon::now();
+        $plan->date_end = Carbon::now()->addDay(intval($type_plan->days));
+        $plan->status = true;
+        $plan->created_at = Carbon::now();
+        $plan->save();
+    
         // Puedes devolver una respuesta JSON si lo prefieres
         return json_encode('stores' . '-' . $store->id);
     }

@@ -53,6 +53,10 @@ Route::post('/get-municipalities', [MainController::class, 'getMunicipalities2']
 // Ruta para obtener los sectores basado en el municipio seleccionado
 Route::post('/get-sectors', [MainController::class, 'getSectors'])->name('get.sectors');
 
+Route::get('/create-sucursal', [MainController::class, 'createSucursal'])->name('create-sucursal');;
+
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -71,8 +75,8 @@ Route::middleware([
     Route::post('imgs-store-data', [UserManagement::class, 'saveImgs2'])->name('imgs-store-data');
     Route::post('table-store-imgs-5', [UserManagement::class, 'registerPublicity'])->name('table-store-imgs-5');
     Route::post('table-store-imgs-4', [UserManagement::class, 'registerPromotion'])->name('table-store-imgs-4');
-    Route::post('table-store-imgs-3', [UserManagement::class, 'registerProductStore'])->name('table-store-imgs-3');
-    Route::post('table-store-imgs-2', [UserManagement::class, 'registerStore'])->name('table-store-imgs-2');
+    Route::post('table-store-imgs-6', [UserManagement::class, 'registerProductStore'])->name('table-store-imgs-3');
+    Route::post('table-store-imgs-2', [UserManagement::class, 'registerSucursal'])->name('table-store-imgs-6');
     Route::post('table-store-imgs', [UserManagement::class, 'store2'])->name('table-store-imgs');
     Route::post('update-store-imgs', [UserManagement::class, 'update2'])->name('update-store-imgs');
     Route::post('update-store-imgs-2', [UserManagement::class, 'updateStore'])->name('update-store-imgs-2');

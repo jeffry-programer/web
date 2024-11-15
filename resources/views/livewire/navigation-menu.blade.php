@@ -344,9 +344,14 @@
             @endif
 
             @if(Auth::user()->store)
-            <x-dropdown-link href="/tienda/{{ str_replace(' ','-', $link_store) }}" style="text-decoration: none">
-              <i class="fa-solid fa-house me-1"></i>Mi {{ strtolower(Auth::user()->store->typeStore->description) }}
-            </x-dropdown-link>
+              <x-dropdown-link href="/tienda/{{ str_replace(' ','-', $link_store) }}" style="text-decoration: none">
+                <i class="fa-solid fa-house me-1"></i>Mi {{ strtolower(Auth::user()->store->typeStore->description) }}
+              </x-dropdown-link>
+              @if(!Auth::user()->store->sucursal)
+              <x-dropdown-link href="/create-sucursal" style="text-decoration: none">
+                <i class="fa-solid fa-plus  me-1"></i>Crear sucursal
+              </x-dropdown-link>
+              @endif
             @endif
 
             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
