@@ -2,12 +2,16 @@
 
 namespace App\Livewire;
 
+use App\Http\Controllers\MainController;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\ExchangeRate;
+use App\Models\Plan;
 use App\Models\Product;
 use App\Models\ProductStore;
 use App\Models\Promotion;
 use App\Models\Publicity;
+use App\Models\Renovation;
 use App\Models\Store;
 use App\Models\SubCategory;
 use App\Models\Subscription;
@@ -167,6 +171,9 @@ class DetailStore extends Component
             $this->product_detail->promotion = $promotion;
         }
 
+        $rate = $this->getExchangeRate();
+        $renovation = Renovation::where('stores_id', $store->id)->where('status', false)->exists();
+
         $array_data = [
             'store' => $store, 
             'categories' => $categories,
@@ -175,7 +182,10 @@ class DetailStore extends Component
             'products_total' => $products_total,
             'products_promotion' => $products_promotion,
             'search' => $search,
-            'category' => $category
+            'category' => $category,
+            'plans' => Plan::all(),
+            'rate' => $rate,
+            'renovation' => $renovation
         ];
 
         $store->address = Crypt::decrypt($store->address);
@@ -216,5 +226,26 @@ class DetailStore extends Component
         $subscribed->delete();
         //session()->flash('message', 'Suscripción anulada exitosamente!!');
         return redirect('/tienda/'.str_replace(' ', '-', $this->global_store['name']));
+    }
+
+    private function getExchangeRate()
+    {
+        // Intenta obtener el último tipo de cambio
+        $exchangeRate = ExchangeRate::latest()->first();
+
+        // Si no hay registro o el último cambio es más viejo que 24 horas
+        if (!$exchangeRate || $exchangeRate->updated_at < now()->subDay()) {
+            // Obtener la tasa de cambio de la API
+            $response = file_get_contents('https://api.exchangerate-api.com/v4/latest/USD');
+            $data = json_decode($response, true);
+
+            // Almacenar la nueva tasa de cambio
+            $exchangeRate = new ExchangeRate();
+            $exchangeRate->rate = $data['rates']['VES'];
+            $exchangeRate->updated_at = now();
+            $exchangeRate->save();
+        }
+
+        return $exchangeRate->rate;
     }
 }

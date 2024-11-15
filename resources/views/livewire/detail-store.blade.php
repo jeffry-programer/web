@@ -86,6 +86,37 @@
     .input-imagen-2 {
         display: none;
     }
+
+    /* Personalizar los radio buttons */
+    .form-check-input {
+        border-radius: 50%;
+        width: 18px;  /* Ajusta el tamaño del radio button */
+        height: 18px;
+        cursor: pointer;
+        border: solid;
+    }
+
+    /* Separar cada fila de los planes */
+    .mb-3 {
+        margin-bottom: 15px; /* Controla el espacio entre los planes */
+    }
+
+    .cursor-pointer{
+        cursor: pointer;
+    }
+
+    .btn-confirm {
+        background-color: cornflowerblue !important; /* Verde vivo */
+        margin-right: 1rem;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+    .btn-confirm:hover {
+        background-color: rgb(79, 134, 236) !important;
+    }
 </style>
 
 
@@ -242,10 +273,58 @@
                                         <div class="col-12">
                                             <p><b>Descripción:</b></p>
                                             <p>{{ $store->description }}</p>
+                                            @if(Auth::user()->store->id == $store->id)
+                                                <p><b>Plan Contratado:</b></p>
+                                                <p>
+                                                    <b>{{ $store->planContrating->plan->description }}:</b>
+                                                    Desde <b>{{ \Carbon\Carbon::parse($store->planContrating->date_init)->translatedFormat('d M Y') }}</b>
+                                                    hasta <b>{{ \Carbon\Carbon::parse($store->planContrating->date_end)->translatedFormat('d M Y') }}</b>
+                                                </p>                
+                                                @if(!$renovation)  
+                                                    <p style="color: #74abff; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#renewPlanModal"><b>Renovar Plan</b></p>
+                                                @else
+                                                    <p style="color: #565f6d;"><b>Pendiente aprobación</b></p>
+                                                @endif
+                                            @endif                        
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <!-- Modal de Renovación de Plan -->
+                            <div class="modal fade" id="renewPlanModal" tabindex="-1" aria-labelledby="renewPlanModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="renewPlanModalLabel">Renovar Plan</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Seleccione uno de nuestros planes</p>
+                                            @foreach ($plans as $plan)
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div>
+                                                        <h5><b>Plan {{ $plan->description }}</b></h5>
+                                                        <p>{{ $plan->days }} días - REF {{ $plan->price }} - {{ number_format(($plan->price * $rate), 2, ',', '.') }} Bs</p>
+                                                    </div>
+                                                    <div>
+                                                        <input class="form-check-input" type="radio" name="plan" id="plan{{ $plan->id }}" value="{{ $plan->id }}">
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                            <p><b>Datos Pago Movil:</b></p>
+                                            <p>V-17108359</p>
+                                            <p>Banco de Venezuela</p>
+                                            <label for=""><b>Concepto de pago</b></label>
+                                            <input type="text" class="form-control my-3" placeholder="Por favor ingrese un concepto">
+                                            <label for=""><b>Comprobante</b></label>
+                                            <div class="dropzone mt-3" id="myDropzone53">
+                                            </div>
+                                            <button class="btn btn-primary mt-3 w-100" id="saveButton">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="col-12 col-lg-8" style="margin-top: 3rem;">
                                 <ul class="nav nav-tabs product-details-tab" id="myTab" role="tablist">
                                     <li class="nav-item" role="presentation">
@@ -674,6 +753,8 @@
 @endif
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
     $(document).ready(function() {
         var page = 2;
@@ -890,4 +971,107 @@
             });
         }
     }
+
+    var myDropzone53 = new Dropzone("#myDropzone53", {
+        url: "{{ route('renovation.store') }}",  // URL de destino
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+        },
+        dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: 1)`,
+        dictMaxFilesExceeded: "No puedes subir más archivos",
+        dictCancelUpload: "Cancelar subida",
+        dictInvalidFileType: "No puedes subir archivos de este tipo",
+        dictRemoveFile: "Remover archivo",
+        acceptedFiles: 'image/*',
+        maxFiles: 1,
+        maxFilesize: 2.048,
+        dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 2.048 MB.",
+        autoProcessQueue: false,
+        addRemoveLinks: true,
+        parallelUploads: 5,
+        init: function() {
+            var dropzone = this;
+
+            // Adjuntar datos adicionales en el evento "sending"
+            this.on("sending", function(file, xhr, formData) {
+                var selectedPlan = document.querySelector('input[name="plan"]:checked');
+                var concepto = document.querySelector('input[placeholder="Por favor ingrese un concepto"]').value;
+                formData.append("plan_id", selectedPlan.value);    // Agregar el plan_id
+                formData.append("comentary", concepto);
+            });
+
+            // Acción después de una subida exitosa
+            this.on("success", function(file, response) {
+                Swal.fire({
+                    title: 'Renovación guardada.',
+                    text: 'Tu renovación ahora esta pendiente de aprobación.',
+                    icon: 'success',
+                    confirmButtonText: 'Cerrar',
+                    customClass: {
+                        confirmButton: 'btn-confirm'
+                    },
+                }).then(function() {
+                    location.reload(); // Recargar la página
+                });
+            });
+        }
+    });
+
+    // Acción al hacer clic en "Guardar"
+    $("#saveButton").click(() => {
+        // Obtener los valores del formulario
+        var selectedPlan = document.querySelector('input[name="plan"]:checked');
+        var concepto = document.querySelector('input[placeholder="Por favor ingrese un concepto"]').value;
+        var dropzone = myDropzone53;
+
+        // Validar que el plan esté seleccionado
+        if (!selectedPlan) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor seleccione un plan.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            return;
+        }
+
+        // Validar que el campo concepto no esté vacío
+        if (!concepto) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor ingrese un concepto.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            return;
+        }
+
+        // Validar que haya al menos una imagen subida
+        if (dropzone.files.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor suba al menos una imagen.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            return;
+        }
+
+        // Si todas las validaciones pasan, procesar la subida
+        dropzone.processQueue();
+    });
+
+
 </script>

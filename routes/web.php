@@ -99,6 +99,7 @@ Route::middleware([
     Route::get('/municipalities/{municipality}/sectors', [MainController::class, 'sectors']);
     Route::get('/your-data-route', [MainController::class, 'getData'])->name('your.data.route');
     Route::get('/products.data', [MainController::class, 'getData2'])->name('products.data');
+    Route::post('/renovation.store', [MainController::class, 'renovationStore'])->name('renovation.store');
 });
 
 Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->group(function () {

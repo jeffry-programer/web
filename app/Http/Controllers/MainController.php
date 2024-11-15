@@ -955,6 +955,7 @@ class MainController extends Controller
         $renovation->image = $url; // Asigna la ruta de la imagen
         $renovation->comentary = $request->comentary; // Asigna el comentario (puede ser null)
         $renovation->status = false; // O asigna el estado que consideres necesario
+        $renovation->created_at = Carbon::now();
         $renovation->save(); // Guarda la entrada en la base de datos
 
         return response()->json(['message' => 'Plan renovado exitosamente!', 'renovation' => $renovation], 200);
@@ -2720,5 +2721,33 @@ class MainController extends Controller
         ];
 
         return view('create-sucursal', $array_data);
+    }
+
+    public function renovationStore(Request $request){
+        // Validar los datos recibidos
+        $validated = $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'comentary' => 'required|string',
+            'image' => 'nullable|string',  // Se espera una URL de la imagen
+        ]);
+
+        if ($request->hasFile('file')) {
+            $route_image = $request->file('file')->store('public/images-renovation');
+            $url = Storage::url($route_image);
+        } else {
+            return response()->json(['message' => 'No se ha subido ninguna imagen'], 400);
+        }
+
+        // Crear un nuevo registro en la tabla renovations
+        $renovation = new Renovation();
+        $renovation->stores_id = Auth::user()->store->id;  // Suponiendo que el usuario tiene una tienda asociada
+        $renovation->plans_id = $validated['plan_id'];
+        $renovation->image = $url;
+        $renovation->comentary = $validated['comentary'];
+        $renovation->status = false;  // Estado inicial
+        $renovation->created_at = Carbon::now();
+        $renovation->save();
+
+        return response()->json(['success' => true, 'message' => 'Renovación guardada correctamente.']);
     }
 }
