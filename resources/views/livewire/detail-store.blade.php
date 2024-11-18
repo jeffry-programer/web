@@ -273,19 +273,21 @@
                                         <div class="col-12">
                                             <p><b>Descripción:</b></p>
                                             <p>{{ $store->description }}</p>
-                                            @if(Auth::user()->store->id == $store->id)
-                                                <p><b>Plan Contratado:</b></p>
-                                                <p>
-                                                    <b>{{ $store->planContrating->plan->description }}:</b>
-                                                    Desde <b>{{ \Carbon\Carbon::parse($store->planContrating->date_init)->translatedFormat('d M Y') }}</b>
-                                                    hasta <b>{{ \Carbon\Carbon::parse($store->planContrating->date_end)->translatedFormat('d M Y') }}</b>
-                                                </p>                
-                                                @if(!$renovation)  
-                                                    <p style="color: #74abff; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#renewPlanModal"><b>Renovar Plan</b></p>
-                                                @else
-                                                    <p style="color: #565f6d;"><b>Pendiente aprobación</b></p>
-                                                @endif
-                                            @endif                        
+                                            @if(Auth::user()->store)
+                                                @if(Auth::user()->store->id == $store->id)
+                                                    <p><b>Plan Contratado:</b></p>
+                                                    <p>
+                                                        <b>{{ $store->planContrating->plan->description }}:</b>
+                                                        Desde <b>{{ \Carbon\Carbon::parse($store->planContrating->date_init)->translatedFormat('d M Y') }}</b>
+                                                        hasta <b>{{ \Carbon\Carbon::parse($store->planContrating->date_end)->translatedFormat('d M Y') }}</b>
+                                                    </p>                
+                                                    @if(!$renovation)  
+                                                        <p style="color: #74abff; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#renewPlanModal"><b>Renovar Plan</b></p>
+                                                    @else
+                                                        <p style="color: #565f6d;"><b>Pendiente aprobación</b></p>
+                                                    @endif
+                                                @endif  
+                                            @endif                 
                                         </div>
                                     </div>
                                 </div>

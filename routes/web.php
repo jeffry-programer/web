@@ -8,6 +8,7 @@ use App\Livewire\AssociateProduct;
 use App\Livewire\DetailStore;
 use App\Livewire\Subscribe;
 use App\Livewire\UserManagement;
+use Illuminate\Support\Facades\Storage;
 
 Route::put('/user/profile-photo', [ProfilePhotoController::class, 'update'])->name('profile-photo.update');
 
@@ -110,6 +111,20 @@ Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->gro
     Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');
 });
+
+Route::get('/download-receipt/{id}', function ($id) {
+    $renovation = App\Models\Renovation::findOrFail($id);
+
+    // Obtén la ruta del comprobante
+    $filePath = $renovation->receipt_path;
+
+    // Verifica si el archivo existe
+    if (Storage::exists($filePath)) {
+        return Storage::download($filePath);
+    } else {
+        return back()->with('error', 'El comprobante no existe.');
+    }
+})->name('download.receipt');
 
 //Route::get('/test', [MainController::class, 'test'])->name('/test');
 

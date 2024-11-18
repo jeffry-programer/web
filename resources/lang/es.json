@@ -431,5 +431,6 @@
     "word" : "Palabra",
     "birthdate" : "Fecha de Nacimiento",
     "categories_stores_id" : "Categoria Tienda",
-    "session_active" : "Sesión Activa"
+    "session_active" : "Sesión Activa",
+    "comentary" : "Concepto de Pago"
 }

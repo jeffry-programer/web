@@ -499,18 +499,49 @@
                                             <option value="No vigente">No vigente</option>
                                         </select>
                                     @elseif((str_contains($field, 'status')))
-                                        <label for="">{{__($field)}}</label>
-                                        <select name="{{$field}}" id="{{$field}}" class="form-select">
-                                            <option value="0">Inactivo</option>
-                                            <option value="1">Activo</option>
-                                        </select>
+                                        @if($label == 'Renovaciones')
+                                            <label for="">{{__($field)}}</label>
+                                            <div class="row">
+                                                <div class="col-md-4 d-flex justify-content-center">
+                                                    <button type="button" class="btn btn-danger">Rechazar</button>
+                                                </div>
+                                                <div class="col-md-4 d-flex justify-content-center">
+                                                    <button type="button" class="btn btn-primary" id="downloadReceiptButton">
+                                                        Ver comprobante
+                                                    </button>
+                                                </div>
+                                                <!-- Modal para mostrar el comprobante -->
+                                                <div class="modal fade" id="mainModal" tabindex="-1" aria-labelledby="mainModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="mainModalLabel">Comprobante de pago</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-center" style="height: 40rem"> 
+                                                                <img id="receiptImage" style="width: 100%;height: 100%;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVZycd2TM-L-PriRh04u6vMBLV01DscrJ2Zw&s" alt="Comprobante de pago" class="img-fluid">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 d-flex justify-content-center">
+                                                    <button type="button" class="btn btn-success">Aprobar</button>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <label for="">{{__($field)}}</label>
+                                            <select name="{{$field}}" id="{{$field}}" class="form-select">
+                                                <option value="0">Inactivo</option>
+                                                <option value="1">Activo</option>
+                                            </select>
+                                        @endif
                                     @elseif(str_contains($field, 'date'))
                                         <label for="">{{__($field)}}</label>
                                         <input type="date" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                     @elseif($field == 'password')
                                         <label>{{__($field)}}</label>
                                         <input type="password" id="{{$field}}" name="{{$field}}" class="form-control" placeholder="Ingrese solo si desea cambiarla">
-                                    @elseif($field == 'image' || $field == 'image2')
+                                    @elseif($field == 'image' || $field == 'image2' && $label != 'Renovaciones')
                                         <?php $image = true; ?>
                                     @elseif($field == 'link')
                                         <input type="text" name="{{$field}}" id="{{$field}}" class="d-none">
@@ -543,13 +574,13 @@
                                     @endif
                             @endif
                         @endforeach
-                        @isset($image)
-                        <label style="margin-top: 1rem;">{{__('images')}}</label>
-                        <div class="row" id="row-img-update">
-                        </div>
-                        <div class="dropzone" id="myDropzone2" style="margin-top: 1rem;">
-                        </div>
-                        @endisset
+                        @if(isset($image) && $label != 'Renovaciones')
+                            <label style="margin-top: 1rem;">{{__('images')}}</label>
+                            <div class="row" id="row-img-update">
+                            </div>
+                            <div class="dropzone" id="myDropzone2" style="margin-top: 1rem;">
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -1272,6 +1303,11 @@
         $(document).ready(() => {
             validateVisibilityTypeStore();
             validateVisibilityTypeStore2();
+        });
+
+        document.getElementById('downloadReceiptButton').addEventListener('click', function() {
+            const mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
+            mainModal.show();
         });
     </script>
 @endsection
