@@ -1788,6 +1788,21 @@ class MainController extends Controller
                 }
             }
 
+            // Desencriptar datos en $stores
+            foreach ($stores as $store) {
+                if ($store) {
+                    try {
+                        $store->email = Crypt::decrypt($store->email);
+                        $store->address = Crypt::decrypt($store->address);
+                        $store->phone = Crypt::decrypt($store->phone);
+                    } catch (\Exception $e) {
+                        $store->email = null;
+                        $store->address = null;
+                        $store->phone = null;
+                    }
+                }
+            }
+
             $publicities = Publicity::where('date_end', '>', $date)
                 ->where('status', true)
                 ->inRandomOrder()
