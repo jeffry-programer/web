@@ -26,8 +26,13 @@ class MessageController extends Controller
 
         // Asignar el nombre e imagen del store al usuario
         $user->name = $user->store->name ?? $user->name; // Mantener el nombre si no hay store
-        $user->image = $user->store->image ?? 'https://ui-avatars.com/api/?name=' . strtoupper($user->name[0]) . '&color=7F9CF5&background=EBF4FF';
 
+        if ($user->store) {
+            $user->image = $user->store->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->store->name[0]) . '&color=7F9CF5&background=EBF4FF';
+        } else {
+            $user->image = $user->image ?: 'https://ui-avatars.com/api/?name=' . strtoupper($user->name[0]) . '&color=7F9CF5&background=EBF4FF';
+        }
+        
         // Actualizar el estado de los mensajes y desencriptar el contenido
         foreach ($conversation->messages as $message) {
             if(Crypt::decrypt($message->from) == Crypt::decrypt($user->email) && $message->status == false){
