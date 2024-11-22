@@ -642,6 +642,19 @@ class MainController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
+        $email = $request->email;
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+
+        if ($user) {
+            return response()->json(['error' => ['user' => ['Este usuario ya existe']]], 422);
+        }
+
         // Limpiar el token FCM si ya existe
         $user_token_exist = User::where('token', $request->token_fcm)->first();
 
@@ -839,6 +852,7 @@ class MainController extends Controller
         if ($user) {
             // Actualizar la fecha de verificación
             $user->email_verified_at = Carbon::now();
+            $user->session_active = true;
             $user->save();
             $user->email = Crypt::decrypt($user->email);
             $user->address = !empty($user->address) ? Crypt::decrypt($user->address) : null;
