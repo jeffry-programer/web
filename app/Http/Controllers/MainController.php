@@ -1410,8 +1410,9 @@ class MainController extends Controller
 
     private function searchProducts($search)
     {
+        // Asegurarse de que la consulta utiliza MATCH...AGAINST para la búsqueda de relevancia
         return Product::whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search])
-            ->havingRaw('MATCH(name) AGAINST(?) > 1', [$search]) // Umbral de relevancia más estricto
+            ->whereRaw('MATCH(name) AGAINST(?) > 1', [$search]) // Filtrar por relevancia aquí
             ->get();
     }
 
