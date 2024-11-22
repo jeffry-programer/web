@@ -78,7 +78,7 @@
                         ubicación, puedes repetir
                         estos pasos para establecer una nueva ubicación manualmente.</p>
 
-                    <h2 class="text-justify mt-5">¿Como realizar busquedas en <span
+                    <h2 class="text-justify mt-5">¿Como realizar búsquedas en <span
                             class="texto-azul">Tulo</span>buscas?</h2>
                     <p class="text-justify mt-3"><b>1. Ingresar a la aplicación o página web con tu usuario y
                             contraseña</b> previamente

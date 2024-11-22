@@ -465,7 +465,7 @@ class MainController extends Controller
             $stores->whereFullText('name', $request->name_store);
         }
 
-        if($categoryId != '' && $categoryId != 0){
+        if ($categoryId != '' && $categoryId != 0) {
             $stores->where('categories_stores_id', $categoryId);
         }
 
@@ -487,7 +487,7 @@ class MainController extends Controller
                 $stores->whereFullText('name', $request->name_store);
             }
 
-            if($categoryId != '' && $categoryId != 0){
+            if ($categoryId != '' && $categoryId != 0) {
                 $stores->where('categories_stores_id', $categoryId);
             }
 
@@ -510,7 +510,7 @@ class MainController extends Controller
                     $stores->whereFullText('name', $request->name_store);
                 }
 
-                if($categoryId != '' && $categoryId != 0){
+                if ($categoryId != '' && $categoryId != 0) {
                     $stores->where('categories_stores_id', $categoryId);
                 }
 
@@ -530,7 +530,7 @@ class MainController extends Controller
                         $stores->whereFullText('name', $request->name_store);
                     }
 
-                    if($categoryId != '' && $categoryId != 0){
+                    if ($categoryId != '' && $categoryId != 0) {
                         $stores->where('categories_stores_id', $categoryId);
                     }
 
@@ -727,10 +727,21 @@ class MainController extends Controller
 
     public function sendVerifiedEmailApi(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $email = $request->email;
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+
         if ($user->email_verified_at != null) {
             return response()->json(['error' => 'Correo verificado'], 422);
         }
+
+        $user->email = Crypt::decrypt($user->email);
+
         $user->notify(new VerifiedEmailApi($user, $request->token));
     }
 
@@ -1355,138 +1366,143 @@ class MainController extends Controller
         return response()->json(['product' => $product]);
     }
 
-    /*----------------------------------------BUSQUEDA PRINCIPAL---------------------------------*/
+    /*----------------------------------BUSQUEDA PRINCIPAL---------------------------------*/
     public function getStoreSearch(Request $request)
     {
-        $search = str_replace('-', ' ', $request->query('query'));
+        $search = strtolower(trim(str_replace('-', ' ', $request->query('query'))));
         $municipalityId = $request->municipalityId;
         $stateId = $request->stateId;
         $sectorId = $request->sectorId;
         $locationStores = 'sector'; // Valor por defecto
 
-        $stores = $this->searchStores10($search, $municipalityId, $stateId, $sectorId, $locationStores);
+        // Realiza la búsqueda de productos que coincidan con la búsqueda
+        $products = $this->searchProducts($search);
 
+        // Si no hay productos, no se pueden retornar tiendas
+        if ($products->isEmpty()) {
+            return response()->json(['stores' => [], 'locationStores' => $locationStores], 200);
+        }
+
+        // Primero, intentamos buscar en el municipio
+        $stores = $this->getStoresFromProducts($products, $municipalityId, $stateId, $sectorId, $locationStores, 'municipality');
+
+        // Si no encontramos tiendas en el municipio, buscamos en el estado
+        if ($stores->isEmpty() && $stateId) {
+            $stores = $this->getStoresFromProducts($products, null, $stateId, $sectorId, $locationStores, 'state');
+        }
+
+        // Si aún no encontramos tiendas, buscamos a nivel nacional
+        if ($stores->isEmpty()) {
+            $stores = $this->getStoresFromProducts($products, null, null, $sectorId, $locationStores, 'country');
+        }
+
+        // Aseguramos que los productos relacionados con las tiendas ya están cargados
         foreach ($stores as $store) {
+            // Desencriptamos la dirección solo si es necesario
             $store->address = Crypt::decrypt($store->address);
         }
 
-        // Guardar la búsqueda del usuario si se encontraron tiendas
+        // Guardar la búsqueda del usuario
         $this->recordUserSearch($stores, $request->userId);
 
         return response()->json(['stores' => $stores, 'locationStores' => $locationStores], 200);
     }
 
-    private function searchStores10($search, $municipalityId, $stateId, $sectorId, &$locationStores)
+    private function searchProducts($search)
     {
-        $storeQuery = Store::where('status', true);
+        return Product::whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search])
+            ->havingRaw('MATCH(name) AGAINST(?) > 1', [$search]) // Umbral de relevancia más estricto
+            ->get();
+    }
 
-        // Filtrar por municipio
-        if ($municipalityId) {
-            $storeQuery->where('municipalities_id', $municipalityId);
-        }
-
-        // Agregar filtro de sector si corresponde
-        if ($sectorId !== 'Todos') {
-            $storeQuery->where('sectors_id', $sectorId);
-        }
-
-        // Dividir la búsqueda en palabras clave y convertir a minúsculas
-        $searchTerms = explode(' ', strtolower($search));
-
-        // Filtro de productos, asegurando que todos los términos estén presentes
-        $storeQuery->whereHas('products', function ($query) use ($searchTerms) {
-            $query->where(function ($q) use ($searchTerms) {
-                foreach ($searchTerms as $term) {
-                    $q->where('name', 'like', '%' . $term . '%');
-                }
+    private function getStoresFromProducts($products, $municipalityId, $stateId, $sectorId, &$locationStores, $locationType)
+    {
+        // Obtener los IDs de tiendas únicas asociadas a los productos a través de la relación 'stores'
+        $storeData = $products->flatMap(function($product) {
+            return $product->stores->map(function($store) use ($product) {
+                return [
+                    'store_id' => $store->id,
+                    'product_id' => $product->id,
+                ];
             });
         });
 
-        // Cargar las relaciones necesarias
-        $storeQuery->with(['products' => function ($query) use ($searchTerms) {
-            $query->where(function ($q) use ($searchTerms) {
-                foreach ($searchTerms as $term) {
-                    $q->where('name', 'like', '%' . $term . '%');
-                }
+        //Agrupar los resultados por tienda
+        $storeDataGrouped = $storeData->groupBy('store_id');  // Agrupamos por ID de tienda
+        
+        // Aseguramos que sean únicos        
+        $storesQuery = Store::whereIn('id', $storeDataGrouped->keys())
+            ->where('status', true)  // Solo tiendas activas
+            ->with(['municipality', 'products']);  // Cargar las relaciones necesarias
+
+        // Filtrar por ubicación (municipio, estado o sector)
+        if ($locationType === 'municipality' && $municipalityId) {
+            $storesQuery->where('municipalities_id', $municipalityId);
+        }
+
+        if ($locationType === 'state' && $stateId) {
+            $storesQuery->whereHas('municipality', function ($query) use ($stateId) {
+                $query->where('states_id', $stateId);
             });
-        }, 'municipality']);
+        }
 
-        // Paginación
-        $stores = $storeQuery->paginate(10);
+        if ($locationType === 'country' && $sectorId && $sectorId !== 'Todos') {
+            $storesQuery->where('sectors_id', $sectorId);
+        }
 
-        // Si no se encontraron tiendas, intenta buscar a nivel de estado
-        if ($stores->isEmpty()) {
-            $stores = $this->searchInState($search, $stateId, $locationStores);
+        $stores = $storesQuery->paginate(10);
+
+        // Establecer el tipo de ubicación para la respuesta
+        if ($stores->isNotEmpty()) {
+            $locationStores = $locationType;
+        }
+
+        foreach ($stores as $store){
+            // Buscar los productos asociados a esta tienda
+            $associatedProducts = $storeDataGrouped->get($store->id, []);
+        
+            // Si se encuentran productos asociados, asigna solo el primero (o el más relevante)
+            if ($associatedProducts->isNotEmpty()) {
+                // En este caso, se selecciona el primer producto de la lista (puedes cambiar esto según tu lógica)
+                $firstProduct = $associatedProducts->first();
+        
+                // Asignar solo ese producto encontrado a la tienda
+                $store->products[0] = [
+                    'id' => $firstProduct['product_id'],
+                ];
+            } else {
+                // Si no hay productos asociados, asignar un valor vacío o null
+                $store->products[0] = null;
+            }
         }
 
         return $stores;
-    }
-
-    private function searchInState($search, $stateId, &$locationStores)
-    {
-        $municipalities = Municipality::where('states_id', $stateId)->pluck('id');
-
-        // Asegurarse de que se está buscando en el estado
-        $stores = Store::where('status', true)
-            ->whereIn('municipalities_id', $municipalities)
-            ->whereHas('products', function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->with(['products' => function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            }, 'municipality'])
-            ->paginate(10);
-
-        // Si aún no se encontraron tiendas, busca a nivel nacional
-        if ($stores->isEmpty()) {
-            $stores = $this->searchInCountry($search);
-            // Cambiar locationStores a 'country' si se busca a nivel nacional
-            $locationStores = 'country';
-        } else {
-            // Cambiar locationStores a 'state' si se encontró en el estado
-            $locationStores = 'state';
-        }
-
-        return $stores;
-    }
-
-    private function searchInCountry($search)
-    {
-        return Store::where('status', true)
-            ->whereHas('products', function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->with(['products' => function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            }, 'municipality'])
-            ->paginate(10);
     }
 
 
     private function recordUserSearch($stores, $userId)
     {
+        $storeIds = $stores->pluck('id');
+
+        $products = ProductStore::whereIn('stores_id', $storeIds)
+            ->with('product')
+            ->get();
+
         foreach ($stores as $store) {
-            // Verificar si hay productos antes de acceder a ellos
-            $firstProduct = $store->products->first();
+            $productStore = $products->firstWhere('stores_id', $store->id);
 
-            if ($firstProduct) { // Asegúrate de que no sea null
-                $productStore = ProductStore::where('products_id', $firstProduct->id)
+            if ($productStore) {
+                $searchExists = SearchUser::where('products_id', $productStore->products_id)
                     ->where('stores_id', $store->id)
-                    ->first();
+                    ->exists();
 
-                if ($productStore) {
-                    $searchExists = SearchUser::where('products_id', $productStore->products_id)
-                        ->where('stores_id', $store->id)
-                        ->exists();
-
-                    if (!$searchExists) {
-                        SearchUser::create([
-                            'users_id' => $userId,
-                            'stores_id' => $store->id,
-                            'products_id' => $productStore->products_id,
-                            'created_at' => now(),
-                        ]);
-                    }
+                if (!$searchExists) {
+                    SearchUser::create([
+                        'users_id' => $userId,
+                        'stores_id' => $store->id,
+                        'products_id' => $productStore->products_id,
+                        'created_at' => now(),
+                    ]);
                 }
             }
         }
@@ -1501,7 +1517,7 @@ class MainController extends Controller
         $stateId = $request->stateId;
         $sectorId = $request->sectorId;
         $locationStores = 'sector';
-    
+
         // Función para agregar filtros comunes al query
         $applyFilters = function ($storeQuery) use ($request, $query) {
             if (!empty($request->categoryId) && $request->categoryId != '0') {
@@ -1512,24 +1528,24 @@ class MainController extends Controller
             }
             return $storeQuery;
         };
-    
+
         // Construcción del query base
         $storeQuery = Store::where('status', true)
             ->where('municipalities_id', $municipalityId)
             ->where('type_stores_id', $request->type)
             ->with('municipality');
-    
+
         // Filtrar por sector si aplica
         if ($sectorId !== 'Todos') {
             $storeQuery->where('sectors_id', $sectorId);
         }
-    
+
         $storeQuery = $applyFilters($storeQuery);
-    
+
         // Cálculo del total independiente de la paginación
         $totalStores = $storeQuery->count();
         $stores = $storeQuery->paginate(10);
-    
+
         // Si no hay resultados, cambiar el ámbito de búsqueda
         if ($stores->isEmpty()) {
             $locationStores = 'municipality';
@@ -1537,45 +1553,45 @@ class MainController extends Controller
                 ->where('municipalities_id', $municipalityId)
                 ->where('type_stores_id', $request->type)
                 ->with('municipality');
-    
+
             $storeQuery = $applyFilters($storeQuery);
             $totalStores = $storeQuery->count();
             $stores = $storeQuery->paginate(10);
-    
+
             if ($stores->isEmpty()) {
                 $locationStores = 'state';
                 $municipalities = Municipality::where('states_id', $stateId)->pluck('id');
-    
+
                 $storeQuery = Store::where('status', true)
                     ->whereIn('municipalities_id', $municipalities)
                     ->where('type_stores_id', $request->type)
                     ->with('municipality');
-    
+
                 $storeQuery = $applyFilters($storeQuery);
                 $totalStores = $storeQuery->count();
                 $stores = $storeQuery->paginate(10);
-    
+
                 if ($stores->isEmpty()) {
                     $locationStores = 'country';
                     $municipalities = Municipality::pluck('id');
-    
+
                     $storeQuery = Store::where('status', true)
                         ->whereIn('municipalities_id', $municipalities)
                         ->where('type_stores_id', $request->type)
                         ->with('municipality');
-    
+
                     $storeQuery = $applyFilters($storeQuery);
                     $totalStores = $storeQuery->count();
                     $stores = $storeQuery->paginate(10);
                 }
             }
         }
-    
+
         // Desencriptar direcciones
         foreach ($stores as $store) {
             $store->address = Crypt::decrypt($store->address);
         }
-    
+
         // Retornar respuesta JSON
         return response()->json([
             'stores' => $stores,
@@ -2735,7 +2751,8 @@ class MainController extends Controller
         return response()->json($sectors);
     }
 
-    public function createSucursal(){
+    public function createSucursal()
+    {
         $type_stores = TypeStore::all();
         $municipalities = Municipality::all();
         $states = State::all();
@@ -2750,7 +2767,8 @@ class MainController extends Controller
         return view('create-sucursal', $array_data);
     }
 
-    public function renovationStore(Request $request){
+    public function renovationStore(Request $request)
+    {
         // Validar los datos recibidos
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',

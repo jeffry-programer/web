@@ -61,7 +61,7 @@
                             </div>
                        </div>
 
-                       <h2 class="text-justify mt-5">¿Porque usar la plataforma  <span class="texto-azul">Tulo</span>buscas? </h2>            
+                       <h2 class="text-justify mt-5">¿Por que usar la plataforma  <span class="texto-azul">Tulo</span>buscas? </h2>            
                        <p class="text-justify mt-10">Beneficios de utilizar la plataforma Tulobuscas: ahorras tiempo, ya que la aplicación te muestra las tiendas que tienen el producto que necesitas. Además, ahorras dinero al evitar desplazarte por la ciudad buscando de tienda en tienda el producto requerido.</p>
                            
                        </p>               

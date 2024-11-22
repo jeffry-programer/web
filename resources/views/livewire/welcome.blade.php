@@ -126,7 +126,7 @@
     @endif
     @if (count($stores3) > 0)
         <div class="alert alert-secondary mx-3" role="alert">
-            <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Busquedas recientes</h6>
+            <h6 style="font-size: 1.2rem;margin-top: 0.5rem;">Búsquedas recientes</h6>
         </div>
         <div class="container">
             <div class="row">
