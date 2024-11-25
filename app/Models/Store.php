@@ -9,7 +9,7 @@ class Store extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['users_id','type_stores_id','sectors_id','municipalities_id','name','description','email','address','RIF','phone','image','image2','link','status','score_store','capacidad','tipo','dimensiones','categories_stores_id', 'sucursal'];
+    protected $fillable = ['users_id','type_stores_id','sectors_id','municipalities_id','name','description','email','address','RIF','phone','image','image2','link','status','score_store','capacidad','tipo','dimensiones','categories_stores_id', 'sucursal', 'services'];
 
     public function promotions(){
         return $this->hasMany(Promotion::class, 'stores_id');

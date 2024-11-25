@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Schema;
 use IntlDateFormatter;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MainController extends Controller
 {
@@ -1433,8 +1434,8 @@ class MainController extends Controller
     private function getStoresFromProducts($products, $municipalityId, $stateId, $sectorId, &$locationStores, $locationType)
     {
         // Obtener los IDs de tiendas únicas asociadas a los productos a través de la relación 'stores'
-        $storeData = $products->flatMap(function($product) {
-            return $product->stores->map(function($store) use ($product) {
+        $storeData = $products->flatMap(function ($product) {
+            return $product->stores->map(function ($store) use ($product) {
                 return [
                     'store_id' => $store->id,
                     'product_id' => $product->id,
@@ -1444,7 +1445,7 @@ class MainController extends Controller
 
         //Agrupar los resultados por tienda
         $storeDataGrouped = $storeData->groupBy('store_id');  // Agrupamos por ID de tienda
-        
+
         // Aseguramos que sean únicos        
         $storesQuery = Store::whereIn('id', $storeDataGrouped->keys())
             ->where('status', true)  // Solo tiendas activas
@@ -1472,15 +1473,15 @@ class MainController extends Controller
             $locationStores = $locationType;
         }
 
-        foreach ($stores as $store){
+        foreach ($stores as $store) {
             // Buscar los productos asociados a esta tienda
             $associatedProducts = $storeDataGrouped->get($store->id, []);
-        
+
             // Si se encuentran productos asociados, asigna solo el primero (o el más relevante)
             if ($associatedProducts->isNotEmpty()) {
                 // En este caso, se selecciona el primer producto de la lista (puedes cambiar esto según tu lógica)
                 $firstProduct = $associatedProducts->first();
-        
+
                 // Asignar solo ese producto encontrado a la tienda
                 $store->products[0] = [
                     'id' => $firstProduct['product_id'],
@@ -1557,9 +1558,40 @@ class MainController extends Controller
 
         $storeQuery = $applyFilters($storeQuery);
 
-        // Cálculo del total independiente de la paginación
-        $totalStores = $storeQuery->count();
-        $stores = $storeQuery->paginate(10);
+        if ($request->type == env('TIPO_TALLER_ID') && $request->categoryId == env('TALLER_MECANICO')) {
+            $storeQuery2 = Store::where('status', true)
+                ->where('municipalities_id', $municipalityId)
+                ->where('services', true)
+                ->with('municipality');
+
+            if ($sectorId !== 'Todos') {
+                $storeQuery2->where('sectors_id', $sectorId);
+            }
+
+            // Obtener resultados individuales
+            $stores1 = $storeQuery->get();
+            $stores2 = $storeQuery2->get();
+
+            // Combinar resultados
+            $mergedStores = $stores1->merge($stores2);
+
+            // Implementar paginación manual
+            $currentPage = LengthAwarePaginator::resolveCurrentPage();
+            $perPage = 10;
+            $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
+
+            $stores = new LengthAwarePaginator(
+                $currentResults,
+                $mergedStores->count(),
+                $perPage,
+                $currentPage,
+                ['path' => LengthAwarePaginator::resolveCurrentPath()]
+            );
+        } else {
+            $stores = $storeQuery->paginate(10);
+        }
+
+        $totalStores = $stores->count();
 
         // Si no hay resultados, cambiar el ámbito de búsqueda
         if ($stores->isEmpty()) {
@@ -1570,8 +1602,41 @@ class MainController extends Controller
                 ->with('municipality');
 
             $storeQuery = $applyFilters($storeQuery);
-            $totalStores = $storeQuery->count();
-            $stores = $storeQuery->paginate(10);
+
+            if ($request->type == env('TIPO_TALLER_ID') && $request->categoryId == env('TALLER_MECANICO')) {
+                $storeQuery2 = Store::where('status', true)
+                    ->where('municipalities_id', $municipalityId)
+                    ->where('services', true)
+                    ->with('municipality');
+
+                if ($sectorId !== 'Todos') {
+                    $storeQuery2->where('sectors_id', $sectorId);
+                }
+
+                // Obtener resultados individuales
+                $stores1 = $storeQuery->get();
+                $stores2 = $storeQuery2->get();
+
+                // Combinar resultados
+                $mergedStores = $stores1->merge($stores2);
+
+                // Implementar paginación manual
+                $currentPage = LengthAwarePaginator::resolveCurrentPage();
+                $perPage = 10;
+                $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
+
+                $stores = new LengthAwarePaginator(
+                    $currentResults,
+                    $mergedStores->count(),
+                    $perPage,
+                    $currentPage,
+                    ['path' => LengthAwarePaginator::resolveCurrentPath()]
+                );
+            } else {
+                $stores = $storeQuery->paginate(10);
+            }
+
+            $totalStores = $stores->count();
 
             if ($stores->isEmpty()) {
                 $locationStores = 'state';
@@ -1583,8 +1648,41 @@ class MainController extends Controller
                     ->with('municipality');
 
                 $storeQuery = $applyFilters($storeQuery);
-                $totalStores = $storeQuery->count();
-                $stores = $storeQuery->paginate(10);
+
+                if ($request->type == env('TIPO_TALLER_ID') && $request->categoryId == env('TALLER_MECANICO')) {
+                    $storeQuery2 = Store::where('status', true)
+                        ->where('municipalities_id', $municipalityId)
+                        ->where('services', true)
+                        ->with('municipality');
+
+                    if ($sectorId !== 'Todos') {
+                        $storeQuery2->where('sectors_id', $sectorId);
+                    }
+
+                    // Obtener resultados individuales
+                    $stores1 = $storeQuery->get();
+                    $stores2 = $storeQuery2->get();
+
+                    // Combinar resultados
+                    $mergedStores = $stores1->merge($stores2);
+
+                    // Implementar paginación manual
+                    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+                    $perPage = 10;
+                    $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
+
+                    $stores = new LengthAwarePaginator(
+                        $currentResults,
+                        $mergedStores->count(),
+                        $perPage,
+                        $currentPage,
+                        ['path' => LengthAwarePaginator::resolveCurrentPath()]
+                    );
+                } else {
+                    $stores = $storeQuery->paginate(10);
+                }
+
+                $totalStores = $stores->count();
 
                 if ($stores->isEmpty()) {
                     $locationStores = 'country';
@@ -1596,8 +1694,41 @@ class MainController extends Controller
                         ->with('municipality');
 
                     $storeQuery = $applyFilters($storeQuery);
-                    $totalStores = $storeQuery->count();
-                    $stores = $storeQuery->paginate(10);
+
+                    if ($request->type == env('TIPO_TALLER_ID') && $request->categoryId == env('TALLER_MECANICO')) {
+                        $storeQuery2 = Store::where('status', true)
+                            ->where('municipalities_id', $municipalityId)
+                            ->where('services', true)
+                            ->with('municipality');
+
+                        if ($sectorId !== 'Todos') {
+                            $storeQuery2->where('sectors_id', $sectorId);
+                        }
+
+                        // Obtener resultados individuales
+                        $stores1 = $storeQuery->get();
+                        $stores2 = $storeQuery2->get();
+
+                        // Combinar resultados
+                        $mergedStores = $stores1->merge($stores2);
+
+                        // Implementar paginación manual
+                        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+                        $perPage = 10;
+                        $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
+
+                        $stores = new LengthAwarePaginator(
+                            $currentResults,
+                            $mergedStores->count(),
+                            $perPage,
+                            $currentPage,
+                            ['path' => LengthAwarePaginator::resolveCurrentPath()]
+                        );
+                    } else {
+                        $stores = $storeQuery->paginate(10);
+                    }
+
+                    $totalStores = $stores->count();
                 }
             }
         }
@@ -1871,6 +2002,11 @@ class MainController extends Controller
         $stores = Store::where('status', true)->whereHas('promotions', function ($query) {
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
         })->with('municipality')->paginate(10);
+
+        foreach($stores as $store){
+            $store->address = Crypt::decrypt($store->address);
+        }
+
         return response()->json($stores);
     }
 
@@ -1919,6 +2055,10 @@ class MainController extends Controller
             $store->tipo = $request->tipo;
             $store->dimensiones = $request->dimensiones;
             $store->capacidad = $request->capacidad;
+        }
+
+        if (isset($request->services)) {
+            $store->services = $request->services;
         }
 
         $store->save();
@@ -2052,6 +2192,19 @@ class MainController extends Controller
             ->exists();
 
         if ($existingSignal) {
+            if ($request->type == env('TIPO_TALLER_ID')) {
+                // Verificar si el usuario ya tiene una señal activa del mismo tipo de tienda
+                $existingSignal = SignalAux::where('users_id', $user->id)
+                    ->where('read', false)
+                    ->whereHas('store', function ($query) use ($request) {
+                        $query->where('services', true);
+                    })
+                    ->exists();
+
+                if ($existingSignal) {
+                    return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
+                }
+            }
             return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
         }
 
@@ -2069,6 +2222,23 @@ class MainController extends Controller
         }
 
         $stores = $storesQuery->get();
+
+        if ($request->type == env('TIPO_TALLER_ID')) {
+            $storesQuery2 = Store::where('services', true)
+                ->where('status', true)
+                ->where('municipalities_id', $request->municipality);
+
+            if ($request->sector !== 'Todos') {
+                $storesQuery2->where('sectors_id', $request->sector);
+            }
+
+            $stores2 = $storesQuery2->get();
+
+            // Combinar tiendas si stores2 tiene contenido
+            if ($stores2->isNotEmpty()) {
+                $stores = $stores->merge($stores2);
+            }
+        }
 
         $storesSendSignalAux = [];
 
@@ -2249,7 +2419,14 @@ class MainController extends Controller
             ->where('status', '!=', true)
             ->get();
 
+        // Busca si existe una conversación entre el usuario y la tienda
         $conversation = Conversation::where('users_id', $signal->users_id)->where('stores_id', $signal->stores_id)->first();
+
+        if ($conversation == null) {
+            $conversation = Conversation::where('users_id', $signal->stores_id)->where('stores_id', $signal->users_id)->first();
+        }
+
+        // Si no existe conversación y los IDs no coinciden, crea una nueva
         if ($conversation == null) {
             $conversation = new Conversation();
             $conversation->users_id = $signal->users_id;
@@ -2257,6 +2434,15 @@ class MainController extends Controller
             $conversation->created_at = Carbon::now();
             $conversation->save();
         }
+
+        $user = User::find($signal->users_id);
+
+        $message = new Message();
+        $message->conversations_id = $conversation->id;
+        $message->content = Crypt::encryptString($signal->detail);
+        $message->from = $user->email;
+        $message->status = false;
+        $message->save();
 
         $array_data = [
             'status' => 'approve',
