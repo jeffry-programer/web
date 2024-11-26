@@ -307,7 +307,7 @@ class UserManagement extends Component
         $count = 0;
         foreach ($atributes as $field) {
             if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'  && $field != 'current_team_id') {
-                if ($field == 'image' || $field == 'image2') {
+                if ($field == 'image' || $field == 'image2' || $field == 'resource') {
                     $data[$field] = '';
                 }
                 if ($field == 'email_verified_at') {
@@ -1085,7 +1085,7 @@ class UserManagement extends Component
     public function saveImgs(Request $request)
     {
         $request->validate([
-            'file' => 'required|image|max:2048'
+            'file' => 'required|mimes:jpeg,png,jpg,gif,mp4,mov,avi,mkv|max:10240', // Hasta 10 MB
         ]);
 
         if ($request->table == 'products') {
@@ -1098,6 +1098,8 @@ class UserManagement extends Component
             $route_image = $request->file('file')->store('public/images-promotion/' . $request->id);
         } else if ($request->table == 'publicities') {
             $route_image = $request->file('file')->store('public/images-publicity/' . $request->id);
+        } else if ($request->table == 'informations') {
+            $route_image = $request->file('file')->store('public/files-informations/' . $request->id);
         } else {
             $route_image = $request->file('file')->store('public/images-user/' . $request->id);
         }
@@ -1132,6 +1134,9 @@ class UserManagement extends Component
                 Storage::delete($image);
                 $query = "update $request->table set image = '$url', image2 = '$store->image' where id = $request->id";
             }
+            DB::update($query);
+        } else if ($request->table == 'informations'){
+            $query = "update $request->table set resource = '$url' where id = $request->id";
             DB::update($query);
         } else {
             $image->nameImg = str_replace('/storage', 'public', $request->nameImg);

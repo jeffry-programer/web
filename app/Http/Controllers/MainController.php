@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewMessage;
 use App\Events\NewMessage2;
+use App\Mail\VerificationEmail;
 use App\Models\AditionalPicturesProduct;
 use App\Models\Box;
 use App\Models\Brand;
@@ -14,6 +15,7 @@ use App\Models\Conversation;
 use App\Models\Country;
 use App\Models\cylinderCapacity;
 use App\Models\ExchangeRate;
+use App\Models\Information;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductStore;
@@ -37,7 +39,9 @@ use App\Models\SubCategory;
 use App\Models\TypeProduct;
 use App\Models\TypePublicity;
 use App\Models\User;
+use App\Notifications\RecoveryAccount;
 use App\Notifications\ResetPasswordApi;
+use App\Notifications\VerifiedEmail;
 use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
 use DateTime;
@@ -54,6 +58,7 @@ use IntlDateFormatter;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Mail;
 
 class MainController extends Controller
 {
@@ -800,7 +805,7 @@ class MainController extends Controller
         }
 
         if ($user->session_active) {
-            return response()->json(['error' => 'Ya tienes una cuenta abierta, por favor ciérrala para continuar'], 422);
+            return response()->json(['error' => 'Ya tienes una cuenta abierta, por favor ciérrala para continuar ó ingresa al link de recuperar cuenta'], 422);
         }
 
         if (is_null($user->email_verified_at)) {
@@ -1220,8 +1225,6 @@ class MainController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -1983,7 +1986,10 @@ class MainController extends Controller
                 ->take(8)
                 ->get();
 
+            $videos = Information::all();
+
             return response()->json([
+                'videos' => $videos,
                 'publicities' => $publicities,
                 'stores' => $stores,
                 'lastStores' => $array_stores_final,
@@ -2577,6 +2583,89 @@ class MainController extends Controller
         $user->email = $request->email;
 
         $user->notify(new ResetPasswordApi($request->token));
+
+        return response()->json($user);
+    }
+
+    public function sendVerificationEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required',
+            'token' => 'required|string',
+            'type' => 'required|string'
+        ]);
+
+        $email = $request->email;
+
+        if($request->type == 'store'){
+            $store = Store::all()->first(function ($store) use ($email) {
+                try {
+                    return Crypt::decrypt($store->email) === $email;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            });
+
+            if ($store) {
+                return response()->json(['error' => 'Este correo ya existe'], 422);
+            }
+        }else{
+            $user = User::all()->first(function ($user) use ($email) {
+                try {
+                    return Crypt::decrypt($user->email) === $email;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            });
+
+            if ($user) {
+                return response()->json(['error' => 'Este correo ya existe'], 422);
+            }
+        }
+
+        // Enviar el correo
+        Mail::to($request->email)->send(new VerificationEmail($request->token));
+
+        return response()->json(['message' => 'Correo de verificación enviado con éxito.'], 200);
+    }
+
+    public function recoveryAccount(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->email;
+
+        $user = User::all()->first(function ($user) use ($email) {
+            try {
+                return Crypt::decrypt($user->email) === $email;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no registrado'], 422);
+        }
+
+        $user->email = $request->email;
+
+        $user->notify(new RecoveryAccount($request->token));
+
+        if($user->store != null){
+            $user->store = $user->store->id;
+        }
+
+        return response()->json($user);
+    }
+
+    public function replaceToken(Request $request){
+        $user = User::find($request->userId);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no registrado'], 422);
+        }
+        $user->token = $request->token;
+        $user->save();
 
         return response()->json($user);
     }

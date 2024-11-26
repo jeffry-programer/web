@@ -70,10 +70,13 @@ Route::post('/close-status-signal', [MainController::class, 'closeSignalsAux']);
 Route::post('/quality-signal', [MainController::class, 'qualitySignal']);
 Route::post('/change-status-message', [MessageController::class, 'changeStatusMessage']);
 Route::post('/reset-password', [MainController::class, 'resetPassword']);
+Route::post('/recovery-account', [MainController::class, 'recoveryAccount']);
+Route::post('/replace-token', [MainController::class, 'replaceToken']);
 Route::post('/change-password', [MainController::class, 'changePassword']);
 Route::post('/save-product', [MainController::class, 'saveProduct']);
 Route::post('/store-products', [MainController::class, 'store']);
 Route::post('/comentaries', [MainController::class, 'getCommentaries']);
+Route::post('/send-verification-email', [MainController::class, 'sendVerificationEmail']);
 
 // Ruta para agregar o actualizar productos en la tienda
 

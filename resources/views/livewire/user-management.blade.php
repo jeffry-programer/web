@@ -378,6 +378,9 @@
                                             <option value="Grúas de arrastre">Grúas de arrastre</option>
                                         </select>
                                     </div>
+                                @elseif((str_contains($field, 'resource')))
+                                    <label>{{__($field)}}</label>
+                                    <div class="dropzone" id="myDropzone48"></div>
                                 @else
                                     @if($field == 'dimensiones' || $field == 'capacidad')
                                         <div class="display-grua">
@@ -412,7 +415,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" style="background:#171717;" data-bs-dismiss="modal">{{__('Close')}}</button>
               <button 
-              @if(isset($image))
+              @if(isset($image) || $label == 'Informaciones')
                 type="button" id="store"
               @else
                 type="submit"
@@ -616,14 +619,12 @@
       </div>
 </div>
 
-
-
-
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="//cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>  
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @isset($autocomplete)
         <script>
         var arrayAutoComplete =  $("#data-autocomplete").val().split(',');
@@ -801,7 +802,6 @@
     </script>
 
     @isset($image)
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         Dropzone.autoDiscover = false;
 
@@ -881,259 +881,6 @@
                 });
             }
         });
-
-        $("#store").click((e) => {
-            validateDataStore();
-        });
-
-        $("#update").click((e) => {
-            validateDataUpdate();
-        });
-
-        function validateDataStore(){
-            var data = $("#form").serialize().split('&');
-            var boolean = true;
-            var incorrectRif = false;
-            data.forEach((key) => {
-                let value = key.split('=')[1];
-                let field = key.split('=')[0];
-                if(field.includes('link')) return false;
-                if(field.includes('product_stores_id')) return false;
-                if(field.includes('capacidad')) return false;
-                if(field.includes('dimensiones')) return false;
-                if(field.includes('tipo')) return false;
-                if(field.includes('RIF') && value.length < 8){
-                    incorrectRif = true;
-                }
-                if(value == null || value == ''){
-                    boolean = false;
-                }
-            });
-
-            if(incorrectRif){
-                Swal.fire({
-                    title: "Error: El RIF debe tener minimo 8 carácteres",
-                    icon: "error",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false
-                });
-                return false;
-            }
-
-            if(!boolean){
-                Swal.fire({
-                    title: "Error: Valores inválidos o campos incompletos.",
-                    icon: "error",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false
-                });
-                return false;
-            } 
-            
-            showAlertTime();
-            storeData();
-        }
-
-        function validateDataUpdate(){
-            var data = $("#form-edit").serialize().split('&');
-            var incorrectRif = false;
-            var boolean = true;
-            data.forEach((key) => {
-                let value = key.split('=')[1];
-                let field = key.split('=')[0];
-
-                if(field.includes('RIF') && value.length < 8){
-                    incorrectRif = true;
-                }
-
-                if(field != 'password' && field != 'capacidad' && field != 'tipo' && field != 'dimensiones'){
-                    if(value == null || value == ''){
-                        boolean = false;
-                    }
-                }
-            });
-
-            if(incorrectRif){
-                Swal.fire({
-                    title: "Error: El RIF debe tener minimo 8 carácteres",
-                    icon: "error",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false
-                });
-                return false;
-            }
-
-            if(!boolean){
-                Swal.fire({
-                    title: "Todos los campos son requeridos",
-                    icon: "error",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false
-                });
-                return false;
-            } 
-            
-            showAlertTime();
-            updateData();
-        }
-
-        function showAlertTime(){
-            Swal.fire({
-                toast: true,
-                position: 'center',
-                title: "Cargando por favor espere...",
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                },
-            });
-        }
-        
-        function hideAlertTime(){
-            setTimeout(() => {
-                window.location.reload();
-            }, 3000);
-
-            Swal.fire({
-                toast: true,
-                position: 'center',
-                icon: 'success',
-                showConfirmButton: false,
-                title: "Registro agregado exitosamente",
-                timer: 3000
-            });
-        }
-
-        function hideAlertTime2(){
-            setTimeout(() => {
-                window.location.reload();
-            }, 3000);
-
-            Swal.fire({
-                toast: true,
-                position: 'center',
-                icon: 'success',
-                showConfirmButton: false,
-                title: "Registro editado exitosamente!!",
-                timer: 3000
-            });
-        }
-
-        function storeData(){
-            $.ajax({
-                url: "{{route('table-store-imgs')}}",
-                data: $("#form").serialize(),
-                method: "POST",
-                success(response){
-                    var res = JSON.parse(response);
-                    $("#id_table").val(res.split('-')[1]);
-                    $("#table").val(res.split('-')[0]);
-                    myDropzone.processQueue();
-                    setTimeout(() => {
-                        if(isset_images == false){
-                            hideAlertTime();
-                        }
-                    }, 3000);
-                },error: function(xhr) {
-                    if(xhr.status === 422) {
-                        console.log(xhr);
-                        var error = xhr.responseJSON.error;
-                        Swal.fire({
-                            title: error,
-                            icon: "error",
-                            timer: 2000,
-                            timerProgressBar: true,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Hubo un problema al procesar la solicitud",
-                            icon: "error",
-                            timer: 2000,
-                            timerProgressBar: true,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false
-                        });
-                    }
-                }
-            });
-        }
-
-        function updateData(){
-            $.ajax({
-                url: "{{route('update-store-imgs')}}",
-                data: $("#form-edit").serialize(),
-                method: "POST",
-                success(response){
-                    var res = JSON.parse(response);
-                    $("#id_table").val(res.split('-')[1]);
-                    $("#table").val(res.split('-')[0]);
-                    myDropzone2.processQueue();
-                    setTimeout(() => {
-                        if(isset_images == false){
-                            hideAlertTime2();
-                        }
-                    }, 3000);
-                },error(err){
-                    Swal.fire({
-                        toast: true,
-                        position: 'center',
-                        icon: 'error',
-                        showConfirmButton: false,
-                        title: "Ups ha ocurrido un error",
-                        timer: 3000
-                    });
-                    return false;
-                }
-            });
-        }
-
-        function deleteImg(nameImg){
-            Swal.fire({
-                title: "¿Seguro que quieres eliminar esta imagen?",
-                showCancelButton: true,
-                confirmButtonText: "Confirmar",
-                cancelButtonText: `Cancelar`
-            }).then((result) => {
-                if (result.isConfirmed){
-                    deleteImgDb(nameImg);
-                }
-            });
-        }
-
-        function deleteImgDb(nameImg){
-            $.ajax({
-                url: "{{route('delete-img')}}",
-                data: {_token : "{{csrf_token()}}", nameImg: nameImg.replaceAll('storage','/storage'), id: $("#id").val(), label: $("#label").val()},
-                method: 'POST',
-                success(response){
-                    var plantilla = $("#row-img-update").html();
-                    var plantillaRemplazar = `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1.4rem;left: 8.8rem;background: white;border-radius: 100%;top: 0.1rem;"></a></div>`;
-                    plantilla = plantilla.replaceAll(plantillaRemplazar, '');
-                    $("#row-img-update").html(plantilla);
-                    $("#row-img-update").show();
-                    setTimeout(() => {
-                        //window.location.reload();
-                    }, 3000);
-
-                    Swal.fire({
-                        toast: true,
-                        position: 'center',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        title: "Imágen eliminada exitosamente",
-                        timer: 3000
-                    });
-                }
-            });
-        }
     </script>
     @endisset
 
@@ -1305,9 +1052,309 @@
             validateVisibilityTypeStore2();
         });
 
-        document.getElementById('downloadReceiptButton').addEventListener('click', function() {
+        /*document.getElementById('downloadReceiptButton').addEventListener('click', function() {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
             mainModal.show();
+        });*/
+
+        $("#store").click((e) => {
+            validateDataStore();
+        });
+
+        $("#update").click((e) => {
+            validateDataUpdate();
+        });
+
+        function validateDataStore(){
+            var data = $("#form").serialize().split('&');
+            var boolean = true;
+            var incorrectRif = false;
+            data.forEach((key) => {
+                let value = key.split('=')[1];
+                let field = key.split('=')[0];
+                if(field.includes('link')) return false;
+                if(field.includes('product_stores_id')) return false;
+                if(field.includes('capacidad')) return false;
+                if(field.includes('dimensiones')) return false;
+                if(field.includes('tipo')) return false;
+                if(field.includes('RIF') && value.length < 8){
+                    incorrectRif = true;
+                }
+                if(value == null || value == ''){
+                    boolean = false;
+                }
+            });
+
+            if(incorrectRif){
+                Swal.fire({
+                    title: "Error: El RIF debe tener minimo 8 carácteres",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false;
+            }
+
+            if(!boolean){
+                Swal.fire({
+                    title: "Error: Valores inválidos o campos incompletos.",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false;
+            } 
+            
+            showAlertTime();
+            storeData();
+        }
+
+        function validateDataUpdate(){
+            var data = $("#form-edit").serialize().split('&');
+            var incorrectRif = false;
+            var boolean = true;
+            data.forEach((key) => {
+                let value = key.split('=')[1];
+                let field = key.split('=')[0];
+
+                if(field.includes('RIF') && value.length < 8){
+                    incorrectRif = true;
+                }
+
+                if(field != 'password' && field != 'capacidad' && field != 'tipo' && field != 'dimensiones'){
+                    if(value == null || value == ''){
+                        boolean = false;
+                    }
+                }
+            });
+
+            if(incorrectRif){
+                Swal.fire({
+                    title: "Error: El RIF debe tener minimo 8 carácteres",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false;
+            }
+
+            if(!boolean){
+                Swal.fire({
+                    title: "Todos los campos son requeridos",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false;
+            } 
+            
+            showAlertTime();
+            updateData();
+        }
+
+        function showAlertTime(){
+            Swal.fire({
+                toast: true,
+                position: 'center',
+                title: "Cargando por favor espere...",
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+        }
+        
+        function hideAlertTime(){
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+
+            Swal.fire({
+                toast: true,
+                position: 'center',
+                icon: 'success',
+                showConfirmButton: false,
+                title: "Registro agregado exitosamente",
+                timer: 3000
+            });
+        }
+
+        function hideAlertTime2(){
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+
+            Swal.fire({
+                toast: true,
+                position: 'center',
+                icon: 'success',
+                showConfirmButton: false,
+                title: "Registro editado exitosamente!!",
+                timer: 3000
+            });
+        }
+
+        function storeData(){
+            $.ajax({
+                url: "{{route('table-store-imgs')}}",
+                data: $("#form").serialize(),
+                method: "POST",
+                success(response){
+                    var res = JSON.parse(response);
+                    $("#id_table").val(res.split('-')[1]);
+                    $("#table").val(res.split('-')[0]);
+                    if($("#table").val() == 'informations'){
+                        myDropzone48.processQueue();
+                    }else{
+                        myDropzone.processQueue();
+                    }
+                    setTimeout(() => {
+                        if(isset_images == false){
+                            hideAlertTime();
+                        }
+                    }, 3000);
+                },error: function(xhr) {
+                    if(xhr.status === 422) {
+                        console.log(xhr);
+                        var error = xhr.responseJSON.error;
+                        Swal.fire({
+                            title: error,
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Hubo un problema al procesar la solicitud",
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+
+        function updateData(){
+            $.ajax({
+                url: "{{route('update-store-imgs')}}",
+                data: $("#form-edit").serialize(),
+                method: "POST",
+                success(response){
+                    var res = JSON.parse(response);
+                    $("#id_table").val(res.split('-')[1]);
+                    $("#table").val(res.split('-')[0]);
+                    myDropzone2.processQueue();
+                    setTimeout(() => {
+                        if(isset_images == false){
+                            hideAlertTime2();
+                        }
+                    }, 3000);
+                },error(err){
+                    Swal.fire({
+                        toast: true,
+                        position: 'center',
+                        icon: 'error',
+                        showConfirmButton: false,
+                        title: "Ups ha ocurrido un error",
+                        timer: 3000
+                    });
+                    return false;
+                }
+            });
+        }
+
+        function deleteImg(nameImg){
+            Swal.fire({
+                title: "¿Seguro que quieres eliminar esta imagen?",
+                showCancelButton: true,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: `Cancelar`
+            }).then((result) => {
+                if (result.isConfirmed){
+                    deleteImgDb(nameImg);
+                }
+            });
+        }
+
+        function deleteImgDb(nameImg){
+            $.ajax({
+                url: "{{route('delete-img')}}",
+                data: {_token : "{{csrf_token()}}", nameImg: nameImg.replaceAll('storage','/storage'), id: $("#id").val(), label: $("#label").val()},
+                method: 'POST',
+                success(response){
+                    var plantilla = $("#row-img-update").html();
+                    var plantillaRemplazar = `<div class="col-12 col-md-4" style="position: relative;margin-top: 1rem;"><img src="{{asset('${nameImg}')}}" style="width: 9.5rem;height: 6.5rem;" alt=""><a style="cursor:pointer" onclick="deleteImg('${nameImg}');"><img src="{{asset('/storage/x.png')}}" alt="" style="position: absolute;width: 1.4rem;left: 8.8rem;background: white;border-radius: 100%;top: 0.1rem;"></a></div>`;
+                    plantilla = plantilla.replaceAll(plantillaRemplazar, '');
+                    $("#row-img-update").html(plantilla);
+                    $("#row-img-update").show();
+                    setTimeout(() => {
+                        //window.location.reload();
+                    }, 3000);
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'center',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        title: "Imágen eliminada exitosamente",
+                        timer: 3000
+                    });
+                }
+            });
+        }
+    </script>
+    @if($label == 'Informaciones')
+    <script>
+        let myDropzone48 = new Dropzone("#myDropzone48", { 
+            url: "{{route('imgs-store')}}",
+            headers: {
+                'X-CSRF-TOKEN' : "{{csrf_token()}}",
+            },
+            dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes o videos: ${$("#maxFiles").val()})`,
+            dictMaxFilesExceeded: "No puedes subir más archivos",
+            dictCancelUpload: "Cancelar subida",
+            dictInvalidFileType: "No puedes subir archivos de este tipo",
+            dictRemoveFile: "Remover archivo",
+            acceptedFiles: 'image/*,video/*', // Acepta tanto imágenes como videos
+            maxFilesize: 10,
+            dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 10 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
+            maxFiles: $("#maxFiles").val(),
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            parallelUploads: 5,
+            init: function(){
+                this.on("sending", function(file, xhr, formData){
+                    formData.append("id", `${$("#id_table").val()}`);
+                    formData.append("table", `${$("#table").val()}`);
+                });
+
+                this.on("addedfile",  function(file) {
+                    console.log("A file has been added");
+                });
+
+
+                this.on("success", function(file, response) {
+                    if(file.status != 'success'){
+                        return false;
+                    }
+                    if(this.getUploadingFiles().length === 0){
+                        isset_images = true;
+                        hideAlertTime2();
+                    }
+                });
+            }
         });
     </script>
+    @endif
 @endsection
