@@ -2663,6 +2663,9 @@ class MainController extends Controller
         if($user->store != null){
             $user->store = $user->store->id;
         }
+        
+        $user->address = $user->address ? Crypt::decrypt($user->address) : null;
+        $user->phone = $user->phone ? Crypt::decrypt($user->phone) : null;
 
         return response()->json($user);
     }
