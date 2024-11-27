@@ -2275,8 +2275,6 @@ class MainController extends Controller
 
                 $storesSendSignalAux[] = $store;
 
-                $type = $store->typeStore->description;
-
                 // Enviar notificación via Firebase si el token es válido
                 $token = $store->user->token;
                 if (strlen($token) > 10) {
@@ -2303,6 +2301,16 @@ class MainController extends Controller
 
                 event(new NewMessage2([], $store->user->id));
             }
+        }
+
+        $type = '';
+
+        if($request->type == env('TIPO_TALLER_ID')){
+            $type = 'Taller';
+        }else if($request->type == env('TIPO_GRUA_ID')){
+            $type = 'Grua';
+        }else{
+            $type = 'Cauchera';
         }
 
         return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId, 'typeStore' => $type], 200);
