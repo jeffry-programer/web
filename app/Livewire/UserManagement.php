@@ -526,6 +526,7 @@ class UserManagement extends Component
         })->get();
         if (!$users->isEmpty()) {
             foreach ($users as $user) {
+                $user->email = Crypt::decrypt($user->email);
                 $user->notify(new NotifyAdmin($user, $store, $type));
             }
         }

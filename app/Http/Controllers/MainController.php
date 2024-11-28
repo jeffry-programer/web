@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewMessage;
 use App\Events\NewMessage2;
+use App\Mail\StoreRegisteredNotification;
 use App\Mail\VerificationEmail;
 use App\Models\AditionalPicturesProduct;
 use App\Models\Box;
@@ -39,6 +40,7 @@ use App\Models\SubCategory;
 use App\Models\TypeProduct;
 use App\Models\TypePublicity;
 use App\Models\User;
+use App\Notifications\NotifyAdmin;
 use App\Notifications\RecoveryAccount;
 use App\Notifications\ResetPasswordApi;
 use App\Notifications\VerifiedEmail;
@@ -1508,20 +1510,23 @@ class MainController extends Controller
             ->get();
 
         foreach ($stores as $store) {
-            $productStore = $products->firstWhere('stores_id', $store->id);
+            $productStore = $products->first(function ($item) use ($store) {
+                return $item->stores_id == $store->id;
+            });
 
-            if ($productStore) {
+            if ($productStore && $productStore->product) {
                 $searchExists = SearchUser::where('products_id', $productStore->products_id)
                     ->where('stores_id', $store->id)
                     ->exists();
 
                 if (!$searchExists) {
-                    SearchUser::create([
-                        'users_id' => $userId,
-                        'stores_id' => $store->id,
-                        'products_id' => $productStore->products_id,
-                        'created_at' => now(),
-                    ]);
+                    $search_user = new SearchUser();
+                    $search_user->users_id = $userId;
+                    $search_user->stores_id = $store->id;
+                    $search_user->products_id = $productStore->products_id;
+                    $search_user->created_at = now();
+
+                    $search_user->save();
                 }
             }
         }
@@ -1927,9 +1932,6 @@ class MainController extends Controller
                 ->join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
-                ->when($userCityId, function ($query) use ($userCityId) {
-                    return $query->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId]);
-                })
                 ->limit(9)
                 ->get();
         }
@@ -1955,7 +1957,7 @@ class MainController extends Controller
                 }
             }
 
-            foreach ($stores3 as $product) {
+            foreach ($stores3->reverse() as $product) {
                 if ($product->product) {
                     $product_id = $product->product->id;
                     if (!in_array($product_id, $array_products)) {
@@ -2009,7 +2011,7 @@ class MainController extends Controller
             $query->where('status', true)->where('date_init', '<=', Carbon::now())->where('date_end', '>=', Carbon::now());
         })->with('municipality')->paginate(10);
 
-        foreach($stores as $store){
+        foreach ($stores as $store) {
             $store->address = Crypt::decrypt($store->address);
         }
 
@@ -2068,6 +2070,16 @@ class MainController extends Controller
         }
 
         $store->save();
+
+        // Notificar a los administradores
+        $administrators = User::whereHas('profile', function ($query) {
+            $query->where('description', 'Administrador');
+        })->get();
+
+        foreach ($administrators as $admin) {
+            $admin->email = Crypt::decrypt($admin->email);
+            Mail::to($admin->email)->send(new StoreRegisteredNotification($store, $admin));
+        }
 
         //Registro del plan contratado
         $type_plan = Plan::where('description', 'Basico')->first();
@@ -2141,6 +2153,17 @@ class MainController extends Controller
             $publicity->image = $url;
             $publicity->save();
 
+            $users = User::whereHas('profile', function ($query) {
+                $query->where('description', 'Administrador');
+            })->get();
+
+            $type = 'publicidad';
+
+            foreach ($users as $user) {
+                $user->email = Crypt::decrypt($user->email);
+                $user->notify(new NotifyAdmin($user, $store, $type));
+            }
+
             return response()->json(['success' => 'Publicity created successfully'], 200);
         } else {
             return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
@@ -2165,6 +2188,17 @@ class MainController extends Controller
         $promotion->description = $request->description;
         $promotion->created_at = Carbon::now();
         $promotion->save();
+
+        $users = User::whereHas('profile', function ($query) {
+            $query->where('description', 'Administrador');
+        })->get();
+
+        $type = 'promoción';
+
+        foreach ($users as $user) {
+            $user->email = Crypt::decrypt($user->email);
+            $user->notify(new NotifyAdmin($user, $store, $type));
+        }
 
         return response()->json(['success' => 'Promotion created successfully'], 200);
     }
@@ -2310,11 +2344,11 @@ class MainController extends Controller
 
         $type = '';
 
-        if($request->type == env('TIPO_TALLER_ID')){
+        if ($request->type == env('TIPO_TALLER_ID')) {
             $type = 'Taller';
-        }else if($request->type == env('TIPO_GRUA_ID')){
+        } else if ($request->type == env('TIPO_GRUA_ID')) {
             $type = 'Grua';
-        }else{
+        } else {
             $type = 'Cauchera';
         }
 
@@ -2610,7 +2644,7 @@ class MainController extends Controller
 
         $email = $request->email;
 
-        if($request->type == 'store'){
+        if ($request->type == 'store') {
             $store = Store::all()->first(function ($store) use ($email) {
                 try {
                     return Crypt::decrypt($store->email) === $email;
@@ -2622,7 +2656,7 @@ class MainController extends Controller
             if ($store) {
                 return response()->json(['error' => 'Este correo ya existe'], 422);
             }
-        }else{
+        } else {
             $user = User::all()->first(function ($user) use ($email) {
                 try {
                     return Crypt::decrypt($user->email) === $email;
@@ -2642,7 +2676,8 @@ class MainController extends Controller
         return response()->json(['message' => 'Correo de verificación enviado con éxito.'], 200);
     }
 
-    public function recoveryAccount(Request $request){
+    public function recoveryAccount(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -2665,17 +2700,18 @@ class MainController extends Controller
 
         $user->notify(new RecoveryAccount($request->token));
 
-        if($user->store != null){
+        if ($user->store != null) {
             $user->store = $user->store->id;
         }
-        
+
         $user->address = $user->address ? Crypt::decrypt($user->address) : null;
         $user->phone = $user->phone ? Crypt::decrypt($user->phone) : null;
 
         return response()->json($user);
     }
 
-    public function replaceToken(Request $request){
+    public function replaceToken(Request $request)
+    {
         $user = User::find($request->userId);
         if (!$user) {
             return response()->json(['error' => 'Usuario no registrado'], 422);
