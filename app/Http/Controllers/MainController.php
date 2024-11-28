@@ -2081,7 +2081,7 @@ class MainController extends Controller
         $plan->save();
 
         // Eliminar todas las conversaciones y sus mensajes asociados para el usuario dado
-        Conversation::where('users_id', $request->users_id)->delete();
+        //Conversation::where('users_id', $request->users_id)->delete();
 
         //Cambiar perfil de usuario
         $user = User::find($request->users_id);
@@ -2092,12 +2092,17 @@ class MainController extends Controller
         } else {
             $user->profiles_id = 5;
         }
+
         $user->save();
 
         $store->email = $request->email;
         $store->address = $request->address;
         $store->RIF = $request->rif;
         $store->phone = $request->phone;
+
+        $user->email = $user->email ? Crypt::decrypt($user->email) : null;
+        $user->address = $user->address ? Crypt::decrypt($user->address) : null;
+        $user->phone = $user->phone ? Crypt::decrypt($user->phone) : null;
 
         //Devolvemos la tienda
         return response()->json(['store' => $store, 'user' => $user], 200);
