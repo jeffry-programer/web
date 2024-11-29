@@ -1096,19 +1096,19 @@
             validateVisibilityTypeStore2();
         });
 
-        document.getElementById('downloadReceiptButton').addEventListener('click', function() {
+        $('#downloadReceiptButton').click(() => {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
             mainModal.show();
         });
 
-        document.getElementById('decline-renovation').addEventListener('click', function() {
+        $('#decline-renovation').click(() => {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal2'));
             $("#aprove-renovation2").hide();
             $("#decline-renovation2").show();
             mainModal.show();
         });
 
-        document.getElementById('aprove-renovation').addEventListener('click', function() {
+        $('#aprove-renovation').click(() => {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal2'));
             $("#aprove-renovation2").show();
             $("#decline-renovation2").hide();
