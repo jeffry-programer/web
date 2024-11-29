@@ -111,6 +111,8 @@ Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->gro
     Route::get('/admin/product_store_delete_masive', [MainController::class, 'productStoreDeleteMasive']);
     Route::get('/admin/table-management/{label}', UserManagement::class)->name('admin/table-management/{label}');
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');
+    Route::post('/aprove-renovation', [UserManagement::class, 'aproveRenovation'])->name('aprove-renovation');
+    Route::post('/decline-renovation', [UserManagement::class, 'declineRenovation'])->name('decline-renovation');
 });
 
 Route::get('/download-receipt/{id}', function ($id) {

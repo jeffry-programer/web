@@ -506,7 +506,7 @@
                                             <label for="">{{__($field)}}</label>
                                             <div class="row">
                                                 <div class="col-md-4 d-flex justify-content-center">
-                                                    <button type="button" class="btn btn-danger">Rechazar</button>
+                                                    <button type="button" class="btn btn-danger" id="decline-renovation">Rechazar</button>
                                                 </div>
                                                 <div class="col-md-4 d-flex justify-content-center">
                                                     <button type="button" class="btn btn-primary" id="downloadReceiptButton">
@@ -522,13 +522,27 @@
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body text-center" style="height: 40rem"> 
-                                                                <img id="receiptImage" style="width: 100%;height: 100%;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVZycd2TM-L-PriRh04u6vMBLV01DscrJ2Zw&s" alt="Comprobante de pago" class="img-fluid">
+                                                                <img id="receiptImage" style="width: 100%;height: 100%;" src="" alt="Comprobante de pago" class="img-fluid">
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 d-flex justify-content-center">
-                                                    <button type="button" class="btn btn-success">Aprobar</button>
+                                                    <button type="button" class="btn btn-success" id="aprove-renovation">Aprobar</button>
+                                                </div>
+                                                <!-- Modal para mostrar el comprobante -->
+                                                <div class="modal fade" id="mainModal2" tabindex="-1" aria-labelledby="mainModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="mainModalLabel"></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-center" style="height: 40rem"> 
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         @else
@@ -773,6 +787,10 @@
             fields.forEach((key, index) => {
                 if(key.includes('password')) return false;
                 if(key.includes('image')){
+                    console.log($("#label").val());
+                    if($("#label").val() == 'Renovaciones'){
+                        $("#receiptImage").attr('src', array[index]);
+                    }
                     arrayImagenes.push(array[index]);
                 }else if(key.includes('date')){
                     $(`#${key}`).val(array[index].split(' ')[0]);
@@ -1052,10 +1070,20 @@
             validateVisibilityTypeStore2();
         });
 
-        /*document.getElementById('downloadReceiptButton').addEventListener('click', function() {
+        document.getElementById('downloadReceiptButton').addEventListener('click', function() {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
             mainModal.show();
-        });*/
+        });
+
+        document.getElementById('decline-renovation').addEventListener('click', function() {
+            const mainModal = new bootstrap.Modal(document.getElementById('mainModal2'));
+            mainModal.show();
+        });
+
+        document.getElementById('aprove-renovation').addEventListener('click', function() {
+            const mainModal = new bootstrap.Modal(document.getElementById('mainModal2'));
+            mainModal.show();
+        });
 
         $("#store").click((e) => {
             validateDataStore();
@@ -1109,6 +1137,100 @@
             
             showAlertTime();
             storeData();
+        }
+        
+        $("#aprove-renovation").click(() => {
+            showAlertTime();
+            aproveRenovation();
+        });
+
+        $("#decline-renovation").click(() => {
+            showAlertTime();
+            declineRenovation();
+        });
+
+        function aproveRenovation(){
+            $.ajax({
+                url: "{{route('aprove-renovation')}}",
+                data: {
+                    'id': $("#id").val(),
+                    'comentary': $("#comentary").val()
+                },
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                method: "POST",
+                success(response){
+                    var res = JSON.parse(response);
+                    hideAlertTime3('La renovacion ha sido aprovada exitosamente');
+                },error: function(xhr) {
+                    if(xhr.status === 422) {
+                        console.log(xhr);
+                        var error = xhr.responseJSON.error;
+                        Swal.fire({
+                            title: error,
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Hubo un problema al procesar la solicitud",
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
+        }
+
+        function declineRenovation(){
+            $.ajax({
+                url: "{{route('decline-renovation')}}",
+                data: {
+                    'id': $("#id").val(),
+                    'comentary': $("#comentary").val()
+                },
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                method: "POST",
+                success(response){
+                    var res = JSON.parse(response);
+                    hideAlertTime3('La renovacion ha sido rechazada exitosamente');
+                },error: function(xhr) {
+                    if(xhr.status === 422) {
+                        console.log(xhr);
+                        var error = xhr.responseJSON.error;
+                        Swal.fire({
+                            title: error,
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Hubo un problema al procesar la solicitud",
+                            icon: "error",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            });
         }
 
         function validateDataUpdate(){
@@ -1194,6 +1316,21 @@
                 icon: 'success',
                 showConfirmButton: false,
                 title: "Registro editado exitosamente!!",
+                timer: 3000
+            });
+        }
+
+        function hideAlertTime3(text){
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+
+            Swal.fire({
+                toast: true,
+                position: 'center',
+                icon: 'success',
+                showConfirmButton: false,
+                title: text,
                 timer: 3000
             });
         }

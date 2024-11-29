@@ -10,4 +10,12 @@ class Renovation extends Model
     use HasFactory;
 
     protected $fillable = ['stores_id', 'plans_id' ,'image', 'comentary', 'status'];
+
+    public function plan(){
+        return $this->belongsTo(Plan::class, 'plans_id');
+    }
+
+    public function store(){
+        return $this->belongsTo(Store::class, 'stores_id');
+    }
 }

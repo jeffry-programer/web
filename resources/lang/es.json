@@ -434,5 +434,8 @@
     "session_active" : "Sesión Activa",
     "comentary" : "Concepto de Pago",
     "type" : "Tipo",
-    "resource" : "Recurso"
+    "resource" : "Recurso",
+    "rate" : "Tasa",
+    "status_renovation": "Estado renovación",
+    "comment_admin" : "Comentario administrador"
 }

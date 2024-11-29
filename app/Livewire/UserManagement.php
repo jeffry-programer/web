@@ -19,6 +19,7 @@ use App\Models\ProfileOperation;
 use App\Models\Promotion;
 use App\Models\Publicity;
 use App\Models\Publicy;
+use App\Models\Renovation;
 use App\Models\State;
 use App\Models\Store;
 use App\Models\SubCategory;
@@ -1237,5 +1238,86 @@ class UserManagement extends Component
 
         $request->nameImg = str_replace('/storage', 'public', $request->nameImg);
         Storage::delete($request->nameImg);
+    }
+
+    public function aproveRenovation(Request $request){
+        $renovation = Renovation::find($request->id);
+        PlanContracting::where('stores_id', $renovation->stores_id)->delete();
+
+        $plan = new PlanContracting();
+        $plan->plans_id = $renovation->plans_id;
+        $plan->stores_id = $renovation->stores_id;
+        $plan->date_init = Carbon::now();
+        $plan->date_end = Carbon::now()->addDay(intval($renovation->plan->days));
+        $plan->status = true;
+        $plan->created_at = Carbon::now();
+        $plan->save();
+
+        $store = Store::find($renovation->stores_id);
+        $store->status = true;
+        $store->save();
+
+        $token = $store->user->token;
+        if (strlen($token) > 10) {
+            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+
+            // Obtener el servicio de mensajería
+            $messaging = $firebase->createMessaging();
+
+            // Crear el mensaje
+            $message = CloudMessage::fromArray([
+                'token' => $token,  // El token del dispositivo que recibirá la notificación
+                'notification' => [
+                    'title' => 'Tu renovacion ha sido aprovada',
+                    'body' => $request->comentary,
+                ],
+                'data' => [ // Datos adicionales para manejar la redirección
+                    'click_action' => 'OPEN_URL',
+                    'url' => 'home',  // Ruta donde quieres redirigir al usuario
+                ],
+                'android' => [  // Mover el bloque de Android fuera de 'data'
+                    'priority' => 'high',
+                ],
+              ]);
+
+            // Enviar el mensaje
+            $messaging->send($message);
+        }
+
+        return json_encode('ok');
+    }
+
+    public function declineRenovation(Request $request){
+        $renovation = Renovation::find($request->id);
+
+        $store = Store::find($renovation->stores_id);
+        $token = $store->user->token;
+        if (strlen($token) > 10) {
+            $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+
+            // Obtener el servicio de mensajería
+            $messaging = $firebase->createMessaging();
+
+            // Crear el mensaje
+            $message = CloudMessage::fromArray([
+                'token' => $token,  // El token del dispositivo que recibirá la notificación
+                'notification' => [
+                    'title' => 'Tu renovacion ha sido rechazada',
+                    'body' => $request->comentary,
+                ],
+                'data' => [ // Datos adicionales para manejar la redirección
+                    'click_action' => 'OPEN_URL',
+                    'url' => 'home',  // Ruta donde quieres redirigir al usuario
+                ],
+                'android' => [  // Mover el bloque de Android fuera de 'data'
+                    'priority' => 'high',
+                ],
+              ]);
+
+            // Enviar el mensaje
+            $messaging->send($message);
+        }
+
+        return json_encode('ok');
     }
 }
