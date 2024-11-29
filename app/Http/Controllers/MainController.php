@@ -64,6 +64,10 @@ use Illuminate\Support\Facades\Mail;
 
 class MainController extends Controller
 {
+    /*public function test(){
+        $this->getExchangeRate();
+    }*/
+
     public function searchStores()
     {
         return view('search-stores');
@@ -1103,12 +1107,12 @@ class MainController extends Controller
         // Si no hay registro o el último cambio es más viejo que 24 horas
         if (!$exchangeRate || $exchangeRate->updated_at < now()->subDay()) {
             // Obtener la tasa de cambio de la API
-            $response = file_get_contents('https://api.exchangerate-api.com/v4/latest/USD');
+            $response = file_get_contents('https://pydolarve.org/api/v1/dollar?page=bcv');
             $data = json_decode($response, true);
 
             // Almacenar la nueva tasa de cambio
             $exchangeRate = new ExchangeRate();
-            $exchangeRate->rate = $data['rates']['VES'];
+            $exchangeRate->rate = $data['monitors']['usd']['price'];
             $exchangeRate->updated_at = now();
             $exchangeRate->save();
         }

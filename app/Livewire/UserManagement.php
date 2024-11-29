@@ -387,6 +387,8 @@ class UserManagement extends Component
         $data['RIF'] = Crypt::encrypt($data['RIF']);
         $data['phone'] = Crypt::encrypt($data['phone']);
 
+        $data['services'] = isset($data['services']) && $data['services'] === 'on';
+
         // Crear la tienda
         $store = Store::create($data);
 
@@ -1078,6 +1080,7 @@ class UserManagement extends Component
         $users = $store->users;
         if (!$users->isEmpty()) {
             foreach ($users as $user) {
+                $user->email = Crypt::decrypt($user->email);
                 $user->notify(new NotifyUsers($user, $store, $link));
             }
         }

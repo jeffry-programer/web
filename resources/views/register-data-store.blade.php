@@ -26,6 +26,57 @@
     .cursor-pointer{
         cursor: pointer;
     }
+
+    .custom-checkbox {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        --tw-text-opacity: 1;
+        font-weight: 500;
+        font-size: .875rem;
+        line-height: 1.25rem;
+    }
+
+    /* Oculta el checkbox original */
+    .custom-checkbox input[type="checkbox"] {
+        display: none;
+    }
+
+    /* Cuadro personalizado del checkbox */
+    .custom-checkbox .checkbox-box {
+        width: 18px;
+        height: 18px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin-right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    /* Estilo cuando está seleccionado */
+    .custom-checkbox input[type="checkbox"]:checked+.checkbox-box {
+        background-color: cornflowerblue;
+        box-shadow: 0px 0px 5px cornflowerblue;
+    }
+
+    /* Ícono de checkmark */
+    .custom-checkbox .checkbox-box::after {
+        content: "";
+        display: none;
+        width: 6px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Muestra el checkmark cuando está seleccionado */
+    .custom-checkbox input[type="checkbox"]:checked+.checkbox-box::after {
+        display: block;
+    }
 </style>
 
 @php
@@ -131,6 +182,19 @@
                                 <div class="dropzone" id="myDropzone24">
                                 </div>
                             </div>
+                            <div class="col-md-6 form-group" id="services-segment" style="display: none">
+                                <div class="mt-4" style="margin-top: 10vw !important;">
+                                    <x-label for="terms">
+                                        <div class="flex items-center">
+                                            <label class="custom-checkbox">
+                                                <input type="checkbox" name="services" id="services"/>
+                                                <span class="checkbox-box"></span>
+                                                <a target="_blank" style="color: cornflowerblue !important;font-size: 1.1rem;">¿La tienda cuenta con un taller de servicios?</a>
+                                            </label>
+                                        </div>
+                                    </x-label>
+                                </div>                       
+                            </div>
                         </div>
         
         
@@ -147,6 +211,8 @@
         </div>
     </div>
 </x-app-layout>
+
+<input type="hidden" value="{{ env('TIENDA_REPUESTOS') }}" id="tienda-repuestos">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -315,6 +381,17 @@ function hideAlertTime(){
             }
         });
 
+        $('select[name="categories_stores_id"]').change(function() {
+            var categoriesId = $(this).val();
+            console.log(categoriesId);
+            
+            if(categoriesId == $('#tienda-repuestos').val()) {
+                $("#services-segment").fadeIn('slow');
+            } else {
+                $("#services-segment").fadeOut('slow');
+            }
+        });
+
         $('#municipalities_id').change(function() {
             var municipalityId = $(this).val();
             if(municipalityId) {
@@ -324,5 +401,4 @@ function hideAlertTime(){
             }
         });
     });
-
 </script>
