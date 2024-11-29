@@ -9,7 +9,7 @@ class Renovation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['stores_id', 'plans_id' ,'image', 'comentary', 'status'];
+    protected $fillable = ['stores_id', 'plans_id' ,'image', 'comentary', 'status', 'comment_admin', 'status_renovation'];
 
     public function plan(){
         return $this->belongsTo(Plan::class, 'plans_id');

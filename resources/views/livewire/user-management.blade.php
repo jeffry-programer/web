@@ -502,8 +502,14 @@
                                             <option value="No vigente">No vigente</option>
                                         </select>
                                     @elseif((str_contains($field, 'status')))
-                                        @if($label == 'Renovaciones')
+                                        @if($label == 'Renovaciones' && $field == 'status')
                                             <label for="">{{__($field)}}</label>
+                                            <div class="row">
+                                                <div class="col-md-12 d-flex justify-content-start">
+                                                    <p class="text-success d-none" id="text-status-renovation-approve"><b>Aprobado</b></p>
+                                                    <p class="text-danger d-none" id="text-status-renovation-decline"><b>Rechazado</b></p>
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-md-4 d-flex justify-content-center">
                                                     <button type="button" class="btn btn-danger" id="decline-renovation">Rechazar</button>
@@ -538,14 +544,22 @@
                                                                 <h5 class="modal-title" id="mainModalLabel"></h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
-                                                            <div class="modal-body text-center" style="height: 40rem"> 
+                                                            <div class="modal-body text-center" style="height: 27rem"> 
+                                                                <h5 style="margin-top: 4rem;font-size:1.5rem;">Comentario Administrador</h5>
+                                                                <div style="display: flex;justify-content: center;align-items: center;">
+                                                                    <input type="text" id="comment" class="w-50 form-control" style="margin-top: 3rem;" placeholder="Por favor ingrese un comentario">
+                                                                </div>
 
+                                                                <div style="margin-top: 2rem;">
+                                                                    <button type="button" class="btn btn-success mt-3 w-25" id="aprove-renovation2">Aprobar</button>
+                                                                    <button type="button" class="btn btn-danger mt-3 w-25" id="decline-renovation2">Rechazar</button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @else
+                                        @elseif($label != 'Renovaciones')
                                             <label for="">{{__($field)}}</label>
                                             <select name="{{$field}}" id="{{$field}}" class="form-select">
                                                 <option value="0">Inactivo</option>
@@ -584,7 +598,7 @@
                                                 <label for="">{{__($field)}}</label>
                                                 <input type="text" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                             </div>
-                                        @else
+                                        @elseif($label != 'Renovaciones' && $field != 'comment_admin')
                                             <label for="">{{__($field)}}</label>
                                             <input type="text" name="{{$field}}" id="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                         @endif
@@ -795,6 +809,18 @@
                 }else if(key.includes('date')){
                     $(`#${key}`).val(array[index].split(' ')[0]);
                 }else{
+                    if(key == 'status_renovation' && (array[index] == 'approve' || array[index] == 'decline')){
+                        $("#aprove-renovation").hide();
+                        $("#decline-renovation").hide();
+
+                        if(array[index] == 'approve'){
+                            $("#text-status-renovation-approve").removeClass('d-none');
+                            $("#text-status-renovation-decline").addClass('d-none');
+                        }else{
+                            $("#text-status-renovation-decline").removeClass('d-none');
+                            $("#text-status-renovation-approve").addClass('d-none');
+                        }
+                    }
                     $(`#${key}`).val(array[index]);
                 }
             });
@@ -1077,11 +1103,15 @@
 
         document.getElementById('decline-renovation').addEventListener('click', function() {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal2'));
+            $("#aprove-renovation2").hide();
+            $("#decline-renovation2").show();
             mainModal.show();
         });
 
         document.getElementById('aprove-renovation').addEventListener('click', function() {
             const mainModal = new bootstrap.Modal(document.getElementById('mainModal2'));
+            $("#aprove-renovation2").show();
+            $("#decline-renovation2").hide();
             mainModal.show();
         });
 
@@ -1139,22 +1169,34 @@
             storeData();
         }
         
-        $("#aprove-renovation").click(() => {
-            showAlertTime();
+        $("#aprove-renovation2").click(() => {
             aproveRenovation();
         });
 
-        $("#decline-renovation").click(() => {
-            showAlertTime();
+        $("#decline-renovation2").click(() => {
             declineRenovation();
         });
 
         function aproveRenovation(){
+            if($("#comment").val() == ''){
+                Swal.fire({
+                    title: "Debes ingresar un comentario",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+
+                return false
+            }   
+
+            showAlertTime();
+
             $.ajax({
                 url: "{{route('aprove-renovation')}}",
                 data: {
                     'id': $("#id").val(),
-                    'comentary': $("#comentary").val()
+                    'comment': $("#comment").val()
                 },
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}",
@@ -1162,7 +1204,7 @@
                 method: "POST",
                 success(response){
                     var res = JSON.parse(response);
-                    hideAlertTime3('La renovacion ha sido aprovada exitosamente');
+                    hideAlertTime3('La renovacion ha sido aprobada exitosamente');
                 },error: function(xhr) {
                     if(xhr.status === 422) {
                         console.log(xhr);
@@ -1192,11 +1234,25 @@
         }
 
         function declineRenovation(){
+            if($("#comment").val() == ''){
+                Swal.fire({
+                    title: "Debes ingresar un comentario",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+
+                return false
+            }   
+
+            showAlertTime();
+
             $.ajax({
                 url: "{{route('decline-renovation')}}",
                 data: {
                     'id': $("#id").val(),
-                    'comentary': $("#comentary").val()
+                    'comment': $("#comment").val()
                 },
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}",
@@ -1265,6 +1321,13 @@
 
             if(!boolean){
                 Swal.fire({
+                    title: "Todos los campos son requeridos",
+                    icon: "error",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+                return false; Swal.fire({
                     title: "Todos los campos son requeridos",
                     icon: "error",
                     toast: true,

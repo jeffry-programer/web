@@ -1284,6 +1284,11 @@ class UserManagement extends Component
             $messaging->send($message);
         }
 
+        $renovation->comment_admin = $request->comment;
+        $renovation->status_renovation = 'approve';
+
+        $renovation->save();
+
         return json_encode('ok');
     }
 
@@ -1317,6 +1322,11 @@ class UserManagement extends Component
             // Enviar el mensaje
             $messaging->send($message);
         }
+
+        $renovation->comment_admin = $request->comment;
+        $renovation->status_renovation = 'decline';
+
+        $renovation->save();
 
         return json_encode('ok');
     }
