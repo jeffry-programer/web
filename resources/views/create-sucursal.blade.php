@@ -180,6 +180,10 @@
                                 <input class="form-control" placeholder="Por favor ingrese la dirección exacta de tu sucursal" class="block mt-1 w-full" type="text" name="address" required/>
                             </div>
                             <div class="col-md-6 form-group">
+                                <label class="py-3" for="name">{{ __('RIF') }}</label>
+                                <input class="form-control" class="block mt-1 w-full" value="{{ $store->RIF }}" type="text" disabled/>
+                            </div>
+                            <div class="col-md-6 form-group">
                                 <label class="py-3" for="name">{{ __('Telefono') }}</label>
                                 <input class="form-control" placeholder="Por favor ingrese el telefono de contacto " class="block mt-1 w-full" type="text" name="phone" required/>
                             </div>

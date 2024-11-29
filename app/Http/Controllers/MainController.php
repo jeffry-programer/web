@@ -3103,12 +3103,16 @@ class MainController extends Controller
         $municipalities = Municipality::all();
         $states = State::all();
         $categories_stores = CategoryStore::where('type_stores_id', Auth::user()->store->type_stores_id)->get();
+        $store = Auth::user()->store;
         $array_data = [
             'type_stores' => $type_stores,
             'municipalities' => $municipalities,
             'states' => $states,
-            'categories_stores' => $categories_stores
+            'categories_stores' => $categories_stores,
+            'store' => $store
         ];
+
+        $store->RIF = Crypt::decrypt($store->RIF);
 
         return view('create-sucursal', $array_data);
     }
