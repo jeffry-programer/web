@@ -654,7 +654,7 @@ class MainController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -710,7 +710,7 @@ class MainController extends Controller
         }
 
         // Buscar usuario por correo
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -752,7 +752,7 @@ class MainController extends Controller
 
     public function sendVerifiedEmailApi(Request $request)
     {
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -793,7 +793,8 @@ class MainController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
+        
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -803,7 +804,7 @@ class MainController extends Controller
         });
 
         if (!$user) {
-            return response()->json(['error' => 'Usuario no registrado'], 422);
+            return response()->json(['error' => 'Usuario no registrado', 'email' => $email], 422);
         }
 
         if (!Hash::check($request->password, $user->password)) {
@@ -852,7 +853,7 @@ class MainController extends Controller
 
     public function verifiedApi(Request $request)
     {
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -883,7 +884,7 @@ class MainController extends Controller
 
     public function subscriptionsApi(Request $request)
     {
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -1220,6 +1221,7 @@ class MainController extends Controller
             ->where('status', true) // Solo donde status es true
             ->whereDate('date_init', '<=', $currentDate) // date_init menor o igual a la fecha actual
             ->whereDate('date_end', '>=', $currentDate) // date_end mayor o igual a la fecha actual
+            ->inRandomOrder()
             ->get();
 
         return response()->json(['publicities' => $publicities], 200);
@@ -1239,7 +1241,7 @@ class MainController extends Controller
 
         $user = User::find($request->id);
         $user->name = $request->name;
-        $user->email = Crypt::encrypt($request->email);
+        $user->email = Crypt::encrypt(strtolower($request->email));
         $user->address = Crypt::encrypt($request->address);
         $user->phone = Crypt::encrypt($request->phone);
         $user->save();
@@ -1256,7 +1258,7 @@ class MainController extends Controller
         $store = Store::find($request->id);
         $store->name = $request->name;
         $store->description = $request->description;
-        $store->email = Crypt::encrypt($request->email);
+        $store->email = Crypt::encrypt(strtolower($request->email));
         $store->address = Crypt::encrypt($request->address);
         $store->phone = Crypt::encrypt($request->phone);
         $store->municipalities_id = $request->municipalities_id;
@@ -2617,7 +2619,7 @@ class MainController extends Controller
             'email' => 'required|email',
         ]);
 
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
 
         $user = User::all()->first(function ($user) use ($email) {
             try {
@@ -2631,7 +2633,7 @@ class MainController extends Controller
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
 
-        $user->email = $request->email;
+        $user->email = $email;
 
         $user->notify(new ResetPasswordApi($request->token));
 
@@ -2646,7 +2648,7 @@ class MainController extends Controller
             'type' => 'required|string'
         ]);
 
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
 
         if ($request->type == 'store') {
             $store = Store::all()->first(function ($store) use ($email) {
@@ -2675,7 +2677,7 @@ class MainController extends Controller
         }
 
         // Enviar el correo
-        Mail::to($request->email)->send(new VerificationEmail($request->token));
+        Mail::to($email)->send(new VerificationEmail($request->token));
 
         return response()->json(['message' => 'Correo de verificación enviado con éxito.'], 200);
     }
@@ -2686,7 +2688,7 @@ class MainController extends Controller
             'email' => 'required|email',
         ]);
 
-        $email = $request->email;
+        $email = strtolower($request->email); // Convertir a minúsculas
 
         $user = User::all()->first(function ($user) use ($email) {
             try {
@@ -2700,7 +2702,7 @@ class MainController extends Controller
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
 
-        $user->email = $request->email;
+        $user->email = $email;
 
         $user->notify(new RecoveryAccount($request->token));
 
