@@ -440,5 +440,6 @@
     "comment_admin" : "Comentario administrador",
     "approve" : "Aprobar",
     "decline" : "Rechazar",
-    "pending" : "Pendiente"
+    "pending" : "Pendiente",
+    "default" : "Imagen por defecto"
 }

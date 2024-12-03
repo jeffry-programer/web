@@ -381,6 +381,9 @@
                                 @elseif((str_contains($field, 'resource')))
                                     <label>{{__($field)}}</label>
                                     <div class="dropzone" id="myDropzone48"></div>
+                                @elseif((str_contains($field, 'default')))
+                                    <label>{{__($field)}}</label>
+                                    <div class="dropzone" id="myDropzone49"></div>
                                 @else
                                     @if($field == 'dimensiones' || $field == 'capacidad')
                                         <div class="display-grua">
@@ -1409,6 +1412,7 @@
                     $("#table").val(res.split('-')[0]);
                     if($("#table").val() == 'informations'){
                         myDropzone48.processQueue();
+                        myDropzone49.processQueue();
                     }else{
                         myDropzone.processQueue();
                     }
@@ -1527,7 +1531,7 @@
             dictInvalidFileType: "No puedes subir archivos de este tipo",
             dictRemoveFile: "Remover archivo",
             acceptedFiles: 'image/*,video/*', // Acepta tanto imágenes como videos
-            maxFilesize: 12,
+            maxFilesize: 30, // Cambiado de 12 MB a 30 MB
             dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 12 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
             maxFiles: $("#maxFiles").val(),
             autoProcessQueue: false,
@@ -1537,6 +1541,48 @@
                 this.on("sending", function(file, xhr, formData){
                     formData.append("id", `${$("#id_table").val()}`);
                     formData.append("table", `${$("#table").val()}`);
+                    formData.append("type", '1');
+                });
+
+                this.on("addedfile",  function(file) {
+                    console.log("A file has been added");
+                });
+
+
+                this.on("success", function(file, response) {
+                    if(file.status != 'success'){
+                        return false;
+                    }
+                    if(this.getUploadingFiles().length === 0){
+                        isset_images = true;
+                        hideAlertTime2();
+                    }
+                });
+            }
+        });
+
+        let myDropzone49 = new Dropzone("#myDropzone49", { 
+            url: "{{route('imgs-store')}}",
+            headers: {
+                'X-CSRF-TOKEN' : "{{csrf_token()}}",
+            },
+            dictDefaultMessage: `Arrastre o haga click para agregar imágenes <br>(máximo de imágenes: ${$("#maxFiles").val()})`,
+            dictMaxFilesExceeded: "No puedes subir más archivos",
+            dictCancelUpload: "Cancelar subida",
+            dictInvalidFileType: "No puedes subir archivos de este tipo",
+            dictRemoveFile: "Remover archivo",
+            acceptedFiles: 'image/*,video/*', // Acepta tanto imágenes como videos
+            maxFilesize: 4,
+            dictFileTooBig: "El archivo es muy grande. Tamaño máximo permitido: 4 MB.", // Mensaje personalizado cuando el archivo excede el tamaño máximo permitido
+            maxFiles: $("#maxFiles").val(),
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            parallelUploads: 5,
+            init: function(){
+                this.on("sending", function(file, xhr, formData){
+                    formData.append("id", `${$("#id_table").val()}`);
+                    formData.append("table", `${$("#table").val()}`);
+                    formData.append("type", '2');
                 });
 
                 this.on("addedfile",  function(file) {

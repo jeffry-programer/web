@@ -45,6 +45,7 @@ Route::get('categories/{typeStore}/stores', [MainController::class, 'getCategori
 Route::get('states/{stateId}/municipalities', [MainController::class, 'getMunicipalityByState']); // Obtener ciudades por estado
 Route::get('municipalities/{cityId}/sectors', [MainController::class, 'getSectorsByMunicipality']); // Obtener sectores por ciudad
 Route::get('product-detail/{productId}_{idStore}_{idUser}', [MainController::class, 'getProductDetail']);
+Route::get('video-detail/{videoId}', [MainController::class, 'getVideoDetail']);
 Route::get('detail-product/{productId}', [MainController::class, 'getProductDetails']);
 Route::get('search-stores', [MainController::class, 'getStoreSearch']);
 Route::get('search-stores2', [MainController::class, 'getStoreSearch2']);

@@ -1386,6 +1386,19 @@ class MainController extends Controller
         return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
+    public function getVideoDetail($videoId){
+        $video_detail = Information::find($videoId);
+
+        // Obtener otros videos aleatoriamente, excluyendo el actual
+        $videos = Information::where('id', '!=', $videoId)->inRandomOrder()->get();
+        
+        // Devolver la respuesta en formato JSON
+        return response()->json([
+            'video_detail' => $video_detail,
+            'videos' => $videos,
+        ], 200);
+    }
+
     public function getProductDetails($id)
     {
         $product = Product::with('brand')->find($id);

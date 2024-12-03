@@ -193,7 +193,7 @@ class UserManagement extends Component
                 if (count(DB::table($name_table)->where('description', $request->description)->where('municipalities_id', $request->municipalities_id)->get()) > 0) {
                     $error = true;
                 }
-            } else if ($name_table != 'products' && $name_table != 'stores' && $name_table != 'publicities' && $name_table != 'promotions') {
+            } else if ($name_table != 'products' && $name_table != 'stores' && $name_table != 'publicities' && $name_table != 'promotions' && $name_table != 'informations') {
                 if (count(DB::table($name_table)->where('description', $request->description)->get()) > 0) {
                     $error = true;
                 }
@@ -295,7 +295,7 @@ class UserManagement extends Component
         $query = 'insert into ' . $name_table . ' (';
         $count = 0;
         foreach ($atributes as $field) {
-            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id') {
+            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id' && $field != 'default') {
                 if ($count == 0) {
                     $query .= $field;
                 } else {
@@ -307,7 +307,7 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach ($atributes as $field) {
-            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'  && $field != 'current_team_id') {
+            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'  && $field != 'current_team_id' && $field != 'default') {
                 if ($field == 'image' || $field == 'image2' || $field == 'resource') {
                     $data[$field] = '';
                 }
@@ -784,6 +784,9 @@ class UserManagement extends Component
         } else if ($name_table == 'stores') {
             $pathDirectory = "public/images-stores/$request->id";
             Storage::deleteDirectory($pathDirectory);
+        } else if ($name_table == 'informations') {
+            $pathDirectory = "public/files-informations/$request->id";
+            Storage::deleteDirectory($pathDirectory);
         }
         session()->flash('message', 'Registro eliminado exitosamente!!');
         if ($name_table == 'products') {
@@ -1090,7 +1093,7 @@ class UserManagement extends Component
     public function saveImgs(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:jpeg,png,jpg,gif,mp4,mov,avi,mkv|max:10240', // Hasta 10 MB
+            'file' => 'required|mimes:jpeg,png,jpg,gif,mp4,mov,avi,mkv|max:30720', // Hasta 10 MB
         ]);
 
         if ($request->table == 'products') {
@@ -1141,7 +1144,11 @@ class UserManagement extends Component
             }
             DB::update($query);
         } else if ($request->table == 'informations'){
-            $query = "update $request->table set resource = '$url' where id = $request->id";
+            if($request->type == '1'){
+                $query = "update $request->table set resource = '$url' where id = $request->id";
+            }else{
+                $query = "update $request->table set `default` = '$url' where id = $request->id";
+            }
             DB::update($query);
         } else {
             $image->nameImg = str_replace('/storage', 'public', $request->nameImg);
