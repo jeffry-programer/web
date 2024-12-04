@@ -1416,11 +1416,6 @@
                     }else{
                         myDropzone.processQueue();
                     }
-                    setTimeout(() => {
-                        if(isset_images == false){
-                            hideAlertTime();
-                        }
-                    }, 3000);
                 },error: function(xhr) {
                     if(xhr.status === 422) {
                         console.log(xhr);
@@ -1555,7 +1550,7 @@
                     }
                     if(this.getUploadingFiles().length === 0){
                         isset_images = true;
-                        hideAlertTime2();
+                        //hideAlertTime2();
                     }
                 });
             }
@@ -1596,7 +1591,7 @@
                     }
                     if(this.getUploadingFiles().length === 0){
                         isset_images = true;
-                        hideAlertTime2();
+                        hideAlertTime();
                     }
                 });
             }
