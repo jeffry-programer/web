@@ -1401,37 +1401,47 @@
             });
         }
 
-        function storeData(){
+        function storeData() {
             $.ajax({
                 url: "{{route('table-store-imgs')}}",
                 data: $("#form").serialize(),
                 method: "POST",
-                success(response){
+                success(response) {
                     var res = JSON.parse(response);
                     $("#id_table").val(res.split('-')[1]);
                     $("#table").val(res.split('-')[0]);
-                    if($("#table").val() == 'informations'){
-                        myDropzone48.processQueue();
-                        myDropzone49.processQueue();
-                    }else{
-                        myDropzone.processQueue();
-                    }
-                },error: function(xhr) {
-                    if(xhr.status === 422) {
-                        console.log(xhr);
-                        var error = xhr.responseJSON.error;
-                        Swal.fire({
-                            title: error,
-                            icon: "error",
-                            timer: 2000,
-                            timerProgressBar: true,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false
-                        });
+
+                    let table = $("#table").val();
+                    let uploadPromises = [];
+
+                    if (table === 'informations') {
+                        // Procesar las colas de ambos Dropzones
+                        uploadPromises.push(processDropzone(myDropzone48));
+                        uploadPromises.push(processDropzone(myDropzone49));
                     } else {
+                        // Procesar solo una cola de Dropzone
+                        uploadPromises.push(processDropzone(myDropzone));
+                    }
+
+                    // Esperar a que todas las subidas terminen
+                    Promise.all(uploadPromises).then(() => {
                         Swal.fire({
-                            title: "Hubo un problema al procesar la solicitud",
+                            title: "Datos guardados y archivos subidos con éxito",
+                            icon: "success",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
+                    }).catch(err => {
+                        console.error("Error en las subidas:", err);
+                        Swal.fire({
+                            title: "Hubo un problema al subir los archivos",
                             icon: "error",
                             timer: 2000,
                             timerProgressBar: true,
@@ -1439,9 +1449,55 @@
                             position: 'top-end',
                             showConfirmButton: false
                         });
-                    }
+                    });
+                },
+                error(xhr) {
+                    handleAjaxError(xhr);
                 }
             });
+        }
+
+        // Función para procesar un Dropzone y devolver una Promesa
+        function processDropzone(dropzoneInstance) {
+            return new Promise((resolve, reject) => {
+                dropzoneInstance.on("queuecomplete", () => {
+                    resolve(); // Resuelve cuando la cola esté vacía
+                });
+
+                dropzoneInstance.on("error", (file, errorMessage) => {
+                    console.error("Error al subir archivo:", errorMessage);
+                    reject(errorMessage); // Rechaza si hay un error
+                });
+
+                dropzoneInstance.processQueue(); // Inicia la subida
+            });
+        }
+
+        // Manejo de errores en la solicitud AJAX
+        function handleAjaxError(xhr) {
+            if (xhr.status === 422) {
+                console.log(xhr);
+                var error = xhr.responseJSON.error;
+                Swal.fire({
+                    title: error,
+                    icon: "error",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    title: "Hubo un problema al procesar la solicitud",
+                    icon: "error",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+            }
         }
 
         function updateData(){
@@ -1591,7 +1647,7 @@
                     }
                     if(this.getUploadingFiles().length === 0){
                         isset_images = true;
-                        hideAlertTime();
+                        //hideAlertTime();
                     }
                 });
             }
