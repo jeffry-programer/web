@@ -60,6 +60,7 @@ Route::post('/registerStore', [MainController::class, 'registerStorePost']);
 Route::get('/type-publicities/{userId}', [MainController::class, 'typePublicities']);
 Route::post('/save-publicity', [MainController::class, 'savePublicity']);
 Route::post('/save-promotion', [MainController::class, 'savePromotion']);
+Route::post('/save-work', [MainController::class, 'saveWork']);
 Route::get('/municipalities', [MainController::class, 'getMunicipalities']);
 Route::get('/states', [MainController::class, 'getStates']);
 Route::post('/send-signal-aux', [MainController::class, 'sendSignalAux']);

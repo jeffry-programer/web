@@ -40,6 +40,7 @@ use App\Models\SubCategory;
 use App\Models\TypeProduct;
 use App\Models\TypePublicity;
 use App\Models\User;
+use App\Models\Work;
 use App\Notifications\NotifyAdmin;
 use App\Notifications\RecoveryAccount;
 use App\Notifications\ResetPasswordApi;
@@ -1089,9 +1090,12 @@ class MainController extends Controller
             return $plan;
         });
 
+        $works = Work::where('stores_id', $storeData['id'])->get();
+
         // Retorna la respuesta con la tienda, suscripción y conversación
         return response()->json([
             'store' => $storeData,
+            'works' => $works,
             'plans' => $plans,
             'subscription' => $subscription,
             'conversation' => $conversation,
@@ -2220,6 +2224,31 @@ class MainController extends Controller
         }
 
         return response()->json(['success' => 'Promotion created successfully'], 200);
+    }
+
+    public function saveWork(Request $request){
+        if ($request->hasFile('selectedImage')) {
+            $store = Store::find($request->store_id);
+
+            $work = new Work();
+            $work->stores_id = $store->id;
+            $work->image = '';
+            $work->title = $request->title;
+            $work->description = $request->description;
+            $work->status = false;
+            $work->created_at = Carbon::now();
+            $work->save();
+
+            $route_image = $request->file('selectedImage')->store('public/images-work/' . $store->id);
+            $url = Storage::url($route_image);
+
+            $work->image = $url;
+            $work->save();
+
+            return response()->json(['success' => 'Work created successfully'], 200);
+        } else {
+            return response()->json(['error' => 'No se ha recibido ninguna imagen'], 400);
+        }
     }
 
     public function getMunicipalities()
