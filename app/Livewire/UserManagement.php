@@ -155,7 +155,7 @@ class UserManagement extends Component
         }
 
         if (isset($request->description)) {
-            if ($name_table == 'products' || $name_table == 'stores' || $name_table == 'publicities' || $name_table == 'promotions') {
+            if ($name_table == 'products' || $name_table == 'stores' || $name_table == 'publicities' || $name_table == 'promotions' || $name_table == 'informations') {
                 if (strlen($request->description) > 255) {
                     $error = true;
                 }
