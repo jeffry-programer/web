@@ -79,6 +79,9 @@ Route::post('/save-product', [MainController::class, 'saveProduct']);
 Route::post('/store-products', [MainController::class, 'store']);
 Route::post('/comentaries', [MainController::class, 'getCommentaries']);
 Route::post('/send-verification-email', [MainController::class, 'sendVerificationEmail']);
+Route::post('/get-sub-categories', [MainController::class, 'getSubCategories']);
+
+
 
 // Ruta para agregar o actualizar productos en la tienda
 

@@ -61,6 +61,7 @@ use IntlDateFormatter;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class MainController extends Controller
@@ -1822,6 +1823,21 @@ class MainController extends Controller
             ->limit($perPage)
             ->get();
 
+        // Mapear los productos para incluir solo la descripción de la marca en `brand`
+        $products = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'reference' => $product->reference,
+                'code' => $product->code,
+                'reference' => $product->reference,
+                'detail' => $product->detail,
+                'image' => $product->image,
+                'brand' => $product->brand ? $product->brand->description : null, // Incluye la descripción de la marca
+            ];
+        });
+
         return response()->json($products);
     }
 
@@ -2275,7 +2291,7 @@ class MainController extends Controller
         // Encontrar usuario que envía el auxilio vial
         $user = User::findOrFail($request->userId);
         $name = $user->name;
-
+    
         // Verificar si el usuario ya tiene una señal activa del mismo tipo de tienda
         $existingSignal = SignalAux::where('users_id', $user->id)
             ->where('read', false)
@@ -2283,72 +2299,71 @@ class MainController extends Controller
                 $query->where('type_stores_id', $request->type);
             })
             ->exists();
-
+    
         if ($existingSignal) {
             if ($request->type == env('TIPO_TALLER_ID')) {
-                // Verificar si el usuario ya tiene una señal activa del mismo tipo de tienda
                 $existingSignal = SignalAux::where('users_id', $user->id)
                     ->where('read', false)
                     ->whereHas('store', function ($query) use ($request) {
                         $query->where('services', true);
                     })
                     ->exists();
-
+    
                 if ($existingSignal) {
                     return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
                 }
             }
             return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
         }
-
+    
         // Encontrar tiendas en la ciudad, del tipo y activas
         $storesQuery = Store::where('type_stores_id', $request->type)
             ->where('status', true)
             ->where('municipalities_id', $request->municipality);
-
+    
         if ($request->sector !== 'Todos') {
             $storesQuery->where('sectors_id', $request->sector);
         }
-
+    
         if ($request->categoryId != 0 && $request->categoryId != '0' && $request->categoryId != null) {
             $storesQuery->where('categories_stores_id', $request->categoryId);
         }
-
+    
         $stores = $storesQuery->get();
-
+    
         if ($request->type == env('TIPO_TALLER_ID')) {
             $storesQuery2 = Store::where('services', true)
                 ->where('status', true)
                 ->where('municipalities_id', $request->municipality);
-
+    
             if ($request->sector !== 'Todos') {
                 $storesQuery2->where('sectors_id', $request->sector);
             }
-
+    
             $stores2 = $storesQuery2->get();
-
+    
             // Combinar tiendas si stores2 tiene contenido
             if ($stores2->isNotEmpty()) {
                 $stores = $stores->merge($stores2);
             }
         }
-
+    
         $storesSendSignalAux = [];
-
+    
         $type = '';
-
+    
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
             // Verificar que la tienda no esté asociada al usuario que envía la señal
             if ($store->user->id === $user->id) {
                 continue; // Saltar esta tienda si pertenece al usuario
             }
-
+    
             $storeHasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true)
                 ->where('read', false)
                 ->exists();
-
+    
             if (!$storeHasActiveSignal) {
                 SignalAux::create([
                     'users_id' => $user->id,
@@ -2359,39 +2374,46 @@ class MainController extends Controller
                     'read' => false,
                     'created_at' => now(),
                 ]);
-
+    
                 $storesSendSignalAux[] = $store;
-
+    
                 // Enviar notificación via Firebase si el token es válido
                 $token = $store->user->token;
-                if (strlen($token) > 10) {
-                    $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
-                    $messaging = $firebase->createMessaging();
-
-                    $message = CloudMessage::fromArray([
-                        'token' => $token,
-                        'notification' => [
-                            'title' => $name,
-                            'body' => 'Requiero auxilio vial',
-                        ],
-                        'data' => [
-                            'click_action' => 'OPEN_URL',
-                            'url' => '/signals-aux',
-                        ],
-                        'android' => [
-                            'priority' => 'high',
-                        ],
-                    ]);
-
-                    $messaging->send($message);
+    
+                if (!empty($token) && strlen($token) > 10) {
+                    try {
+                        $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+                        $messaging = $firebase->createMessaging();
+    
+                        $message = CloudMessage::fromArray([
+                            'token' => $token,
+                            'notification' => [
+                                'title' => $name,
+                                'body' => 'Requiero auxilio vial',
+                            ],
+                            'data' => [
+                                'click_action' => 'OPEN_URL',
+                                'url' => '/signals-aux',
+                            ],
+                            'android' => [
+                                'priority' => 'high',
+                            ],
+                        ]);
+    
+                        $messaging->send($message);
+                    } catch (\Throwable $e) {
+                        Log::warning('Error al enviar notificación: ' . $e->getMessage() . ' | User: ' . $store->user);
+                        continue; // Continuar con la siguiente tienda
+                    }
+                } else {
+                    Log::warning('Token inválido o vacío para el usuario: ' . $store->user->id);
+                    continue; // Saltar si el token no es válido
                 }
-
+    
                 event(new NewMessage2([], $store->user->id));
             }
         }
-
-        $type = '';
-
+    
         if ($request->type == env('TIPO_TALLER_ID')) {
             $type = 'Taller';
         } else if ($request->type == env('TIPO_GRUA_ID')) {
@@ -2399,9 +2421,10 @@ class MainController extends Controller
         } else {
             $type = 'Cauchera';
         }
-
+    
         return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId, 'typeStore' => $type], 200);
     }
+    
 
     public function getSignalsAux(Request $request)
     {
@@ -3188,5 +3211,14 @@ class MainController extends Controller
         $renovation->save();
 
         return response()->json(['success' => true, 'message' => 'Renovación guardada correctamente.']);
+    }
+
+    public function getSubCategories(Request $request){
+        $store = Store::find($request->storeId);
+        $subCategories = SubCategory::whereHas('category', function ($query) use ($store) {
+            $query->where('name', $store->category->description);
+        })->get();
+
+        return response()->json(['subCategories' => $subCategories]);
     }
 }
