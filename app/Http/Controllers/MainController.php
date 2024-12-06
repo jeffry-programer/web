@@ -1172,7 +1172,9 @@ class MainController extends Controller
 
     public function ProductStoreDetails(Request $request)
     {
-        $search = str_replace('-', ' ', $request->product_search);
+        $search = urldecode(str_replace('-', ' ', $request->product_search));
+
+        $search = $this->normalizeText(str_replace('-', ' ', $search));
 
         // Obtén el ID de la ciudad
         $store_id = $request->store_id;
@@ -1183,18 +1185,36 @@ class MainController extends Controller
         // Obtener la tienda que coincide con el ID de la tienda proporcionado
         $store = Store::find($store_id);
 
-        // Buscar productos que coincidan con la búsqueda y estén asociados a la tienda encontrada
-        $products = $store->products()->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery])->get();
+        // Búsqueda inicial con MATCH ... AGAINST
+        $products = $store->products()
+        ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
+        ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
+        ->orderByDesc('relevance')
+        ->get();
 
-        // Si no se encontraron productos, buscar con coincidencias parciales
+
+        // Si no se encuentran resultados, buscar con coincidencias parciales
         if ($products->isEmpty()) {
             $searchQuery = $search . '*';
-
-            $products = $store->products()->whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$searchQuery])->get();
+            $products = $store->products()
+            ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$searchQuery])
+            ->orWhere('name', 'LIKE', "%{$searchQuery}%") // Complementar con búsqueda relajada
+            ->orderByDesc('relevance')
+            ->get();
         }
 
         // Retornar los productos encontrados
         return response()->json($products, 200);
+    }
+
+    function normalizeText($text) {
+        $unwantedArray = [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
+            'ñ' => 'n', 'Ñ' => 'N'
+        ];
+        return strtr($text, $unwantedArray);
     }
 
     public function SubscribeStore(Request $request)
@@ -1454,9 +1474,9 @@ class MainController extends Controller
 
     private function searchProducts($search)
     {
-        // Asegurarse de que la consulta utiliza MATCH...AGAINST para la búsqueda de relevancia
-        return Product::whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [$search])
-            ->whereRaw('MATCH(name) AGAINST(?) > 1', [$search]) // Filtrar por relevancia aquí
+        return Product::selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
+            ->orderByDesc('relevance')
             ->get();
     }
 
@@ -2787,6 +2807,12 @@ class MainController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Usuario no registrado'], 422);
         }
+
+        // Actualizar token de FCM si es necesario
+        if ($userWithToken = User::where('token', $request->token)->first()) {
+            $userWithToken->update(['token' => null]);
+        }
+
         $user->token = $request->token;
         $user->save();
 
@@ -3075,6 +3101,34 @@ class MainController extends Controller
         ], 200);
     }
 
+    public function updateProductStore(Request $request, Product $product){
+        // Validar los datos recibidos
+        $validated = $request->validate([
+            'price' => 'required|numeric|min:0', // El precio debe ser un número mayor o igual a 0
+            'amount' => 'required|integer|min:0', // La cantidad debe ser un entero mayor o igual a 0
+        ]);
+
+        $product_store = ProductStore::where('products_id', $request->productId)->where('stores_id', $request->storeId)->first();
+
+        // Actualizar los datos del producto
+        $product_store->update($validated);
+
+        return response()->json(['message' => 'Producto actualizado correctamente.', 'product' => $product], 200);
+    }   
+
+    public function detachProductStore(Request $request, Store $store, Product $product)
+    {
+        // Verificar si el producto está asociado a la tienda
+        if (!$store->products()->where('products.id', $product->id)->exists()) {
+            return response()->json(['error' => 'El producto no está asociado a esta tienda.'], 404);
+        }
+
+        // Desasociar el producto
+        $store->products()->detach($product->id);
+
+        return response()->json(['message' => 'Producto desasociado correctamente.'], 200);
+    }
+
     // Método opcional para eliminar un producto de la tienda
     public function removeProductFromStore($storeId, $productId)
     {
@@ -3213,12 +3267,96 @@ class MainController extends Controller
         return response()->json(['success' => true, 'message' => 'Renovación guardada correctamente.']);
     }
 
-    public function getSubCategories(Request $request){
+    public function getDataRegisterProduct(Request $request){
         $store = Store::find($request->storeId);
         $subCategories = SubCategory::whereHas('category', function ($query) use ($store) {
             $query->where('name', $store->category->description);
         })->get();
+        $brands = Brand::all();
+        $cylinder_capacities = cylinderCapacity::all();
+        $models = Modell::all();
+        $boxes = Box::all();
 
-        return response()->json(['subCategories' => $subCategories]);
+        $cylinder_no_apply = cylinderCapacity::where('description', 'No aplica')->first();
+        $model_no_apply = Modell::where('description', 'No aplica')->first();
+        $box_no_apply = Box::where('description', 'No aplica')->first();
+
+        $response = [
+            'cylinder_capacities' => $cylinder_capacities,
+            'models' => $models,
+            'boxes' => $boxes,
+            'subCategories' => $subCategories,
+            'brands' => $brands,
+            'cylinder_no_apply' => $cylinder_no_apply,
+            'model_no_apply' => $model_no_apply,
+            'box_no_apply' => $box_no_apply,
+            'category_store' => $store->category->description
+        ]; 
+
+        return response()->json($response);
+    }
+    
+    public function createNewProduct(Request $request)
+    {
+        // Validar los datos recibidos
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',  // Nombre del producto
+            'cylinder_capacities_id' => 'required',  
+            'models_id' => 'required', 
+            'boxes_id' => 'required', 
+            'category' => 'required',  // Asegúrate de que la categoría exista en la base de datos
+            'brand' => 'required|exists:brands,id',  // Asegúrate de que la marca exista en la base de datos
+            'description' => 'nullable|string',  // Descripción opcional
+            'code' => 'nullable|string|max:255',  // Código del producto
+            'reference' => 'nullable|string|max:255',  // Referencia del producto
+            'detail' => 'nullable|string',  // Detalles del producto
+            'amount' => 'required|integer|min:1',  // Cantidad, debe ser un número entero positivo
+            'price' => 'required|numeric|min:0',  // Precio, debe ser un número positivo
+            'storeId' => 'required|exists:stores,id', // El ID de la tienda también debe existir en la base de datos
+        ]);
+        
+        // Crear el nuevo producto
+        $product = new Product();
+        $product->name = $validated['name'];
+        $product->cylinder_capacities_id = $validated['cylinder_capacities_id'];
+        $product->models_id = $validated['models_id'];
+        $product->boxes_id = $validated['boxes_id'];
+        $product->type_products_id = TypeProduct::where('description', 'Repuestos')->first()->id ?? 1;
+        $product->sub_categories_id = $validated['category'];  // Relación con subcategoría
+        $product->brands_id = $validated['brand'];  // Relación con marca
+        $product->description = $validated['description'] ?? null;
+        $product->code = $validated['code'] ?? null;
+        $product->reference = $validated['reference'] ?? null;
+        $product->detail = $validated['detail'] ?? null;
+        $product->count = 0;
+        $product->link = str_replace(' ', '-' , $validated['name']);
+        $product->image = '';
+        
+        // Guardar el producto en la base de datos
+        $product->save();
+
+        if ($request->hasFile('selectedImage')) {
+            $route_image = $request->file('selectedImage')->store('public/images-prod/' . $product->id);
+            $url = Storage::url($route_image);
+
+            $product->image = $url;
+            $product->save();
+        }
+    
+        // Crear un registro en la tabla ProductStore
+        $product_store = new ProductStore();
+        $product_store->price = $validated['price'];
+        $product_store->amount = $validated['amount'];
+        $product_store->created_at = Carbon::now();
+        $product_store->products_id = $product->id;  // Relacionar con el producto creado
+        $product_store->stores_id = $validated['storeId'];  // Relacionar con la tienda indicada
+    
+        $product_store->save();
+    
+        // Responder con un mensaje de éxito
+        return response()->json([
+            'message' => 'Producto creado exitosamente.',
+            'product' => $product
+        ], 201);  // Código de estado 201 para recurso creado
     }
 }

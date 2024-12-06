@@ -1,4 +1,4 @@
-<?php
+ta<?php
 
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MessageController;
@@ -79,13 +79,17 @@ Route::post('/save-product', [MainController::class, 'saveProduct']);
 Route::post('/store-products', [MainController::class, 'store']);
 Route::post('/comentaries', [MainController::class, 'getCommentaries']);
 Route::post('/send-verification-email', [MainController::class, 'sendVerificationEmail']);
-Route::post('/get-sub-categories', [MainController::class, 'getSubCategories']);
-
+Route::post('/get-data-register-product', [MainController::class, 'getDataRegisterProduct']);
+Route::post('/create-new-product', [MainController::class, 'createNewProduct']);
 
 
 // Ruta para agregar o actualizar productos en la tienda
 
 Route::post('/stores/{storeId}/products', [MainController::class, 'addProductToStore']);
+Route::put('/products/{product}', [MainController::class, 'updateProductStore']);
+Route::delete('/store/{store}/product/{product}', [MainController::class, 'detachProductStore']);
+
+
 
 // Ruta para eliminar un producto de la tienda (opcional)
 Route::delete('/stores/{storeId}/products/{productId}', [MainController::class, 'removeProductFromStore']);
