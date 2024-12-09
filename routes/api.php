@@ -1,4 +1,4 @@
-ta<?php
+<?php
 
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MessageController;
