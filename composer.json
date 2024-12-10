@@ -15,9 +15,11 @@
         "laravel/framework": "^10.10",
         "laravel/jetstream": "^4.1",
         "laravel/sanctum": "^3.3",
+        "laravel/scout": "^10.11",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.2",
         "pusher/pusher-php-server": "^7.2",
+        "teamtnt/laravel-scout-tntsearch-driver": "^14.0",
         "yajra/laravel-datatables-oracle": "^10.11"
     },
     "require-dev": {
