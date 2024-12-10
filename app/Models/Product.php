@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
     use HasFactory;
+    use Searchable;
 
     protected $fillable = ['sub_categories_id', 'cylinder_capacities_id', 'models_id', 'boxes_id', 'type_products_id', 'brands_id', 'name', 'description', 'code', 'image', 'count', 'link', 'reference', 'detail', 'created_at'];
 
@@ -45,5 +47,15 @@ class Product extends Model
 
     public function model(){
         return $this->belongsTo(Modell::class, 'models_id');
+    }
+
+    // Método que define los campos que serán indexados
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // Aquí puedes modificar qué campos se indexan
+        // Asegúrate de que 'id' esté presente
+        return $array;
     }
 }

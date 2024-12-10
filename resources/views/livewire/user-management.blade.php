@@ -1138,7 +1138,7 @@
                 if(field.includes('capacidad')) return false;
                 if(field.includes('dimensiones')) return false;
                 if(field.includes('tipo')) return false;
-                if(field.includes('RIF') && value.length < 8){
+                if(field.includes('RIF') && value.length < 7){
                     incorrectRif = true;
                 }
                 if(value == null || value == ''){
@@ -1300,7 +1300,7 @@
                 let value = key.split('=')[1];
                 let field = key.split('=')[0];
 
-                if(field.includes('RIF') && value.length < 8){
+                if(field.includes('RIF') && value.length < 7){
                     incorrectRif = true;
                 }
 

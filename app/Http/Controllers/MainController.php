@@ -677,7 +677,7 @@ class MainController extends Controller
             $user_token_exist->save();
         }
 
-        $encrytedEmail = Crypt::encrypt($request->email);
+        $encrytedEmail = Crypt::encrypt($email);
 
         // Crear el nuevo usuario
         $user = User::create([
@@ -689,7 +689,7 @@ class MainController extends Controller
             'birthdate' => $request->birthdate,
         ]);
 
-        $user->email = $request->email;
+        $user->email = $email;
 
         // Enviar notificación
         $user->notify(new VerifiedEmailApi($user, $request->token));
@@ -796,7 +796,7 @@ class MainController extends Controller
         }
 
         $email = strtolower($request->email); // Convertir a minúsculas
-        
+
         $user = User::all()->first(function ($user) use ($email) {
             try {
                 return Crypt::decrypt($user->email) === $email;
@@ -1172,47 +1172,47 @@ class MainController extends Controller
 
     public function ProductStoreDetails(Request $request)
     {
+        // Decodificar y normalizar la búsqueda
         $search = urldecode(str_replace('-', ' ', $request->product_search));
-
         $search = $this->normalizeText(str_replace('-', ' ', $search));
 
-        // Obtén el ID de la ciudad
-        $store_id = $request->store_id;
+        // Buscar la tienda que coincide con el ID proporcionado
+        $store = Store::find($request->store_id);
 
-        // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
-        $searchQuery = '"' . $search . '"';
-
-        // Obtener la tienda que coincide con el ID de la tienda proporcionado
-        $store = Store::find($store_id);
-
-        // Búsqueda inicial con MATCH ... AGAINST
-        $products = $store->products()
-        ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
-        ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
-        ->orderByDesc('relevance')
-        ->get();
-
-
-        // Si no se encuentran resultados, buscar con coincidencias parciales
-        if ($products->isEmpty()) {
-            $searchQuery = $search . '*';
-            $products = $store->products()
-            ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
-            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$searchQuery])
-            ->orWhere('name', 'LIKE', "%{$searchQuery}%") // Complementar con búsqueda relajada
-            ->orderByDesc('relevance')
-            ->get();
+        // Si la tienda no existe, retorna un error o un array vacío
+        if (!$store) {
+            return response()->json(['error' => 'Store not found'], 404);
         }
 
-        // Retornar los productos encontrados
-        return response()->json($products, 200);
+        // Buscar productos usando TNTSearch con Scout
+        $products = Product::search($search)  // Usar Scout con TNTSearch
+            ->take(10)  // Limitar los resultados a los 3 productos más relevantes
+            ->get();
+
+        // Filtrar los productos para verificar si están asociados a la tienda
+        $products = $products->filter(function ($product) use ($store) {
+            return $store->products()->where('products.id', $product->id)->exists();
+        });
+
+        // Retornar los productos filtrados
+        return response()->json(['products' => $products->values()->toArray()], 200);
     }
 
-    function normalizeText($text) {
+    function normalizeText($text)
+    {
         $unwantedArray = [
-            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
-            'ñ' => 'n', 'Ñ' => 'N'
+            'á' => 'a',
+            'é' => 'e',
+            'í' => 'i',
+            'ó' => 'o',
+            'ú' => 'u',
+            'Á' => 'A',
+            'É' => 'E',
+            'Í' => 'I',
+            'Ó' => 'O',
+            'Ú' => 'U',
+            'ñ' => 'n',
+            'Ñ' => 'N'
         ];
         return strtr($text, $unwantedArray);
     }
@@ -1350,7 +1350,11 @@ class MainController extends Controller
     public function getCategoriesStoreApi($typeStore)
     {
         $type_store = TypeStore::where('description', $typeStore)->first();
-        $categories = CategoryStore::where('type_stores_id', $type_store->id)->get();
+        if ($type_store != null) {
+            $categories = CategoryStore::where('type_stores_id', $type_store->id)->get();
+        } else {
+            $categories = [];
+        }
         return response()->json(['categories' => $categories]);
     }
 
@@ -1411,12 +1415,13 @@ class MainController extends Controller
         return response()->json(['product' => $response, 'conversation' => $conversation]);
     }
 
-    public function getVideoDetail($videoId){
+    public function getVideoDetail($videoId)
+    {
         $video_detail = Information::find($videoId);
 
         // Obtener otros videos aleatoriamente, excluyendo el actual
         $videos = Information::where('id', '!=', $videoId)->inRandomOrder()->get();
-        
+
         // Devolver la respuesta en formato JSON
         return response()->json([
             'video_detail' => $video_detail,
@@ -1441,6 +1446,8 @@ class MainController extends Controller
 
         // Realiza la búsqueda de productos que coincidan con la búsqueda
         $products = $this->searchProducts($search);
+
+        //return response()->json(['products' => $products], 200);
 
         // Si no hay productos, no se pueden retornar tiendas
         if ($products->isEmpty()) {
@@ -1474,9 +1481,9 @@ class MainController extends Controller
 
     private function searchProducts($search)
     {
-        return Product::selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
-            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
-            ->orderByDesc('relevance')
+        // Limitar a los 10 productos más relevantes
+        return Product::search($search)
+            ->take(10)  // Limitar a 10 resultados
             ->get();
     }
 
@@ -2262,7 +2269,8 @@ class MainController extends Controller
         return response()->json(['success' => 'Promotion created successfully'], 200);
     }
 
-    public function saveWork(Request $request){
+    public function saveWork(Request $request)
+    {
         if ($request->hasFile('selectedImage')) {
             $store = Store::find($request->store_id);
 
@@ -2311,7 +2319,7 @@ class MainController extends Controller
         // Encontrar usuario que envía el auxilio vial
         $user = User::findOrFail($request->userId);
         $name = $user->name;
-    
+
         // Verificar si el usuario ya tiene una señal activa del mismo tipo de tienda
         $existingSignal = SignalAux::where('users_id', $user->id)
             ->where('read', false)
@@ -2319,7 +2327,7 @@ class MainController extends Controller
                 $query->where('type_stores_id', $request->type);
             })
             ->exists();
-    
+
         if ($existingSignal) {
             if ($request->type == env('TIPO_TALLER_ID')) {
                 $existingSignal = SignalAux::where('users_id', $user->id)
@@ -2328,62 +2336,62 @@ class MainController extends Controller
                         $query->where('services', true);
                     })
                     ->exists();
-    
+
                 if ($existingSignal) {
                     return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
                 }
             }
             return response()->json(['error' => 'Ya tienes una señal activa de este tipo.'], 400);
         }
-    
+
         // Encontrar tiendas en la ciudad, del tipo y activas
         $storesQuery = Store::where('type_stores_id', $request->type)
             ->where('status', true)
             ->where('municipalities_id', $request->municipality);
-    
+
         if ($request->sector !== 'Todos') {
             $storesQuery->where('sectors_id', $request->sector);
         }
-    
+
         if ($request->categoryId != 0 && $request->categoryId != '0' && $request->categoryId != null) {
             $storesQuery->where('categories_stores_id', $request->categoryId);
         }
-    
+
         $stores = $storesQuery->get();
-    
+
         if ($request->type == env('TIPO_TALLER_ID')) {
             $storesQuery2 = Store::where('services', true)
                 ->where('status', true)
                 ->where('municipalities_id', $request->municipality);
-    
+
             if ($request->sector !== 'Todos') {
                 $storesQuery2->where('sectors_id', $request->sector);
             }
-    
+
             $stores2 = $storesQuery2->get();
-    
+
             // Combinar tiendas si stores2 tiene contenido
             if ($stores2->isNotEmpty()) {
                 $stores = $stores->merge($stores2);
             }
         }
-    
+
         $storesSendSignalAux = [];
-    
+
         $type = '';
-    
+
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
             // Verificar que la tienda no esté asociada al usuario que envía la señal
             if ($store->user->id === $user->id) {
                 continue; // Saltar esta tienda si pertenece al usuario
             }
-    
+
             $storeHasActiveSignal = SignalAux::where('stores_id', $store->user->id)
                 ->where('status', true)
                 ->where('read', false)
                 ->exists();
-    
+
             if (!$storeHasActiveSignal) {
                 SignalAux::create([
                     'users_id' => $user->id,
@@ -2394,17 +2402,17 @@ class MainController extends Controller
                     'read' => false,
                     'created_at' => now(),
                 ]);
-    
+
                 $storesSendSignalAux[] = $store;
-    
+
                 // Enviar notificación via Firebase si el token es válido
                 $token = $store->user->token;
-    
+
                 if (!empty($token) && strlen($token) > 10) {
                     try {
                         $firebase = (new Factory)->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
                         $messaging = $firebase->createMessaging();
-    
+
                         $message = CloudMessage::fromArray([
                             'token' => $token,
                             'notification' => [
@@ -2419,7 +2427,7 @@ class MainController extends Controller
                                 'priority' => 'high',
                             ],
                         ]);
-    
+
                         $messaging->send($message);
                     } catch (\Throwable $e) {
                         Log::warning('Error al enviar notificación: ' . $e->getMessage() . ' | User: ' . $store->user);
@@ -2429,11 +2437,11 @@ class MainController extends Controller
                     Log::warning('Token inválido o vacío para el usuario: ' . $store->user->id);
                     continue; // Saltar si el token no es válido
                 }
-    
+
                 event(new NewMessage2([], $store->user->id));
             }
         }
-    
+
         if ($request->type == env('TIPO_TALLER_ID')) {
             $type = 'Taller';
         } else if ($request->type == env('TIPO_GRUA_ID')) {
@@ -2441,10 +2449,10 @@ class MainController extends Controller
         } else {
             $type = 'Cauchera';
         }
-    
+
         return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId, 'typeStore' => $type], 200);
     }
-    
+
 
     public function getSignalsAux(Request $request)
     {
@@ -3101,7 +3109,8 @@ class MainController extends Controller
         ], 200);
     }
 
-    public function updateProductStore(Request $request, Product $product){
+    public function updateProductStore(Request $request, Product $product)
+    {
         // Validar los datos recibidos
         $validated = $request->validate([
             'price' => 'required|numeric|min:0', // El precio debe ser un número mayor o igual a 0
@@ -3114,7 +3123,7 @@ class MainController extends Controller
         $product_store->update($validated);
 
         return response()->json(['message' => 'Producto actualizado correctamente.', 'product' => $product], 200);
-    }   
+    }
 
     public function detachProductStore(Request $request, Store $store, Product $product)
     {
@@ -3267,7 +3276,8 @@ class MainController extends Controller
         return response()->json(['success' => true, 'message' => 'Renovación guardada correctamente.']);
     }
 
-    public function getDataRegisterProduct(Request $request){
+    public function getDataRegisterProduct(Request $request)
+    {
         $store = Store::find($request->storeId);
         $subCategories = SubCategory::whereHas('category', function ($query) use ($store) {
             $query->where('name', $store->category->description);
@@ -3291,19 +3301,19 @@ class MainController extends Controller
             'model_no_apply' => $model_no_apply,
             'box_no_apply' => $box_no_apply,
             'category_store' => $store->category->description
-        ]; 
+        ];
 
         return response()->json($response);
     }
-    
+
     public function createNewProduct(Request $request)
     {
         // Validar los datos recibidos
         $validated = $request->validate([
             'name' => 'required|string|max:255',  // Nombre del producto
-            'cylinder_capacities_id' => 'required',  
-            'models_id' => 'required', 
-            'boxes_id' => 'required', 
+            'cylinder_capacities_id' => 'required',
+            'models_id' => 'required',
+            'boxes_id' => 'required',
             'category' => 'required',  // Asegúrate de que la categoría exista en la base de datos
             'brand' => 'required|exists:brands,id',  // Asegúrate de que la marca exista en la base de datos
             'description' => 'nullable|string',  // Descripción opcional
@@ -3314,7 +3324,7 @@ class MainController extends Controller
             'price' => 'required|numeric|min:0',  // Precio, debe ser un número positivo
             'storeId' => 'required|exists:stores,id', // El ID de la tienda también debe existir en la base de datos
         ]);
-        
+
         // Crear el nuevo producto
         $product = new Product();
         $product->name = $validated['name'];
@@ -3329,9 +3339,9 @@ class MainController extends Controller
         $product->reference = $validated['reference'] ?? null;
         $product->detail = $validated['detail'] ?? null;
         $product->count = 0;
-        $product->link = str_replace(' ', '-' , $validated['name']);
+        $product->link = str_replace(' ', '-', $validated['name']);
         $product->image = '';
-        
+
         // Guardar el producto en la base de datos
         $product->save();
 
@@ -3342,7 +3352,7 @@ class MainController extends Controller
             $product->image = $url;
             $product->save();
         }
-    
+
         // Crear un registro en la tabla ProductStore
         $product_store = new ProductStore();
         $product_store->price = $validated['price'];
@@ -3350,9 +3360,9 @@ class MainController extends Controller
         $product_store->created_at = Carbon::now();
         $product_store->products_id = $product->id;  // Relacionar con el producto creado
         $product_store->stores_id = $validated['storeId'];  // Relacionar con la tienda indicada
-    
+
         $product_store->save();
-    
+
         // Responder con un mensaje de éxito
         return response()->json([
             'message' => 'Producto creado exitosamente.',
