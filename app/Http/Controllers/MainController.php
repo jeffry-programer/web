@@ -1172,30 +1172,40 @@ class MainController extends Controller
 
     public function ProductStoreDetails(Request $request)
     {
-        // Decodificar y normalizar la búsqueda
         $search = urldecode(str_replace('-', ' ', $request->product_search));
+
         $search = $this->normalizeText(str_replace('-', ' ', $search));
 
-        // Buscar la tienda que coincide con el ID proporcionado
-        $store = Store::find($request->store_id);
+        // Obtén el ID de la ciudad
+        $store_id = $request->store_id;
 
-        // Si la tienda no existe, retorna un error o un array vacío
-        if (!$store) {
-            return response()->json(['error' => 'Store not found'], 404);
+        // Construir la consulta de búsqueda booleana con comillas dobles para coincidencia exacta
+        $searchQuery = '"' . $search . '"';
+
+        // Obtener la tienda que coincide con el ID de la tienda proporcionado
+        $store = Store::find($store_id);
+
+        // Búsqueda inicial con MATCH ... AGAINST
+        $products = $store->products()
+        ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
+        ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
+        ->orderByDesc('relevance')
+        ->get();
+
+
+        // Si no se encuentran resultados, buscar con coincidencias parciales
+        if ($products->isEmpty()) {
+            $searchQuery = $search . '*';
+            $products = $store->products()
+            ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$searchQuery])
+            ->orWhere('name', 'LIKE', "%{$searchQuery}%") // Complementar con búsqueda relajada
+            ->orderByDesc('relevance')
+            ->get();
         }
 
-        // Buscar productos usando TNTSearch con Scout
-        $products = Product::search($search)  // Usar Scout con TNTSearch
-            ->take(10)  // Limitar los resultados a los 3 productos más relevantes
-            ->get();
-
-        // Filtrar los productos para verificar si están asociados a la tienda
-        $products = $products->filter(function ($product) use ($store) {
-            return $store->products()->where('products.id', $product->id)->exists();
-        });
-
-        // Retornar los productos filtrados
-        return response()->json(['products' => $products->values()->toArray()], 200);
+        // Retornar los productos encontrados
+        return response()->json($products, 200);
     }
 
     function normalizeText($text)
@@ -1481,10 +1491,10 @@ class MainController extends Controller
 
     private function searchProducts($search)
     {
-        // Limitar a los 10 productos más relevantes
-        return Product::search($search)
-            ->take(10)  // Limitar a 10 resultados
-            ->get();
+        return Product::selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
+        ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
+        ->orderByDesc('relevance')
+        ->get();
     }
 
     private function getStoresFromProducts($products, $municipalityId, $stateId, $sectorId, &$locationStores, $locationType)
@@ -3290,6 +3300,12 @@ class MainController extends Controller
         $cylinder_no_apply = cylinderCapacity::where('description', 'No aplica')->first();
         $model_no_apply = Modell::where('description', 'No aplica')->first();
         $box_no_apply = Box::where('description', 'No aplica')->first();
+        
+        $products = Product::whereHas('subcategory', function ($query) use ($store) {
+            $query->whereHas('category', function ($query) use ($store) {
+                $query->where('name', $store->category->description);
+            });
+        })->take(12)->get();
 
         $response = [
             'cylinder_capacities' => $cylinder_capacities,
@@ -3300,7 +3316,8 @@ class MainController extends Controller
             'cylinder_no_apply' => $cylinder_no_apply,
             'model_no_apply' => $model_no_apply,
             'box_no_apply' => $box_no_apply,
-            'category_store' => $store->category->description
+            'category_store' => $store->category->description,
+            'products' => $products
         ];
 
         return response()->json($response);
