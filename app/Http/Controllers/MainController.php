@@ -1205,7 +1205,7 @@ class MainController extends Controller
         }
 
         // Retornar los productos encontrados
-        return response()->json($products, 200);
+        return response()->json(['products' => $products], 200);
     }
 
     function normalizeText($text)
