@@ -3002,6 +3002,7 @@ class MainController extends Controller
                     'image',
                     'reference',
                     'detail',
+                    'categories_id',
                     'sub_categories_id',
                     'brands_id',
                     'models_id',
@@ -3018,6 +3019,10 @@ class MainController extends Controller
                         } else {
                             return '';
                         }
+                    }
+                    if($field == 'categories_id'){
+                        $subcategory = SubCategory::find($row->sub_categories_id);
+                        return $subcategory ? $subcategory->categories_id : '';
                     }
                     return $row->$field ?? '';
                 }, $attributes));

@@ -834,7 +834,6 @@
         }
 
         function editUser(array){
-            console.log(array);
             fields = array[0].split("|");
             array.shift();
             var arrayImagenes = [];
@@ -844,13 +843,16 @@
                     arrayImagenes.push(array[index]);
                 }else if(key.includes('date')){
                     $(`#${key}`).val(array[index].split(' ')[0]);
+                }else if(key.includes('sub_categories_id')){
+                    $(`#select4`).val(array[index]);
                 }else{
                     $(`#${key}`).val(array[index]);
                 }
+
+                console.log('Campo ' + key + ' = ' + array[index]);
             });
 
-            console.log(arrayImagenes);
-
+            
 
             if(arrayImagenes.length > 0){
                 var arrayImagenes = arrayImagenes.concat(array.at(-1).replaceAll('images:','').split('|'));
