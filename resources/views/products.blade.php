@@ -845,6 +845,8 @@
                     $(`#${key}`).val(array[index].split(' ')[0]);
                 }else if(key.includes('sub_categories_id')){
                     $(`#select4`).val(array[index]);
+                }else if(key.includes('categories_id')){
+                    $(`#select3`).val(array[index]);
                 }else{
                     $(`#${key}`).val(array[index]);
                 }

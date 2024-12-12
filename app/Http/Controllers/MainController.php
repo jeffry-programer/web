@@ -3006,6 +3006,9 @@ class MainController extends Controller
                     'sub_categories_id',
                     'brands_id',
                     'models_id',
+                    'cylinder_capacities_id',
+                    'type_products_id',
+                    'boxes_id',
                     'created_at',
                     'aditionalPictures', // Suponiendo que esto es una relación o atributo de imágenes adicionales
                 ];
