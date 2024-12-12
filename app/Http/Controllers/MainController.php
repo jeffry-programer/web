@@ -1187,7 +1187,7 @@ class MainController extends Controller
 
         // Búsqueda inicial con MATCH ... AGAINST
         $products = $store->products()
-        ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
+        ->selectRaw("products.id, products.name, products.image, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
         ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
         ->orderByDesc('relevance')
         ->get();
@@ -1197,7 +1197,7 @@ class MainController extends Controller
         if ($products->isEmpty()) {
             $searchQuery = $search . '*';
             $products = $store->products()
-            ->selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
+            ->selectRaw("products.id, products.name, products.image, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
             ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$searchQuery])
             ->orWhere('name', 'LIKE', "%{$searchQuery}%") // Complementar con búsqueda relajada
             ->orderByDesc('relevance')
@@ -1205,7 +1205,7 @@ class MainController extends Controller
         }
 
         // Retornar los productos encontrados
-        return response()->json(['products' => $products], 200);
+        return response()->json(['products' => $products, 'search' => $search], 200);
     }
 
     function normalizeText($text)
