@@ -81,6 +81,8 @@ Route::post('/comentaries', [MainController::class, 'getCommentaries']);
 Route::post('/send-verification-email', [MainController::class, 'sendVerificationEmail']);
 Route::post('/get-data-register-product', [MainController::class, 'getDataRegisterProduct']);
 Route::post('/create-new-product', [MainController::class, 'createNewProduct']);
+Route::put('/works/{id}', [MainController::class, 'updateWork']); // Actualizar un trabajo
+Route::delete('/works/{id}', [MainController::class, 'destroyWork']); // Eliminar un trabajo
 
 
 // Ruta para agregar o actualizar productos en la tienda

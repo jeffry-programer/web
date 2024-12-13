@@ -3394,4 +3394,65 @@ class MainController extends Controller
             'product' => $product
         ], 201);  // Código de estado 201 para recurso creado
     }
+
+    public function updateWork(Request $request, $id)
+    {
+        try {
+            // Buscar el trabajo por ID
+            $work = Work::findOrFail($id);
+
+            // Validar los datos del request
+            $validatedData = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+            ]);
+
+            // Actualizar los campos
+            $work->update($validatedData);
+
+            return response()->json([
+                'message' => 'Trabajo actualizado exitosamente.',
+                'data' => $work,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el trabajo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Eliminar un trabajo.
+     */
+    public function destroyWork($id)
+    {
+        try {
+            // Buscar el trabajo por ID
+            $work = Work::findOrFail($id);
+    
+            // Verificar si el trabajo tiene una imagen asociada
+            if ($work->image) {
+                // Extraer la ruta relativa del archivo (elimina el prefijo '/storage/')
+                $relativePath = str_replace('/storage/', 'public/', $work->image);
+    
+                // Eliminar la imagen del almacenamiento
+                if (Storage::exists($relativePath)) {
+                    Storage::delete($relativePath);
+                }
+            }
+    
+            // Eliminar el trabajo
+            $work->delete();
+    
+            return response()->json([
+                'message' => 'Trabajo e imagen eliminados exitosamente.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el trabajo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
