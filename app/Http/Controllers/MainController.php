@@ -1187,21 +1187,21 @@ class MainController extends Controller
 
         // Búsqueda inicial con MATCH ... AGAINST
         $products = $store->products()
-        ->selectRaw("products.id, products.name, products.image, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
-        ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
-        ->orderByDesc('relevance')
-        ->get();
+            ->selectRaw("products.id, products.name, products.image, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
+            ->orderByDesc('relevance')
+            ->get();
 
 
         // Si no se encuentran resultados, buscar con coincidencias parciales
         if ($products->isEmpty()) {
             $searchQuery = $search . '*';
             $products = $store->products()
-            ->selectRaw("products.id, products.name, products.image, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
-            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$searchQuery])
-            ->orWhere('name', 'LIKE', "%{$searchQuery}%") // Complementar con búsqueda relajada
-            ->orderByDesc('relevance')
-            ->get();
+                ->selectRaw("products.id, products.name, products.image, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$searchQuery])
+                ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$searchQuery])
+                ->orWhere('name', 'LIKE', "%{$searchQuery}%") // Complementar con búsqueda relajada
+                ->orderByDesc('relevance')
+                ->get();
         }
 
         // Retornar los productos encontrados
@@ -1457,8 +1457,6 @@ class MainController extends Controller
         // Realiza la búsqueda de productos que coincidan con la búsqueda
         $products = $this->searchProducts($search);
 
-        //return response()->json(['products' => $products], 200);
-
         // Si no hay productos, no se pueden retornar tiendas
         if ($products->isEmpty()) {
             return response()->json(['stores' => [], 'locationStores' => $locationStores], 200);
@@ -1492,73 +1490,85 @@ class MainController extends Controller
     private function searchProducts($search)
     {
         return Product::selectRaw("*, MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance", [$search])
-        ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
-        ->orderByDesc('relevance')
-        ->get();
+            ->whereRaw("MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)", [$search])
+            ->orderByDesc('relevance')
+            ->get();
     }
 
     private function getStoresFromProducts($products, $municipalityId, $stateId, $sectorId, &$locationStores, $locationType)
     {
-        // Obtener los IDs de tiendas únicas asociadas a los productos a través de la relación 'stores'
-        $storeData = $products->flatMap(function ($product) {
-            return $product->stores->map(function ($store) use ($product) {
-                return [
-                    'store_id' => $store->id,
-                    'product_id' => $product->id,
-                ];
-            });
+        // Cargar la relación 'stores.municipality' de los productos
+        $products->load('stores.municipality');
+
+        // Recopilar todas las tiendas en una colección
+        $stores = collect();
+
+        foreach ($products as $product) {
+            if ($product->stores) {
+                foreach ($product->stores as $store) {
+                    if ($store->status == true) { // Verificar si la tienda está activa
+                        $stores->push($store);
+                    }
+                }
+            }
+        }
+
+        // Eliminar duplicados basados en la clave 'id'
+        $stores = $stores->unique('id');
+
+        // Agregar un producto de prueba en la posición 0 a cada tienda
+        $stores->each(function ($store) {
+            $store->products = collect([
+                (object)[
+                    'id' => 0,
+                    'name' => 'Producto de prueba',
+                    'description' => 'Este es un producto de prueba agregado dinámicamente',
+                    'price' => 0.00,
+                    'status' => true,
+                ]
+            ]);
         });
-
-        //Agrupar los resultados por tienda
-        $storeDataGrouped = $storeData->groupBy('store_id');  // Agrupamos por ID de tienda
-
-        // Aseguramos que sean únicos        
-        $storesQuery = Store::whereIn('id', $storeDataGrouped->keys())
-            ->where('status', true)  // Solo tiendas activas
-            ->with(['municipality', 'products']);  // Cargar las relaciones necesarias
 
         // Filtrar por ubicación (municipio, estado o sector)
         if ($locationType === 'municipality' && $municipalityId) {
-            $storesQuery->where('municipalities_id', $municipalityId);
+            $stores = $stores->filter(function ($store) use ($municipalityId) {
+                return $store->municipality && $store->municipality->id == $municipalityId;
+            });
         }
 
         if ($locationType === 'state' && $stateId) {
-            $storesQuery->whereHas('municipality', function ($query) use ($stateId) {
-                $query->where('states_id', $stateId);
+            $stores = $stores->filter(function ($store) use ($stateId) {
+                return $store->municipality && $store->municipality->states_id == $stateId;
             });
         }
 
         if ($locationType === 'country' && $sectorId && $sectorId !== 'Todos') {
-            $storesQuery->where('sectors_id', $sectorId);
+            $stores = $stores->filter(function ($store) use ($sectorId) {
+                return $store->sectors_id == $sectorId;
+            });
         }
 
-        $stores = $storesQuery->paginate(10);
+        // Paginación manual
+        $stores = $stores->values(); // Reindexar la colección
+        $perPage = 10;
+        $page = request()->get('page', 1);
+        $paginatedStores = $stores->slice(($page - 1) * $perPage, $perPage);
+
+        // Crear un paginador manual
+        $paginatedStores = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedStores,
+            $stores->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         // Establecer el tipo de ubicación para la respuesta
-        if ($stores->isNotEmpty()) {
+        if ($paginatedStores->isNotEmpty()) {
             $locationStores = $locationType;
         }
 
-        foreach ($stores as $store) {
-            // Buscar los productos asociados a esta tienda
-            $associatedProducts = $storeDataGrouped->get($store->id, []);
-
-            // Si se encuentran productos asociados, asigna solo el primero (o el más relevante)
-            if ($associatedProducts->isNotEmpty()) {
-                // En este caso, se selecciona el primer producto de la lista (puedes cambiar esto según tu lógica)
-                $firstProduct = $associatedProducts->first();
-
-                // Asignar solo ese producto encontrado a la tienda
-                $store->products[0] = [
-                    'id' => $firstProduct['product_id'],
-                ];
-            } else {
-                // Si no hay productos asociados, asignar un valor vacío o null
-                $store->products[0] = null;
-            }
-        }
-
-        return $stores;
+        return $paginatedStores;
     }
 
 
@@ -3023,7 +3033,7 @@ class MainController extends Controller
                             return '';
                         }
                     }
-                    if($field == 'categories_id'){
+                    if ($field == 'categories_id') {
                         $subcategory = SubCategory::find($row->sub_categories_id);
                         return $subcategory ? $subcategory->categories_id : '';
                     }
@@ -3308,7 +3318,7 @@ class MainController extends Controller
         $cylinder_no_apply = cylinderCapacity::where('description', 'No aplica')->first();
         $model_no_apply = Modell::where('description', 'No aplica')->first();
         $box_no_apply = Box::where('description', 'No aplica')->first();
-        
+
         $products = Product::whereHas('subcategory', function ($query) use ($store) {
             $query->whereHas('category', function ($query) use ($store) {
                 $query->where('name', $store->category->description);
@@ -3430,21 +3440,21 @@ class MainController extends Controller
         try {
             // Buscar el trabajo por ID
             $work = Work::findOrFail($id);
-    
+
             // Verificar si el trabajo tiene una imagen asociada
             if ($work->image) {
                 // Extraer la ruta relativa del archivo (elimina el prefijo '/storage/')
                 $relativePath = str_replace('/storage/', 'public/', $work->image);
-    
+
                 // Eliminar la imagen del almacenamiento
                 if (Storage::exists($relativePath)) {
                     Storage::delete($relativePath);
                 }
             }
-    
+
             // Eliminar el trabajo
             $work->delete();
-    
+
             return response()->json([
                 'message' => 'Trabajo e imagen eliminados exitosamente.',
             ], 200);
