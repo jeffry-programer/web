@@ -113,6 +113,7 @@ Route::middleware('auth.admin',config('jetstream.auth_session'),'verified')->gro
     Route::get('/table-management/{label}', UserManagement::class)->name('/table-management/{label}');
     Route::post('/aprove-renovation', [UserManagement::class, 'aproveRenovation'])->name('aprove-renovation');
     Route::post('/decline-renovation', [UserManagement::class, 'declineRenovation'])->name('decline-renovation');
+    Route::post('/datatable-products', [MainController::class, 'getProducts'])->name('datatable.products');
 });
 
 Route::get('/download-receipt/{id}', function ($id) {

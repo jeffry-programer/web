@@ -487,7 +487,7 @@
                                                 </select>
                                             @endif
                                             <label for="">{{__($field)}}</label>
-                                            <select class="form-select" name="{{$field}}" id="{{$field}}">
+                                            <select class="form-select" @if($field != 'categories_stores_id') name="{{$field}}" @endif id="{{$field}}">
                                                 @foreach ($extra_data[$field]['values'] as $value)
                                                     @foreach ($extra_data[$field]['fields'] as $field2)
                                                         @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')

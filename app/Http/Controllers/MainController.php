@@ -2413,13 +2413,13 @@ class MainController extends Controller
                 ->exists();
 
             if (!$storeHasActiveSignal) {
-                $sector = ($request->sector !== 'Todos') 
-                ? optional(Sector::find($request->sector))->description ?? '' 
-                : '';
+                $sector = ($request->sector !== 'Todos')
+                    ? optional(Sector::find($request->sector))->description ?? ''
+                    : '';
 
-                if($sector != ''){
-                    $detail_signal = 'Me encuentro en: '.$sector . ', ' . $request->description;
-                }else{
+                if ($sector != '') {
+                    $detail_signal = 'Me encuentro en: ' . $sector . ', ' . $request->description;
+                } else {
                     $detail_signal = $request->description;
                 }
 
@@ -3473,6 +3473,47 @@ class MainController extends Controller
                 'message' => 'Error al eliminar el trabajo.',
                 'error' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    public function getProducts(Request $request)
+    {
+        if ($request->ajax()) {
+            $products = Product::with('brand')->select('products.*');
+    
+            // Filtrar por búsqueda si existe algún valor
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+
+                // Divide la búsqueda en palabras individuales
+                $searchWords = explode(' ', $searchValue);
+
+                // Filtra buscando cada palabra en el campo 'name'
+                $products = $products->where(function ($query) use ($searchWords) {
+                    foreach ($searchWords as $word) {
+                        $query->where('products.name', 'like', "%{$word}%");
+                    }
+                });
+            }
+    
+            return DataTables::of($products)
+                ->addColumn('checkbox', function($product) {
+                    return '<input style="margin-top: .75rem;" type="checkbox" onclick="myCheckbox(' . $product->id . ')" id="checkbox-' . $product->id . '">';
+                })
+                ->addColumn('name', function($product) {
+                    return '<p class="text-xs font-weight-bold mb-0">' . $product->name . '</p>';
+                })
+                ->addColumn('brand', function($product) {
+                    return '<p class="text-xs font-weight-bold mb-0">' . $product->brand->description . '</p>';
+                })
+                ->addColumn('amount', function($product) {
+                    return '<input type="number" min="1" id="amount-' . $product->id . '" class="form-control">';
+                })
+                ->addColumn('price', function($product) {
+                    return '<input type="number" min="1" id="price-' . $product->id . '" class="form-control">';
+                })
+                ->rawColumns(['checkbox', 'name', 'brand', 'amount', 'price'])
+                ->make(true);
         }
     }
 }

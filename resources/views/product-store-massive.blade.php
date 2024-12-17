@@ -284,17 +284,6 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($products as $product)
-                                                    <tr>
-                                                        <th><input style="margin-top: .75rem;" type="checkbox" onclick="myCheckbox({{$product->id}})" id="checkbox-{{$product->id}}"></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->name}}</p></th>
-                                                        <th><p class="text-xs font-weight-bold mb-0" style="font-weight: initial;
-                                                            margin-top: .4rem;">{{$product->brand->description}}</p></th>
-                                                        <th><input type="number" min="1" id="amount-{{$product->id}}" class="form-control"></th>
-                                                        <th><input type="number" min="1" id="price-{{$product->id}}" class="form-control"></th>
-                                                    </tr>
-                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -331,10 +320,20 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $('#myTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{{ route('datatable.products') }}", // Ruta al servidor que procesa los datos
+                "type": "POST",
+                "data": function(d) {
+                    d._token = "{{ csrf_token() }}"; // Agregar CSRF token para Laravel
+                }
+            },
             "oLanguage": {
                 "sSearch": "{{__('Search')}}",
-                "sEmptyTable": "No hay información para mostrar"
-            },"language": {
+                "sEmptyTable": "{{__('No hay información para mostrar')}}"
+            },
+            "language": {
                 "zeroRecords": "{{__('No matching records found')}}",
                 "infoEmpty": "{{__('No records available')}}",
                 "paginate": {
@@ -342,10 +341,18 @@
                     "next": "{{__('Next')}}"
                 },
                 "lengthMenu": "{{__('Showing')}} _MENU_ {{__('entries')}}",
-                "infoFiltered":   "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
+                "infoFiltered": "({{__('filtered from')}} _TOTAL_ {{__('total entries')}})",
                 "info": "{{__('Showing')}} _START_ {{__('to')}} _END_ {{__('of')}} _TOTAL_ {{__('entries')}}",
             },
+            "columns": [
+                { "data": "checkbox" },
+                { "data": "name" },
+                { "data": "brand" },
+                { "data": "amount" },
+                { "data": "price" }
+            ]
         });
+
 
         $("#menu").click(() => {
             if($("#menu").attr('class').includes('act')){
