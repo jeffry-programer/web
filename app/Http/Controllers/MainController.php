@@ -2369,9 +2369,9 @@ class MainController extends Controller
             ->where('status', true)
             ->where('municipalities_id', $request->municipality);
 
-        if ($request->sector !== 'Todos') {
+        /*if ($request->sector !== 'Todos') {
             $storesQuery->where('sectors_id', $request->sector);
-        }
+        }*/
 
         if ($request->categoryId != 0 && $request->categoryId != '0' && $request->categoryId != null) {
             $storesQuery->where('categories_stores_id', $request->categoryId);
@@ -2413,10 +2413,18 @@ class MainController extends Controller
                 ->exists();
 
             if (!$storeHasActiveSignal) {
+                $sector = ($request->sector !== 'Todos') 
+                ? optional(Sector::find($request->sector))->description ?? '' 
+                : '';
+
+                if($sector != ''){
+                    $detail_signal = 'Me encuentro en: '.$sector . ', ' . $request->description;
+                }
+
                 SignalAux::create([
                     'users_id' => $user->id,
                     'stores_id' => $store->user->id,
-                    'detail' => $request->description,
+                    'detail' => $detail_signal,
                     'status' => false,  // Marcamos como abierta (esperando)
                     'status2' => false,
                     'read' => false,
