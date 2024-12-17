@@ -2419,6 +2419,8 @@ class MainController extends Controller
 
                 if($sector != ''){
                     $detail_signal = 'Me encuentro en: '.$sector . ', ' . $request->description;
+                }else{
+                    $detail_signal = $request->description;
                 }
 
                 SignalAux::create([
