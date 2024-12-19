@@ -170,6 +170,8 @@ class UserManagement extends Component
 
     public function validateExist(Request $request, $name_table)
     {
+        return false;
+        
         $error = false;
         if (isset($request->name) && $name_table != 'users') {
             if ($name_table == 'sub_categories') {

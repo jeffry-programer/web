@@ -487,7 +487,7 @@
                                                 </select>
                                             @endif
                                             <label for="">{{__($field)}}</label>
-                                            <select class="form-select" @if($field != 'categories_stores_id') name="{{$field}}" @endif id="{{$field}}">
+                                            <select class="form-select" name="{{$field}}" id="{{$field}}">
                                                 @foreach ($extra_data[$field]['values'] as $value)
                                                     @foreach ($extra_data[$field]['fields'] as $field2)
                                                         @if($field2 == 'email' || $field2 == 'name' || $field2 == 'description')
@@ -1026,7 +1026,7 @@
               });
         });
 
-        fillCategoriesSelect($('[name="type_stores_id"]').val(), $('[name="categories_stores_id"]'));
+        fillCategoriesSelect($('[name="type_stores_id"]').val(), $('[name="categories_stores_id"]:first')); // Solo el primer select
 
         $('[name="type_stores_id"]').change(() => {
             const typeStoresId = $('[name="type_stores_id"]').val();
