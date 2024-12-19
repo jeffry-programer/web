@@ -47,6 +47,7 @@ use App\Notifications\ResetPasswordApi;
 use App\Notifications\VerifiedEmail;
 use App\Notifications\VerifiedEmailApi;
 use Carbon\Carbon;
+use CURLFile;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -1361,7 +1362,9 @@ class MainController extends Controller
     {
         $type_store = TypeStore::where('description', $typeStore)->first();
         if ($type_store != null) {
-            $categories = CategoryStore::where('type_stores_id', $type_store->id)->get();
+            $categories = CategoryStore::where('type_stores_id', $type_store->id)
+                ->orderBy('description', 'asc') // Ordenar por descripción en orden ascendente
+                ->get();
         } else {
             $categories = [];
         }
@@ -1637,35 +1640,73 @@ class MainController extends Controller
 
         $storeQuery = $applyFilters($storeQuery);
 
-        if ($request->type == env('TIPO_TALLER_ID') && $request->categoryId == env('TALLER_MECANICO')) {
-            $storeQuery2 = Store::where('status', true)
-                ->where('municipalities_id', $municipalityId)
-                ->where('services', true)
-                ->with('municipality');
+        if ($request->type == env('TIPO_TALLER_ID')) {
+            if ($request->categoryId == env('TALLER_MECANICO')) {
+                $storeQuery2 = Store::where('status', true)
+                    ->where('municipalities_id', $municipalityId)
+                    ->where('services', true)
+                    ->where('categories_stores_id', env('TIPO_REPUESTOS'))
+                    ->with('municipality')
+                    ->get(); // Si necesitas ejecutar la consulta y obtener resultados.
 
-            if ($sectorId !== 'Todos') {
-                $storeQuery2->where('sectors_id', $sectorId);
+                if ($sectorId !== 'Todos') {
+                    $storeQuery2->where('sectors_id', $sectorId);
+                }
+
+                // Obtener resultados individuales
+                $stores1 = $storeQuery->get();
+                $stores2 = $storeQuery2->get();
+
+                // Combinar resultados
+                $mergedStores = $stores1->merge($stores2);
+
+                // Implementar paginación manual
+                $currentPage = LengthAwarePaginator::resolveCurrentPage();
+                $perPage = 10;
+                $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
+
+                $stores = new LengthAwarePaginator(
+                    $currentResults,
+                    $mergedStores->count(),
+                    $perPage,
+                    $currentPage,
+                    ['path' => LengthAwarePaginator::resolveCurrentPath()]
+                );
+            } else {
+                $categoryStore = CategoryStore::find($request->categoryId);
+                $storeQuery2 = Store::where('status', true)
+                    ->where('municipalities_id', $municipalityId)
+                    ->where('services', true)
+                    ->whereHas('category', function ($query) use ($categoryStore) {
+                        $query->where('description', $categoryStore->description);
+                    })
+                    ->with('municipality')
+                    ->get(); // Si necesitas ejecutar la consulta y obtener resultados.
+
+                if ($sectorId !== 'Todos') {
+                    $storeQuery2->where('sectors_id', $sectorId);
+                }
+
+                // Obtener resultados individuales
+                $stores1 = $storeQuery->get();
+                $stores2 = $storeQuery2->get();
+
+                // Combinar resultados
+                $mergedStores = $stores1->merge($stores2);
+
+                // Implementar paginación manual
+                $currentPage = LengthAwarePaginator::resolveCurrentPage();
+                $perPage = 10;
+                $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
+
+                $stores = new LengthAwarePaginator(
+                    $currentResults,
+                    $mergedStores->count(),
+                    $perPage,
+                    $currentPage,
+                    ['path' => LengthAwarePaginator::resolveCurrentPath()]
+                );
             }
-
-            // Obtener resultados individuales
-            $stores1 = $storeQuery->get();
-            $stores2 = $storeQuery2->get();
-
-            // Combinar resultados
-            $mergedStores = $stores1->merge($stores2);
-
-            // Implementar paginación manual
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-            $perPage = 10;
-            $currentResults = $mergedStores->slice(($currentPage - 1) * $perPage, $perPage);
-
-            $stores = new LengthAwarePaginator(
-                $currentResults,
-                $mergedStores->count(),
-                $perPage,
-                $currentPage,
-                ['path' => LengthAwarePaginator::resolveCurrentPath()]
-            );
         } else {
             $stores = $storeQuery->paginate(10);
         }
@@ -2353,6 +2394,7 @@ class MainController extends Controller
                 $existingSignal = SignalAux::where('users_id', $user->id)
                     ->where('read', false)
                     ->whereHas('store', function ($query) use ($request) {
+                        $query->where('categories_stores_id', env('TIPO_REPUESTOS'));
                         $query->where('services', true);
                     })
                     ->exists();
@@ -2381,6 +2423,7 @@ class MainController extends Controller
 
         if ($request->type == env('TIPO_TALLER_ID')) {
             $storesQuery2 = Store::where('services', true)
+                ->where('categories_stores_id', env('TIPO_REPUESTOS'))
                 ->where('status', true)
                 ->where('municipalities_id', $request->municipality);
 
@@ -2399,6 +2442,8 @@ class MainController extends Controller
         $storesSendSignalAux = [];
 
         $type = '';
+
+        $processImage = false;
 
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
@@ -2423,6 +2468,19 @@ class MainController extends Controller
                     $detail_signal = $request->description;
                 }
 
+                if ($request->hasFile('image') && !($processImage)) {
+                    // Obtener el archivo
+                    $image = $request->file('image');
+
+                    // Generar un nombre único para la imagen
+                    $imagePath = $image->store('public/images-signals-aux');  // 'public/images' es el directorio donde se guarda la imagen
+
+                    // Si necesitas la URL completa para acceder a la imagen
+                    $imageUrl = Storage::url($imagePath);
+                }
+
+                $processImage = true;
+
                 SignalAux::create([
                     'users_id' => $user->id,
                     'stores_id' => $store->user->id,
@@ -2431,6 +2489,7 @@ class MainController extends Controller
                     'status2' => false,
                     'read' => false,
                     'created_at' => now(),
+                    'image' => $imageUrl ?? null,  // Guardar la URL de la imagen si existe
                 ]);
 
                 $storesSendSignalAux[] = $store;
@@ -2666,6 +2725,17 @@ class MainController extends Controller
         // Emitir el evento para cada señal antes de eliminarlas
         foreach ($signals as $signal) {
             event(new NewMessage2([], $signal->store->user->id));
+
+            // Eliminar la imagen asociada si existe
+            if (!empty($signal->image)) {
+                // Convertir la URL completa en una ruta relativa al almacenamiento
+                $imagePath = str_replace('/storage', 'public', $signal->image);
+
+                // Verificar y eliminar la imagen
+                if (Storage::exists($imagePath)) {
+                    Storage::delete($imagePath);
+                }
+            }
         }
 
         // Luego de emitir los eventos, proceder a eliminar las señales
@@ -3480,7 +3550,7 @@ class MainController extends Controller
     {
         if ($request->ajax()) {
             $products = Product::with('brand')->select('products.*');
-    
+
             // Filtrar por búsqueda si existe algún valor
             if (!empty($request->search['value'])) {
                 $searchValue = $request->search['value'];
@@ -3495,21 +3565,21 @@ class MainController extends Controller
                     }
                 });
             }
-    
+
             return DataTables::of($products)
-                ->addColumn('checkbox', function($product) {
+                ->addColumn('checkbox', function ($product) {
                     return '<input style="margin-top: .75rem;" type="checkbox" onclick="myCheckbox(' . $product->id . ')" id="checkbox-' . $product->id . '">';
                 })
-                ->addColumn('name', function($product) {
+                ->addColumn('name', function ($product) {
                     return '<p class="text-xs font-weight-bold mb-0">' . $product->name . '</p>';
                 })
-                ->addColumn('brand', function($product) {
+                ->addColumn('brand', function ($product) {
                     return '<p class="text-xs font-weight-bold mb-0">' . $product->brand->description . '</p>';
                 })
-                ->addColumn('amount', function($product) {
+                ->addColumn('amount', function ($product) {
                     return '<input type="number" min="1" id="amount-' . $product->id . '" class="form-control">';
                 })
-                ->addColumn('price', function($product) {
+                ->addColumn('price', function ($product) {
                     return '<input type="number" min="1" id="price-' . $product->id . '" class="form-control">';
                 })
                 ->rawColumns(['checkbox', 'name', 'brand', 'amount', 'price'])
