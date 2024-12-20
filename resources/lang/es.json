@@ -441,5 +441,8 @@
     "approve" : "Aprobar",
     "decline" : "Rechazar",
     "pending" : "Pendiente",
-    "default" : "Imagen por defecto"
+    "default" : "Imagen por defecto",
+    "email_verified_at" : "Verificación",
+    "services": "Servicios",
+    "sucursal" : "Sucursal"
 }

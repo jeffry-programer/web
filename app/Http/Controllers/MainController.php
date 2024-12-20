@@ -1646,8 +1646,7 @@ class MainController extends Controller
                     ->where('municipalities_id', $municipalityId)
                     ->where('services', true)
                     ->where('categories_stores_id', env('TIPO_REPUESTOS'))
-                    ->with('municipality')
-                    ->get(); // Si necesitas ejecutar la consulta y obtener resultados.
+                    ->with('municipality');
 
                 if ($sectorId !== 'Todos') {
                     $storeQuery2->where('sectors_id', $sectorId);
@@ -1674,14 +1673,14 @@ class MainController extends Controller
                 );
             } else {
                 $categoryStore = CategoryStore::find($request->categoryId);
+
                 $storeQuery2 = Store::where('status', true)
                     ->where('municipalities_id', $municipalityId)
                     ->where('services', true)
                     ->whereHas('category', function ($query) use ($categoryStore) {
                         $query->where('description', $categoryStore->description);
                     })
-                    ->with('municipality')
-                    ->get(); // Si necesitas ejecutar la consulta y obtener resultados.
+                    ->with('municipality');
 
                 if ($sectorId !== 'Todos') {
                     $storeQuery2->where('sectors_id', $sectorId);
@@ -2092,7 +2091,7 @@ class MainController extends Controller
                 }
             }
 
-            foreach ($services as $service){
+            foreach ($services as $service) {
                 $service->address = Crypt::decrypt($service->address);
             }
 
@@ -2163,7 +2162,7 @@ class MainController extends Controller
             'municipalities_id' => 'required',
             'sectors_id' => 'required',
             'name' => 'required|string|max:100|unique:stores',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string|max:500',
             'email' => 'required|email|unique:stores',
             'address' => 'required|max:255',
             'rif' => 'required|max:255|unique:stores', // Agregamos la regla 'unique'
@@ -2997,6 +2996,12 @@ class MainController extends Controller
             },
             'hour' => function ($row) {
                 return date('H:i', strtotime($row->hour));
+            },
+            'email_verified_at' => function ($row) {
+                return $row->email_verified_at == null ? 'Inactiva' : 'Activa';
+            },
+            'session_active' => function ($row) {
+                return $row->session_active == 0 ? 'Inactiva' : 'Activa';
             }
         ];
 

@@ -108,16 +108,16 @@ class UserManagement extends Component
     public function searchData(Request $request)
     {
         $result = [];
-    
+
         if ($request->table == 'users') {
             // Obtener todos los registros y descifrar los correos
             $users = DB::table($request->table)->select('id', 'email', 'name')->get();
-    
+
             foreach ($users as $user) {
                 try {
                     // Intentar descifrar el correo
                     $decryptedEmail = decrypt($user->email);
-    
+
                     // Comparar el correo descifrado con el valor de búsqueda
                     if (stripos($decryptedEmail, $request->value) !== false) {
                         $result[] = [
@@ -131,7 +131,7 @@ class UserManagement extends Component
                     continue;
                 }
             }
-    
+
             return json_encode($result);
         } else {
             // Búsqueda normal para otras tablas
@@ -143,7 +143,7 @@ class UserManagement extends Component
             );
         }
     }
-    
+
 
     public function validateRequest(Request $request, $name_table)
     {
@@ -155,23 +155,29 @@ class UserManagement extends Component
         }
 
         if (isset($request->description)) {
-            if ($name_table == 'products' || $name_table == 'stores' || $name_table == 'publicities' || $name_table == 'promotions' || $name_table == 'informations') {
-                if (strlen($request->description) > 255) {
-                    $error = true;
-                }
-            } else {
-                if (strlen($request->description) > 45) {
-                    $error = true;
-                }
+            $lengthLimits = [
+                'stores' => 500,
+                'products' => 255,
+                'publicities' => 255,
+                'promotions' => 255,
+                'informations' => 255,
+                'default' => 45,
+            ];
+        
+            $maxLength = $lengthLimits[$name_table] ?? $lengthLimits['default'];
+        
+            if (strlen($request->description) > $maxLength) {
+                $error = true;
             }
         }
+
         return $error;
     }
 
     public function validateExist(Request $request, $name_table)
     {
         return false;
-        
+
         $error = false;
         if (isset($request->name) && $name_table != 'users') {
             if ($name_table == 'sub_categories') {
@@ -319,7 +325,7 @@ class UserManagement extends Component
                     $count++;
                     continue;
                 }
-                
+
                 if ($data[$field] != $request->label && $data[$field] != $request->_token) {
                     if ($count == 0) {
                         if ($field == 'product_stores_id') $data[$field] = ProductStore::where('products_id', $data['products_id'])->where('stores_id', $data['stores_id'])->first()->id;
@@ -333,11 +339,11 @@ class UserManagement extends Component
                             $data[$field] = str_replace(' ', '-', $data['name']);
                         }
 
-                        if($request->label == 'Tiendas' && ($field == 'email' || $field == 'address' || $field == 'phone' || $field == 'RIF')){
+                        if ($request->label == 'Tiendas' && ($field == 'email' || $field == 'address' || $field == 'phone' || $field == 'RIF')) {
                             $data[$field] = Crypt::encrypt($data[$field]);
                         }
 
-                        if($request->label == 'Usuarios' && ($field == 'email' || $field == 'address' || $field == 'phone')){
+                        if ($request->label == 'Usuarios' && ($field == 'email' || $field == 'address' || $field == 'phone')) {
                             $data[$field] = Crypt::encrypt($data[$field]);
                         }
 
@@ -425,16 +431,16 @@ class UserManagement extends Component
             'states_id' => 'required',
             'categories_stores_id' => 'required'
         ]);
-    
+
         $data = $request->all();
-    
+
         // Encriptar datos sensibles
         $data['link'] = str_replace(' ', '-', $data['name']);
         $data['address'] = Crypt::encrypt($data['address']);
         $data['RIF'] = Crypt::encrypt(Auth::user()->store->RIF);
         $data['email'] = Crypt::encrypt($data['email']);
         $data['phone'] = Crypt::encrypt($data['phone']);
-    
+
         // Crear el usuario
         $user = User::create([
             'profiles_id' => Auth::user()->profiles_id,
@@ -442,12 +448,12 @@ class UserManagement extends Component
             'email' => $data['email'], // Se debe desencriptar al mostrarlo
             'password' => Hash::make($request->password),
         ]);
-    
+
         // Crear la tienda
         $data['users_id'] = $user->id;
         $data['sucursal'] = true;
         $store = Store::create($data);
-    
+
         // Asignar plan básico a la tienda
         $type_plan = Plan::where('description', 'Basico')->first();
 
@@ -459,7 +465,7 @@ class UserManagement extends Component
         $plan->status = true;
         $plan->created_at = Carbon::now();
         $plan->save();
-    
+
         // Puedes devolver una respuesta JSON si lo prefieres
         return json_encode('stores' . '-' . $store->id);
     }
@@ -849,7 +855,7 @@ class UserManagement extends Component
         if ($name_table == 'promotions') {
             $status1 = Promotion::find($request->id)->status;
         }
-        
+
         DB::update($query);
 
         if ($name_table == 'promotions') {
@@ -872,7 +878,7 @@ class UserManagement extends Component
             $url = '/detail-product/' . $request->products_id . '/' . $request->stores_id;
             $checkApprove = Promotion::find($request->id)->status == true ? true : false;
 
-            if(!$checkApprove){
+            if (!$checkApprove) {
                 session()->flash('message', 'Registro editado exitosamente!!');
                 return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
             }
@@ -900,7 +906,7 @@ class UserManagement extends Component
                             'android' => [  // Mover el bloque de Android fuera de 'data'
                                 'priority' => 'high',
                             ],
-                          ]);
+                        ]);
 
                         // Enviar el mensaje
                         $messaging->send($message);
@@ -908,7 +914,7 @@ class UserManagement extends Component
                 }
             }
         }
-        
+
         session()->flash('message', 'Registro editado exitosamente!!');
         return redirect('/admin/table-management/' . str_replace(' ', '_', $request->label));
     }
@@ -1009,7 +1015,7 @@ class UserManagement extends Component
             $url = '/detail-publicity/' . $request->id;
             $checkApprove = Publicity::find($request->id)->status == true ? true : false;
 
-            if(!$checkApprove){
+            if (!$checkApprove) {
                 return json_encode($name_table . '-' . $request->id);
             }
 
@@ -1036,7 +1042,7 @@ class UserManagement extends Component
                             'android' => [  // Mover el bloque de Android fuera de 'data'
                                 'priority' => 'high',
                             ],
-                          ]);
+                        ]);
 
                         // Enviar el mensaje
                         $messaging->send($message);
@@ -1145,10 +1151,10 @@ class UserManagement extends Component
                 $query = "update $request->table set image = '$url', image2 = '$store->image' where id = $request->id";
             }
             DB::update($query);
-        } else if ($request->table == 'informations'){
-            if($request->type == '1'){
+        } else if ($request->table == 'informations') {
+            if ($request->type == '1') {
                 $query = "update $request->table set resource = '$url' where id = $request->id";
-            }else{
+            } else {
                 $query = "update $request->table set `default` = '$url' where id = $request->id";
             }
             DB::update($query);
@@ -1249,7 +1255,8 @@ class UserManagement extends Component
         Storage::delete($request->nameImg);
     }
 
-    public function aproveRenovation(Request $request){
+    public function aproveRenovation(Request $request)
+    {
         $renovation = Renovation::find($request->id);
         PlanContracting::where('stores_id', $renovation->stores_id)->delete();
 
@@ -1287,7 +1294,7 @@ class UserManagement extends Component
                 'android' => [  // Mover el bloque de Android fuera de 'data'
                     'priority' => 'high',
                 ],
-              ]);
+            ]);
 
             // Enviar el mensaje
             $messaging->send($message);
@@ -1301,7 +1308,8 @@ class UserManagement extends Component
         return json_encode('ok');
     }
 
-    public function declineRenovation(Request $request){
+    public function declineRenovation(Request $request)
+    {
         $renovation = Renovation::find($request->id);
 
         $store = Store::find($renovation->stores_id);
@@ -1326,7 +1334,7 @@ class UserManagement extends Component
                 'android' => [  // Mover el bloque de Android fuera de 'data'
                     'priority' => 'high',
                 ],
-              ]);
+            ]);
 
             // Enviar el mensaje
             $messaging->send($message);

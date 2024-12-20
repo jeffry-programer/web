@@ -189,7 +189,7 @@
                                     <thead>
                                         <tr>
                                             @foreach ($atributes as $field)
-                                                @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
+                                                @if(!in_array($field, ['updated_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                         {{ __($field) }}
                                                     </th>
@@ -266,7 +266,7 @@
                             </select>
                         @endif
                         @foreach ($atributes as $field)
-                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
+                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'remember_token' && $field != 'token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                 @if(str_contains($field, '_id'))
                                     @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
                                         <label for="">{{__($field)}}</label>
@@ -359,7 +359,7 @@
                                     <input type="text" name="{{$field}}" class="d-none" value="">
                                 @elseif($field == 'phone' || $field == 'amount' || $field == 'price')
                                     <label>{{__($field)}}</label>
-                                    <input type="number" step="0.01" min="1" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
+                                    <input type="number" step="0.01" min="0.01" name="{{$field}}" required class="form-control" placeholder="{{__('enter a')}} {{__($field)}}">
                                 @elseif($field == 'count')
                                     <label class="d-none">{{__($field)}}</label>
                                     <input type="number" step="0.01" name="{{$field}}" required class="form-control d-none" value="0">
@@ -384,6 +384,30 @@
                                 @elseif((str_contains($field, 'default')))
                                     <label>{{__($field)}}</label>
                                     <div class="dropzone" id="myDropzone49"></div>
+                                @elseif((str_contains($field, 'services')))
+                                    <label>{{ __($field) }}</label>
+                                    <select name="{{ $field }}" class="form-select">
+                                        <option value="1">Esta tienda tiene servicios</option>
+                                        <option value="0">Esta tienda no tiene servicios</option>
+                                    </select>
+                                @elseif((str_contains($field, 'sucursal')))
+                                    <label>{{ __($field) }}</label>
+                                    <select name="{{ $field }}" class="form-select">
+                                        <option value="1">Esta tienda es sucursal</option>
+                                        <option value="0">Esta tienda no es sucursal</option>
+                                    </select>
+                                @elseif((str_contains($field, 'session_active')))
+                                    <label>{{ __($field) }}</label>
+                                    <select name="{{ $field }}" class="form-select">
+                                        <option value="1">Sesión Activa</option>
+                                        <option value="0">Sesión Inactiva</option>
+                                    </select>
+                                @elseif((str_contains($field, 'email_verified_at')))
+                                    <label>{{ __($field) }}</label>
+                                    <select name="{{ $field }}" class="form-select">
+                                        <option value="{{ Carbon\Carbon::now() }}">Activa</option>
+                                        <option value="">Inactiva</option>
+                                    </select>
                                 @else
                                     @if($field == 'dimensiones' || $field == 'capacidad')
                                         <div class="display-grua">
@@ -462,7 +486,7 @@
                 <div class="card" style="width: 74%;left: 16%;">
                     <div class="card-body">
                         @foreach ($atributes as $field)
-                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
+                            @if($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'remember_token' && $field != 'token' && $field != 'about' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at')
                                 @if(str_contains($field, '_id'))
                                         @if($field == 'stores_id' || $field == 'products_id' || $field == 'users_id')
                                             <label for="">{{__($field)}}</label>
@@ -595,6 +619,30 @@
                                                 <option value="Grúas de arrastre">Grúas de arrastre</option>
                                             </select>
                                         </div>
+                                    @elseif((str_contains($field, 'services')))
+                                        <label>{{ __($field) }}</label>
+                                        <select name="{{ $field }}" id="{{ $field }}" class="form-select">
+                                            <option value="1">Esta tienda tiene servicios</option>
+                                            <option value="0">Esta tienda no tiene servicios</option>
+                                        </select>
+                                    @elseif((str_contains($field, 'sucursal')))
+                                        <label>{{ __($field) }}</label>
+                                        <select name="{{ $field }}" id="{{ $field }}" class="form-select">
+                                            <option value="1">Esta tienda es sucursal</option>
+                                            <option value="0">Esta tienda no es sucursal</option>
+                                        </select>
+                                    @elseif((str_contains($field, 'session_active')))
+                                        <label>{{ __($field) }}</label>
+                                        <select name="{{ $field }}" id="{{$field}}" class="form-select">
+                                            <option value="1">Sesión Activa</option>
+                                            <option value="0">Sesión Inactiva</option>
+                                        </select>
+                                    @elseif((str_contains($field, 'email_verified_at')))
+                                        <label>{{ __($field) }}</label>
+                                        <select name="{{ $field }}" id="{{$field}}" class="form-select">
+                                            <option value="{{ Carbon\Carbon::now() }}">Activa</option>
+                                            <option value="">Inactiva</option>
+                                        </select>
                                     @else
                                         @if($field == 'dimensiones' || $field == 'capacidad')
                                             <div class="display-grua2">
@@ -737,7 +785,7 @@
             },
             columns: [
                 @foreach ($atributes as $field)
-                    @if(!in_array($field, ['updated_at', 'email_verified_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
+                    @if(!in_array($field, ['updated_at', 'remember_token', 'token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at']))
                         { data: '{{ $field }}' },
                     @endif
                 @endforeach
@@ -811,6 +859,12 @@
                     arrayImagenes.push(array[index]);
                 }else if(key.includes('date')){
                     $(`#${key}`).val(array[index].split(' ')[0]);
+                }else if(key.includes('email_verified_at')){
+                    if (array[index] !== '' && array[index] !== null) {
+                        $("#email_verified_at").val('{{ \Carbon\Carbon::now() }}');
+                    }else{
+                        $("#email_verified_at").val('');
+                    }
                 }else{
                     if(key == 'status_renovation' && (array[index] == 'approve' || array[index] == 'decline')){
                         $("#aprove-renovation").hide();
@@ -826,6 +880,8 @@
                     }
                     $(`#${key}`).val(array[index]);
                 }
+
+                console.log(key + ' = ' + array[index]);
             });
 
 
@@ -1138,6 +1194,7 @@
                 if(field.includes('capacidad')) return false;
                 if(field.includes('dimensiones')) return false;
                 if(field.includes('tipo')) return false;
+                if(field.includes('email_verified_at')) return false;
                 if(field.includes('RIF') && value.length < 7){
                     incorrectRif = true;
                 }
@@ -1304,7 +1361,7 @@
                     incorrectRif = true;
                 }
 
-                if(field != 'password' && field != 'capacidad' && field != 'tipo' && field != 'dimensiones'){
+                if(field != 'password' && field != 'capacidad' && field != 'tipo' && field != 'dimensiones' && field != 'email_verified_at'){
                     if(value == null || value == ''){
                         boolean = false;
                     }
