@@ -2034,6 +2034,11 @@ class MainController extends Controller
                 ->limit(9)
                 ->get();
 
+            $services = Store::with('municipality')->where('type_stores_id', '!=', env('TIPO_TIENDA_ID'))
+                ->inRandomOrder()
+                ->limit(9)
+                ->get();
+
             $stores3 = SearchUser::join('stores', 'search_users.stores_id', '=', 'stores.id')
                 ->join('municipalities', 'stores.municipalities_id', '=', 'municipalities.id')
                 ->with(['product', 'store'])
@@ -2052,6 +2057,11 @@ class MainController extends Controller
                 ->when($userCityId, function ($query) use ($userCityId) {
                     return $query->orderByRaw("IF(stores.municipalities_id = ?, 0, 1)", [$userCityId]);
                 })
+                ->limit(9)
+                ->get();
+
+            $services = Store::with('municipality')->where('type_stores_id', '!=', env('TIPO_TIENDA_ID'))
+                ->inRandomOrder()
                 ->limit(9)
                 ->get();
 
@@ -2074,14 +2084,16 @@ class MainController extends Controller
                     $store_id = $store->store->id;
                     if (!in_array($store_id, $array_stores)) {
                         // Desencriptar datos del store
-                        $store->store->email = Crypt::decrypt($store->store->email);
                         $store->store->address = Crypt::decrypt($store->store->address);
-                        $store->store->phone = Crypt::decrypt($store->store->phone);
 
                         $array_stores[] = $store_id;
                         $array_stores_final[] = $store->store;
                     }
                 }
+            }
+
+            foreach ($services as $service){
+                $service->address = Crypt::decrypt($service->address);
             }
 
             foreach ($stores3->reverse() as $product) {
@@ -2098,9 +2110,7 @@ class MainController extends Controller
             foreach ($stores as $store) {
                 if ($store) {
                     try {
-                        $store->email = Crypt::decrypt($store->email);
                         $store->address = Crypt::decrypt($store->address);
-                        $store->phone = Crypt::decrypt($store->phone);
                     } catch (\Exception $e) {
                         $store->email = null;
                         $store->address = null;
@@ -2123,6 +2133,7 @@ class MainController extends Controller
                 'stores' => $stores,
                 'lastStores' => $array_stores_final,
                 'lastSearch' => $array_products_final,
+                'servicesMoreSearch' => $services,
                 'userCityId' => $userCityId
             ]);
         } catch (\Exception $e) {
