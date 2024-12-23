@@ -303,7 +303,8 @@ class UserManagement extends Component
         $query = 'insert into ' . $name_table . ' (';
         $count = 0;
         foreach ($atributes as $field) {
-            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id' && $field != 'default') {
+            $condition_email_verified_at = !($field == 'email_verified_at' && $data[$field] == '');
+            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id' && $field != 'default' && $condition_email_verified_at) {
                 if ($count == 0) {
                     $query .= $field;
                 } else {
@@ -315,11 +316,13 @@ class UserManagement extends Component
         $query .= ',created_at) values (';
         $count = 0;
         foreach ($atributes as $field) {
-            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'  && $field != 'current_team_id' && $field != 'default') {
+            $condition_email_verified_at = !($field == 'email_verified_at' && $data[$field] == '');
+
+            if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' && $field != 'remember_token' && $field != 'token' && $field != 'current_team_id' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at'  && $field != 'current_team_id' && $field != 'default' && $condition_email_verified_at) {
                 if ($field == 'image' || $field == 'image2' || $field == 'resource') {
                     $data[$field] = '';
                 }
-                if ($field == 'email_verified_at') {
+                if ($field == 'email_verified_at' && $data[$field] != ''){
                     $date = Carbon::now();
                     $query .= ",'" . $date . "'";
                     $count++;
@@ -951,14 +954,27 @@ class UserManagement extends Component
 
         $query = 'update ' . $name_table . ' set ';
         $count = 0;
+        $null_verified = false;
         foreach ($atributes as $field) {
-            if ($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'email_verified_at' && $field != 'remember_token' && $field != 'token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id') {
+            if ($field == 'email_verified_at' && $data[$field] == ''){
+                $null_verified = true;
+                continue;
+            }
+
+            if ($field != 'created_at' && $field != 'updated_at' && $field != 'id' && $field != 'remember_token' && $field != 'token' && $field != 'two_factor_secret' && $field != 'two_factor_recovery_codes' && $field != 'two_factor_confirmed_at' && $field != 'current_team_id') {
                 if ($count == 0) {
                     $query .= "$field = '" . $data[$field] . "' ";
                 } else {
                     if ($request->label == 'Publicidad' && $field == 'date_end') {
                         $days_plan = TypePublicity::find($request->type_publicities_id)->amount_days;
                         $data[$field] = Carbon::parse($request->date_init)->addDay($days_plan);
+                    }
+
+                    if ($field == 'email_verified_at' && $data[$field] != ''){
+                        $date = Carbon::now();
+                        $query .= ", $field = '" . $date . "' ";
+                        $count++;
+                        continue;
                     }
 
                     $condition = $request->label == 'Tiendas' && ($field == 'email' || $field == 'address' || $field == 'phone' || $field == 'RIF');
@@ -977,7 +993,14 @@ class UserManagement extends Component
             }
         }
         $query .= "where id = $request->id";
+
         DB::update($query);
+
+        if($null_verified){
+            $user = User::find($request->id);
+            $user->email_verified_at = null;
+            $user->save();
+        }
 
         if ($request->label == 'Tiendas') {
             $store = Store::find($request->id);

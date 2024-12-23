@@ -2426,7 +2426,11 @@ class MainController extends Controller
         }*/
 
         if ($request->categoryId != 0 && $request->categoryId != '0' && $request->categoryId != null) {
-            $storesQuery->where('categories_stores_id', $request->categoryId);
+            if($request->type == env('TIPO_TALLER_ID') && $request->selectedServiceType == 'moto'){
+                $storesQuery->where('categories_stores_id', env('TALLER_MOTOS'));
+            }else{
+                $storesQuery->where('categories_stores_id', $request->categoryId);
+            }
         }
 
         $stores = $storesQuery->get();
@@ -2454,6 +2458,8 @@ class MainController extends Controller
         $type = '';
 
         $processImage = false;
+
+        $count = 0;
 
         // Enviar señal y notificación a cada tienda sin una señal activa no leída
         foreach ($stores as $store) {
@@ -2530,14 +2536,14 @@ class MainController extends Controller
                         $messaging->send($message);
                     } catch (\Throwable $e) {
                         Log::warning('Error al enviar notificación: ' . $e->getMessage() . ' | User: ' . $store->user);
-                        continue; // Continuar con la siguiente tienda
                     }
                 } else {
                     Log::warning('Token inválido o vacío para el usuario: ' . $store->user->id);
-                    continue; // Saltar si el token no es válido
                 }
 
-                event(new NewMessage2([], $store->user->id));
+                $count++;
+
+                event(new NewMessage2([], $store->users_id));
             }
         }
 
@@ -2549,7 +2555,7 @@ class MainController extends Controller
             $type = 'Cauchera';
         }
 
-        return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId, 'typeStore' => $type], 200);
+        return response()->json(['stores' => $storesSendSignalAux, 'categoryId' => $request->categoryId, 'typeStore' => $type, 'count' => $count], 200);
     }
 
 
@@ -3002,6 +3008,12 @@ class MainController extends Controller
             },
             'session_active' => function ($row) {
                 return $row->session_active == 0 ? 'Inactiva' : 'Activa';
+            },
+            'sucursal' => function ($row) {
+                return $row->sucursal == 0 ? 'Inactiva' : 'Activa';
+            },
+            'services' => function ($row) {
+                return $row->services == 0 ? 'Inactiva' : 'Activa';
             }
         ];
 
