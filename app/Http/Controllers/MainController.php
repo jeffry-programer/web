@@ -2121,7 +2121,7 @@ class MainController extends Controller
             $publicities = Publicity::where('date_end', '>', $date)
                 ->where('status', true)
                 ->inRandomOrder()
-                ->take(8)
+                ->take(30)
                 ->get();
 
             $videos = Information::all();
@@ -2234,11 +2234,13 @@ class MainController extends Controller
 
         //Cambiar perfil de usuario
         $user = User::find($request->users_id);
-        if ($request->typeStore == 'Tienda') {
+        if($request->typeStore == 'Tienda'){
             $user->profiles_id = 2;
-        } else if ($request->typeStore == 'Taller') {
+        } else if($request->typeStore == 'Taller'){
             $user->profiles_id = 4;
-        } else {
+        } else if($request->typeStore == 'Cauchera'){
+            $user->profiles_id = 6;
+        }else{
             $user->profiles_id = 5;
         }
 

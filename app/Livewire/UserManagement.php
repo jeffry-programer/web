@@ -158,8 +158,8 @@ class UserManagement extends Component
             $lengthLimits = [
                 'stores' => 500,
                 'products' => 255,
-                'publicities' => 255,
-                'promotions' => 255,
+                'publicities' => 300,
+                'promotions' => 300,
                 'informations' => 255,
                 'default' => 45,
             ];
