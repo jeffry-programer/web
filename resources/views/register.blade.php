@@ -63,7 +63,7 @@
                     <img class="zoomed-image" src="{{ asset('images/gruaSinfondo.png') }}">
                   </div>
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
-                    <h5 class="card-title text-center fw-bolder">Registra tu cauchera</h5>
+                    <h5 class="card-title text-center fw-bolder">Registra tu grúa</h5>
                     <p class="card-text" style="color: #86878a;
                     text-align: justify;">Proporciona asistencia rápida en momentos de emergencia y brinda ayuda a los usuarios.</p>
                     <button class="btn w-100" style="background: #00a3e8;
@@ -83,7 +83,7 @@
                   <div class="card-body" style="padding-bottom: .5rem;position: relative;">
                     <h5 class="card-title text-center fw-bolder">Registra tu cauchera</h5>
                     <p class="card-text" style="color: #86878a;
-                    text-align: justify;">Registra tu cauchera con la cual podras auxiliar usuarios y te daras a conocer potenciando tu negocio.</p>
+                    text-align: justify;">Al registrar tu cauchera, la estás colocando en un mapa digital, haciendo que más personas puedan encontrarla.</p>
                     <button class="btn w-100" style="background: #00a3e8;
                     color: white;
                     position: absolute;

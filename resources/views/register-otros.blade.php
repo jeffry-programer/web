@@ -66,16 +66,13 @@
     background-position: center;">
         <div class="row">
             <div class="col-md-8 mt-md-5 pb-md-5 text-white">
-                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Posiciona tu Tienda y aumenta el tráfico de clientes</h1>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000"> ¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de mucho más?</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Los primeros 30 dias son gratis en la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b></p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px hsl(0, 0%, 0%), -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los productos de tu tienda pueden ser consultados por los usuarios
-                    de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b></p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">En nuestro sitio tendrás tu perfil y los clientes podrán visitarlo desde cualquier dispositivo
-                    </p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Tu seguridad es nuestra prioridad. Al registrarte, te garantizamos una experiencia segura y protegida</p>
-                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o problema, nuestro equipo de soporte al cliente estará listo para ayudarte</p>
-                    <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Es importante que te registres para poder ofrecerte este servicio</p>
+                <h1 class="mb-4" style="text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Bienvenido a <b style="color: #6495ed;font-size: 2.0rem;">Tulobuscas</b>, puedes dar a conocer el servicio que brindas</h1>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">¿Sabías que al registrarte en nuestro sitio web puedes disfrutar de aún más?</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">No pagas por pertenecer a la red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b> por los primeros 30 días</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Todos los usuarios podrán comunicarse directamente y acceder a los servicios</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">En nuestro sitio tendrás tu perfil y los clientes podran visitarlo desde cualquier dispositivo</p>
+                <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Si tienes alguna pregunta o inconveniente, nuestro equipo de soporte al cliente estará listo para ayudarte.</p> 
+                    <p style="font-size: 1.2rem;font-weight: 900;text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000">Registrate y forma parte de la gran red de <b style="color: #6495ed;font-size: 1.4rem;">Tulobuscas</b></p>
             </div>
             <div class="col-md-4">
                 <div class="card my-3" style="border: solid 1px #aaa !important;
@@ -188,9 +185,8 @@
                 color: white;
                 text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta el trafico de clientes a tu tienda desde tulobuscas</h6>
-                    <p> Logra aunmentar el número de clientes gracias a la gran red
-                        de usuarios de tulobuscas</p>
+                    font-weight: bolder;">Geolocalización</h6>
+                    <p>Tu negocio aparecerá en los resultados de búsqueda de los usuarios que estén cerca de tu ubicación. Esto te garantiza que los conductores que necesiten tus servicios te encuentren fácilmente. </p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -201,9 +197,8 @@
                 color: white;
                 text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Aumenta la exposición de tu tienda con tulobuscas</h6>
-                    <p> Aumenta la visibilidad de tu tienda y atrae mayor clientes, desde
-                        la el sistema tulobuscas</p>
+                    font-weight: bolder;">Categorización</h6>
+                    <p> Al clasificar tu taller como "reparación de llantas", llegarás directamente a quienes buscan ese servicio específico. </p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -214,9 +209,8 @@
                 color: white;
                 text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">  Obtendras información extra</h6>
-                    <p>  Obtendras informción que te ayudara en tus ventas, como por ejemplo
-                        el producto más vendida en mi zona.</p>
+                    font-weight: bolder;">Reseñas y Calificaciones</h6>
+                    <p>Los clientes pueden dejar sus opiniones sobre tu trabajo, lo que genera confianza en potenciales clientes.</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -227,9 +221,8 @@
                 color: white;
                 text-align: left;height: auto;">
                     <h6 style="font-size: 1.5rem;
-                    font-weight: bolder;">Tendras un código QR</h6>
-                    <p>  Con el código QR en fisico, expuesto en la tienda fisica, los posibles clientes pueden
-                        consultar los repuestos aun cuando la tienda este cerrada y crear una comunicación con la tienda</p>
+                    font-weight: bolder;">Publicidad Gratuita</h6>
+                    <p>La app te ofrece un espacio para mostrar tus servicios y promociones, sin costo adicional. </p>
                 </div>
             </div>
         </div>
