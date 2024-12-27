@@ -27,6 +27,8 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])->name
 Route::get('/register-grua', [MainController::class, 'registerGrua'])->name('register-grua');
 Route::get('/register-taller', [MainController::class, 'registerTaller'])->name('register-taller');
 Route::get('/register-store', [MainController::class, 'registerStore'])->name('register-store');
+Route::get('/register-cauchera', [MainController::class, 'registerCauchera'])->name('register-cauchera');
+Route::get('/register-otros', [MainController::class, 'registerOtros'])->name('register-otros');
 Route::post('/register-store', [MainController::class, 'registerStorePost'])->name('register-store');
 
 
@@ -69,6 +71,8 @@ Route::middleware([
     Route::get('/register-data-grua', [MainController::class, 'registerDataGrua'])->name('register-data-grua');
     Route::get('/register-data-store', [MainController::class, 'registerDataStore'])->name('register-data-store');
     Route::get('/register-data-taller', [MainController::class, 'registerDataTaller'])->name('register-data-taller');
+    Route::get('/register-data-cauchera', [MainController::class, 'registerDataCauchera'])->name('register-data-cauchera');
+    Route::get('/register-data-otros', [MainController::class, 'registerDataOtros'])->name('register-data-otros');
     Route::post('table-store', [UserManagement::class, 'store'])->name('table-store');
     Route::post('table-update', [UserManagement::class, 'update'])->name('table-update');
     Route::post('delete-register', [UserManagement::class, 'delete'])->name('delete-register');

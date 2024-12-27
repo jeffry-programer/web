@@ -216,6 +216,14 @@ class MainController extends Controller
         return view('register-store');
     }
 
+    public function registerCauchera(){
+        return view('register-cauchera');
+    }
+
+    public function registerOtros(){
+        return view('register-otros');
+    }
+
     public function registerTaller()
     {
         return view('register-taller');
@@ -255,6 +263,34 @@ class MainController extends Controller
             'categories_stores' => $categories_stores
         ];
         return view('register-data-taller', $array_data);
+    }
+
+    public function registerDataCauchera(){
+        $type_stores = TypeStore::all();
+        $municipalities = Municipality::all();
+        $states = State::all();
+        $categories_stores = CategoryStore::where('type_stores_id', env('TIPO_CAUCHERA_ID'))->get();
+        $array_data = [
+            'type_stores' => $type_stores,
+            'municipalities' => $municipalities,
+            'states' => $states,
+            'categories_stores' => $categories_stores
+        ];
+        return view('register-data-cauchera', $array_data);
+    }
+
+    public function registerDataOtros(){
+        $type_stores = TypeStore::all();
+        $municipalities = Municipality::all();
+        $states = State::all();
+        $categories_stores = CategoryStore::where('type_stores_id', env('TIPO_OTROS_ID'))->get();
+        $array_data = [
+            'type_stores' => $type_stores,
+            'municipalities' => $municipalities,
+            'states' => $states,
+            'categories_stores' => $categories_stores
+        ];
+        return view('register-data-otros', $array_data);
     }
 
     public function registerDataGrua()
@@ -1402,7 +1438,7 @@ class MainController extends Controller
             'description' => $product->description,
             'detail' => $product->detail,
             'code' => $product->code,
-            'reference' => $product->reference,
+            'brand' => $product->brand->description ?? '',
             'image' => $product->image,
             'amount' => $product_store->amount,
             'price' => $product_store->price,
@@ -3456,39 +3492,39 @@ class MainController extends Controller
         // Validar los datos recibidos
         $validated = $request->validate([
             'name' => 'required|string|max:255',  // Nombre del producto
-            'cylinder_capacities_id' => 'required',
-            'models_id' => 'required',
-            'boxes_id' => 'required',
             'category' => 'required',  // Asegúrate de que la categoría exista en la base de datos
             'brand' => 'required|exists:brands,id',  // Asegúrate de que la marca exista en la base de datos
             'description' => 'nullable|string',  // Descripción opcional
             'code' => 'nullable|string|max:255',  // Código del producto
-            'reference' => 'nullable|string|max:255',  // Referencia del producto
             'detail' => 'nullable|string',  // Detalles del producto
             'amount' => 'required|integer|min:1',  // Cantidad, debe ser un número entero positivo
             'price' => 'required|numeric|min:0',  // Precio, debe ser un número positivo
             'storeId' => 'required|exists:stores,id', // El ID de la tienda también debe existir en la base de datos
         ]);
 
-        // Crear el nuevo producto
-        $product = new Product();
-        $product->name = $validated['name'];
-        $product->cylinder_capacities_id = $validated['cylinder_capacities_id'];
-        $product->models_id = $validated['models_id'];
-        $product->boxes_id = $validated['boxes_id'];
-        $product->type_products_id = TypeProduct::where('description', 'Repuestos')->first()->id ?? 1;
-        $product->sub_categories_id = $validated['category'];  // Relación con subcategoría
-        $product->brands_id = $validated['brand'];  // Relación con marca
-        $product->description = $validated['description'] ?? null;
-        $product->code = $validated['code'] ?? null;
-        $product->reference = $validated['reference'] ?? null;
-        $product->detail = $validated['detail'] ?? null;
-        $product->count = 0;
-        $product->link = str_replace(' ', '-', $validated['name']);
-        $product->image = '';
+        // Cargar datos necesarios de la base de datos en un solo paso
+        $cylinder_no_apply = cylinderCapacity::firstWhere('description', 'No aplica')?->id ?? 1;
+        $model_no_apply = Modell::firstWhere('description', 'No aplica')?->id ?? 1;
+        $box_no_apply = Box::firstWhere('description', 'No aplica')?->id ?? 1;
+        $type_product_id = TypeProduct::firstWhere('description', 'Repuestos')?->id ?? 1;
 
-        // Guardar el producto en la base de datos
-        $product->save();
+        // Crear el nuevo producto con valores predeterminados y datos validados
+        $product = Product::create([
+            'name' => $validated['name'],
+            'cylinder_capacities_id' => $cylinder_no_apply,
+            'models_id' => $model_no_apply,
+            'boxes_id' => $box_no_apply,
+            'type_products_id' => $type_product_id,
+            'sub_categories_id' => $validated['category'],
+            'brands_id' => $validated['brand'],
+            'description' => $validated['description'] ?? '',
+            'code' => $validated['code'] ?? '',
+            'reference' => $validated['detail'] ?? '',
+            'detail' => $validated['detail'] ?? '',
+            'count' => 0,
+            'link' => str_replace(' ', '-', $validated['name']),
+            'image' => '',
+        ]);
 
         if ($request->hasFile('selectedImage')) {
             $route_image = $request->file('selectedImage')->store('public/images-prod/' . $product->id);

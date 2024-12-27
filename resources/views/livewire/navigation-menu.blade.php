@@ -57,7 +57,7 @@
   .card-text {
     width: 100%;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -170,6 +170,20 @@
   </script>";
   }
   }
+  if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 6 && !Auth::user()->store){
+  if($_SERVER['REQUEST_URI'] != '/register-data-cauchera'){
+  echo "<script>
+    window.location.replace('/register-data-cauchera');
+  </script>";
+  }
+  }
+  if(Auth::user()->email_verified_at != "" && Auth::user()->profiles_id == 7 && !Auth::user()->store){
+  if($_SERVER['REQUEST_URI'] != '/register-data-otros'){
+  echo "<script>
+    window.location.replace('/register-data-otros');
+  </script>";
+  }
+  }
   }
   @endphp
   <nav x-data="{ open: false }" class="bg-white border-b border-gray-100"
@@ -206,12 +220,22 @@
 
         <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal27" style="text-decoration: none"
           style="font-size: 1rem;">
-          <i class="fa-solid fa-house me-1"></i>{{ __('Buscar talleres') }}
+          <i class="fa-solid fa-wrench me-1"></i></i>{{ __('Buscar talleres') }}
+        </x-dropdown-link>
+
+        <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal29" style="text-decoration: none"
+          style="font-size: 1rem;">
+          <i class="fa-solid fa-car me-1"></i>{{ __('Buscar caucheras') }}
         </x-dropdown-link>
 
         <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal28" style="text-decoration: none"
           style="font-size: 1rem;">
           <i class="fa-solid fa-truck-fast me-1"></i>{{ __('Buscar grúas') }}
+        </x-dropdown-link>
+
+        <x-dropdown-link href="#" data-bs-toggle="modal" data-bs-target="#exampleModal30" style="text-decoration: none"
+          style="font-size: 1rem;">
+          <i class="fa-solid fa-bars me-2 ms-1"></i>{{ __('Buscar otros servicios') }}
         </x-dropdown-link>
       </div>
       <div class="col-10 col-md-3 d-flex align-items-center justify-content-start">
@@ -448,13 +472,30 @@
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModal28" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        @livewire('search-grua')
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          @livewire('search-grua')
+        </div>
       </div>
-    </div>
   </div>
-</div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal29" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          @livewire('search-cauchera')
+        </div>
+      </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal30" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          @livewire('search-otros')
+        </div>
+      </div>
+  </div>
 
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
